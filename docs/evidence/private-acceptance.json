@@ -1,0 +1,847 @@
+{
+  "tested_code_commit": "dee41c0d429564019bc14d7459a58f4f45d62f31",
+  "date_utc": "2026-10-12",
+  "runs": [
+    {
+      "run": "G",
+      "passed": true,
+      "tested_revision": "dee41c0d429564019bc14d7459a58f4f45d62f31",
+      "python": "3.11.15",
+      "input_storage": "local read-only",
+      "image_geometry": {
+        "axes": [
+          "z",
+          "y",
+          "x"
+        ],
+        "shape_xyz": [
+          48,
+          40,
+          20
+        ],
+        "resolution_nm_xyz": [
+          8.0,
+          8.0,
+          24.0
+        ],
+        "array_path": "0"
+      },
+      "atom_policy": "source_labels",
+      "docker_build_no_cache": true,
+      "steps": [
+        {
+          "step": "doctor",
+          "exit_code": 0,
+          "seconds": 0.33
+        },
+        {
+          "step": "deps",
+          "exit_code": 0,
+          "seconds": 52.48
+        },
+        {
+          "step": "unit-tests",
+          "exit_code": 0,
+          "seconds": 3.76
+        },
+        {
+          "step": "build",
+          "exit_code": 0,
+          "seconds": 67.19
+        },
+        {
+          "step": "fixture",
+          "exit_code": 0,
+          "seconds": 1.03
+        },
+        {
+          "step": "create",
+          "exit_code": 0,
+          "seconds": 0.31
+        },
+        {
+          "step": "start",
+          "exit_code": 0,
+          "seconds": 21.38
+        },
+        {
+          "step": "api-browser",
+          "exit_code": 0,
+          "seconds": 40.28
+        },
+        {
+          "step": "segmentation-metadata-concurrency",
+          "exit_code": 0,
+          "seconds": 48.07
+        },
+        {
+          "step": "database-reconnect",
+          "exit_code": 0,
+          "seconds": 10.41
+        },
+        {
+          "step": "holding-edit-restart",
+          "exit_code": 0,
+          "seconds": 34.56
+        },
+        {
+          "step": "snapshot-before-rerun",
+          "exit_code": 0,
+          "seconds": 2.22
+        },
+        {
+          "step": "rerun-preserves-edits",
+          "exit_code": 0,
+          "seconds": 8.32
+        },
+        {
+          "step": "snapshot",
+          "exit_code": 0,
+          "seconds": 2.2
+        }
+      ],
+      "voxel_checks": {
+        "all_voxels_verified": 38400,
+        "foreground_voxels_verified": 4144,
+        "all_atoms_verified": 19,
+        "expected_connected_components": 6,
+        "same_label_edges_verified": 22,
+        "face_adjacency_edges_verified": 23
+      },
+      "native_api_operations": [
+        "merge",
+        "split",
+        "undo_merge",
+        "undo_split"
+      ],
+      "api_membership_restored": true,
+      "inserted_annotation_materialized": true,
+      "browser": {
+        "passed": true,
+        "browser": "155.0.8059.39",
+        "component_membership_restored": true,
+        "reload_verified": true,
+        "fresh_tab_verified": true
+      },
+      "browser_operations": [
+        "merge",
+        "split"
+      ],
+      "browser_page_errors": 0,
+      "browser_failed_requests": 0,
+      "browser_blocked_requests": 0,
+      "concurrent_creators": {
+        "count": 4,
+        "all_passed": true,
+        "metadata_row_count": 1,
+        "immediate_annotation_materialization_verified": true,
+        "existing_state_preserved": true
+      },
+      "database_reconnect": {
+        "passed": true,
+        "request_retries": 0,
+        "complete_snapshot_unchanged": true
+      },
+      "repeat_start_snapshot_equal": true,
+      "fresh_state": [
+        "Git checkout",
+        "Python venv",
+        "vendor checkouts",
+        "viewer output",
+        "input fixture",
+        "graph",
+        "Postgres",
+        "Redis",
+        "generated secrets"
+      ],
+      "shared_host_state": [
+        "OS",
+        "Docker daemon",
+        "installed Python/Node/Git",
+        "global package/download caches",
+        "Docker layers unless --no-cache"
+      ]
+    },
+    {
+      "run": "H",
+      "passed": true,
+      "tested_revision": "dee41c0d429564019bc14d7459a58f4f45d62f31",
+      "python": "3.14.6",
+      "input_storage": "local read-only",
+      "image_geometry": {
+        "axes": [
+          "x",
+          "y",
+          "z"
+        ],
+        "shape_xyz": [
+          40,
+          48,
+          24
+        ],
+        "resolution_nm_xyz": [
+          12.0,
+          16.0,
+          40.0
+        ],
+        "array_path": "0"
+      },
+      "atom_policy": "spatial_tiles",
+      "docker_build_no_cache": false,
+      "steps": [
+        {
+          "step": "doctor",
+          "exit_code": 0,
+          "seconds": 0.36
+        },
+        {
+          "step": "deps",
+          "exit_code": 0,
+          "seconds": 40.84
+        },
+        {
+          "step": "unit-tests",
+          "exit_code": 0,
+          "seconds": 3.86
+        },
+        {
+          "step": "build",
+          "exit_code": 0,
+          "seconds": 16.63
+        },
+        {
+          "step": "fixture",
+          "exit_code": 0,
+          "seconds": 1.17
+        },
+        {
+          "step": "create",
+          "exit_code": 0,
+          "seconds": 0.36
+        },
+        {
+          "step": "start",
+          "exit_code": 0,
+          "seconds": 22.24
+        },
+        {
+          "step": "api-browser",
+          "exit_code": 0,
+          "seconds": 42.8
+        },
+        {
+          "step": "segmentation-metadata-concurrency",
+          "exit_code": 0,
+          "seconds": 48.04
+        },
+        {
+          "step": "database-reconnect",
+          "exit_code": 0,
+          "seconds": 10.34
+        },
+        {
+          "step": "holding-edit-restart",
+          "exit_code": 0,
+          "seconds": 35.86
+        },
+        {
+          "step": "snapshot-before-rerun",
+          "exit_code": 0,
+          "seconds": 2.38
+        },
+        {
+          "step": "rerun-preserves-edits",
+          "exit_code": 0,
+          "seconds": 8.33
+        },
+        {
+          "step": "snapshot",
+          "exit_code": 0,
+          "seconds": 2.35
+        }
+      ],
+      "voxel_checks": {
+        "all_voxels_verified": 46080,
+        "foreground_voxels_verified": 4946,
+        "all_atoms_verified": 74,
+        "expected_connected_components": 8,
+        "same_label_edges_verified": 124,
+        "face_adjacency_edges_verified": 128
+      },
+      "native_api_operations": [
+        "merge",
+        "split",
+        "undo_merge",
+        "undo_split"
+      ],
+      "api_membership_restored": true,
+      "inserted_annotation_materialized": true,
+      "browser": {
+        "passed": true,
+        "browser": "155.0.8059.39",
+        "component_membership_restored": true,
+        "reload_verified": true,
+        "fresh_tab_verified": true
+      },
+      "browser_operations": [
+        "split",
+        "merge"
+      ],
+      "browser_page_errors": 0,
+      "browser_failed_requests": 0,
+      "browser_blocked_requests": 0,
+      "concurrent_creators": {
+        "count": 4,
+        "all_passed": true,
+        "metadata_row_count": 1,
+        "immediate_annotation_materialization_verified": true,
+        "existing_state_preserved": true
+      },
+      "database_reconnect": {
+        "passed": true,
+        "request_retries": 0,
+        "complete_snapshot_unchanged": true
+      },
+      "repeat_start_snapshot_equal": true,
+      "fresh_state": [
+        "Git checkout",
+        "Python venv",
+        "vendor checkouts",
+        "viewer output",
+        "input fixture",
+        "graph",
+        "Postgres",
+        "Redis",
+        "generated secrets"
+      ],
+      "shared_host_state": [
+        "OS",
+        "Docker daemon",
+        "installed Python/Node/Git",
+        "global package/download caches",
+        "Docker layers unless --no-cache"
+      ]
+    },
+    {
+      "run": "I",
+      "passed": true,
+      "independent_agent_without_chat_history": true,
+      "tested_revision": "dee41c0d429564019bc14d7459a58f4f45d62f31",
+      "python": "3.14.6",
+      "input_storage": "unsigned HTTP with freshly generated immutable synthetic input",
+      "image_geometry": {
+        "axes": [
+          "x",
+          "y",
+          "z"
+        ],
+        "shape_xyz": [
+          40,
+          48,
+          24
+        ],
+        "resolution_nm_xyz": [
+          12.0,
+          16.0,
+          40.0
+        ],
+        "array_path": "0"
+      },
+      "atom_policy": "source_labels",
+      "docker_build_no_cache": false,
+      "unit_tests_passed": 51,
+      "skills_validated": 5,
+      "steps": [
+        {
+          "step": "doctor",
+          "seconds": 0.341,
+          "exit_code": 0
+        },
+        {
+          "step": "skills-install",
+          "seconds": 0.047,
+          "exit_code": 0
+        },
+        {
+          "step": "deps",
+          "seconds": 40.625,
+          "exit_code": 0
+        },
+        {
+          "step": "fetch",
+          "seconds": 1.447,
+          "exit_code": 0
+        },
+        {
+          "step": "skills-validate",
+          "seconds": 0.363,
+          "exit_code": 0
+        },
+        {
+          "step": "unit-tests",
+          "seconds": 4.068,
+          "exit_code": 0
+        },
+        {
+          "step": "build",
+          "seconds": 16.509,
+          "exit_code": 0
+        },
+        {
+          "step": "create",
+          "seconds": 0.36,
+          "exit_code": 0
+        },
+        {
+          "step": "start",
+          "seconds": 21.562,
+          "exit_code": 0
+        },
+        {
+          "step": "api-acceptance",
+          "seconds": 7.683,
+          "exit_code": 0
+        },
+        {
+          "step": "browser-acceptance",
+          "seconds": 27.251,
+          "exit_code": 0
+        },
+        {
+          "step": "source-label-policy",
+          "seconds": 1.66,
+          "exit_code": 0
+        },
+        {
+          "step": "segmentation-metadata-concurrency",
+          "seconds": 48.259,
+          "exit_code": 0
+        },
+        {
+          "step": "database-reconnect",
+          "seconds": 9.848,
+          "exit_code": 0
+        },
+        {
+          "step": "holding-edit-restart",
+          "seconds": 34.776,
+          "exit_code": 0
+        },
+        {
+          "step": "snapshot-before-repeat",
+          "seconds": 2.337,
+          "exit_code": 0
+        },
+        {
+          "step": "repeat-start",
+          "seconds": 8.594,
+          "exit_code": 0
+        },
+        {
+          "step": "snapshot-after-repeat",
+          "seconds": 2.504,
+          "exit_code": 0
+        },
+        {
+          "step": "compare-repeat",
+          "seconds": 0.003,
+          "exit_code": 0
+        },
+        {
+          "step": "online-backup",
+          "seconds": 43.078,
+          "exit_code": 0
+        },
+        {
+          "step": "verify-online-backup",
+          "seconds": 1.21,
+          "exit_code": 0
+        },
+        {
+          "step": "restore-copy",
+          "seconds": 31.332,
+          "exit_code": 0
+        },
+        {
+          "step": "restore-runtime-bytes",
+          "seconds": 1.617,
+          "exit_code": 0
+        },
+        {
+          "step": "restored-browser",
+          "seconds": 24.94,
+          "exit_code": 0
+        },
+        {
+          "step": "rotation-before-record",
+          "seconds": 0.153,
+          "exit_code": 0
+        },
+        {
+          "step": "rotate-secrets",
+          "seconds": 26.915,
+          "exit_code": 0
+        },
+        {
+          "step": "rotation-after-record",
+          "seconds": 0.149,
+          "exit_code": 0
+        },
+        {
+          "step": "rotation-verification",
+          "seconds": 0.031,
+          "exit_code": 0
+        },
+        {
+          "step": "snapshot-before-gateway",
+          "seconds": 2.252,
+          "exit_code": 0
+        },
+        {
+          "step": "stop-gateway",
+          "seconds": 0.618,
+          "exit_code": 0
+        },
+        {
+          "step": "gateway-diagnostic-status",
+          "seconds": 0.399,
+          "exit_code": 0
+        },
+        {
+          "step": "gateway-diagnostic-logs",
+          "seconds": 0.397,
+          "exit_code": 0
+        },
+        {
+          "step": "gateway-stopped-record",
+          "seconds": 0.159,
+          "exit_code": 0
+        },
+        {
+          "step": "gateway-diagnosis",
+          "seconds": 0.201,
+          "exit_code": 0
+        },
+        {
+          "step": "recover-gateway-start",
+          "seconds": 14.425,
+          "exit_code": 0
+        },
+        {
+          "step": "gateway-first-snapshot",
+          "seconds": 2.617,
+          "exit_code": 0
+        },
+        {
+          "step": "gateway-recovered-record",
+          "seconds": 0.156,
+          "exit_code": 0
+        },
+        {
+          "step": "gateway-recovery-verification",
+          "seconds": 0.09,
+          "exit_code": 0
+        },
+        {
+          "step": "verify-earlier-backup",
+          "seconds": 1.158,
+          "exit_code": 0
+        },
+        {
+          "step": "teardown-restored",
+          "seconds": 5.872,
+          "exit_code": 0
+        },
+        {
+          "step": "upgrade-restore",
+          "seconds": 30.124,
+          "exit_code": 0
+        },
+        {
+          "step": "upgrade-runtime-bytes",
+          "seconds": 1.619,
+          "exit_code": 0
+        },
+        {
+          "step": "upgraded-browser",
+          "seconds": 25.593,
+          "exit_code": 0
+        },
+        {
+          "step": "teardown-upgraded",
+          "seconds": 6.707,
+          "exit_code": 0
+        },
+        {
+          "step": "browser-handoff",
+          "seconds": 1.667,
+          "exit_code": 0
+        },
+        {
+          "step": "final-readonly-validate",
+          "seconds": 2.411,
+          "exit_code": 0
+        },
+        {
+          "step": "final-preservation",
+          "seconds": 0.615,
+          "exit_code": 1
+        },
+        {
+          "step": "final-preservation-normalized",
+          "seconds": 0.828,
+          "exit_code": 0
+        },
+        {
+          "step": "final-report",
+          "seconds": 0.248,
+          "exit_code": 0
+        },
+        {
+          "step": "protect-private-evidence",
+          "seconds": 0.033,
+          "exit_code": 0
+        }
+      ],
+      "voxel_checks": {
+        "all_voxels_verified": 46080,
+        "foreground_voxels_verified": 4946,
+        "all_atoms_verified": 23,
+        "expected_connected_components": 8,
+        "same_label_edges_verified": 24,
+        "face_adjacency_edges_verified": 25
+      },
+      "native_api_operations": [
+        "merge",
+        "split",
+        "undo_merge",
+        "undo_split"
+      ],
+      "api_membership_restored": true,
+      "inserted_annotation_materialized": true,
+      "browser": {
+        "passed": true,
+        "browser": "122.0.6261.94",
+        "component_membership_restored": true,
+        "reload_verified": true,
+        "fresh_tab_verified": true
+      },
+      "browser_operations": [
+        "merge",
+        "split"
+      ],
+      "browser_page_errors": 0,
+      "browser_failed_requests": 0,
+      "browser_blocked_requests": 0,
+      "concurrent_creators": {
+        "count": 4,
+        "all_passed": true,
+        "metadata_row_count": 1,
+        "immediate_annotation_materialization_verified": true,
+        "existing_state_preserved": true
+      },
+      "database_reconnect": {
+        "passed": true,
+        "request_retries": 0,
+        "complete_snapshot_unchanged": true
+      },
+      "repeat_start_snapshot_equal": true
+    }
+  ],
+  "private_acceptance_passed": true,
+  "host": {
+    "distribution": "Ubuntu 20.04.4 LTS",
+    "architecture": "x86_64",
+    "kernel": "5.4.0-216-generic",
+    "docker": "28.1.1",
+    "docker_compose": "2.35.1",
+    "node": "25.8.1",
+    "npm": "11.11.0",
+    "browser_versions": [
+      "Chromium 155.0.8059.39",
+      "Chrome 122.0.6261.94"
+    ]
+  },
+  "lifecycle_evaluation": {
+    "independent_agent": true,
+    "source_commit": "dee41c0d429564019bc14d7459a58f4f45d62f31",
+    "passed": true,
+    "skills_validated": 5,
+    "backup": {
+      "complete": true,
+      "state_checked": true,
+      "checksum_verification_passed": true,
+      "source_included": false,
+      "remote_input_files_byte_preserved": true
+    },
+    "restore": {
+      "state_compared_to_backup": true,
+      "saved_snapshot_exactly_matches_archive_before_browser_edits": true,
+      "retired": true
+    },
+    "rotation": {
+      "passed": true,
+      "persistent_services_kept": true,
+      "exact_running_applications_recreated": true,
+      "active_env_private": true,
+      "recovery_env_private": true,
+      "complete_state_unchanged": true
+    },
+    "database_password_changed": true,
+    "session_secret_changed": true,
+    "gateway_recovery": {
+      "passed": true,
+      "first_snapshot_attempts": 1,
+      "first_snapshot_exit_code": 0,
+      "first_snapshot_byte_equal": true,
+      "postgres_recreated": true,
+      "other_eight_services_continuously_running": [
+        "mat-worker",
+        "materialize",
+        "schema",
+        "info",
+        "annotation",
+        "pcg",
+        "redis",
+        "bigtable"
+      ],
+      "all_ten_services_running": true,
+      "first_snapshot_http_errors": []
+    },
+    "upgrade": {
+      "backup_revision": "648e9dab6aaaeea6866fb78ab3735b041087b405",
+      "candidate_revision": "dee41c0d429564019bc14d7459a58f4f45d62f31",
+      "state_compared_to_backup": true,
+      "archived_runtime_did_not_replace_candidate": true,
+      "postgres_image_pin_unchanged": true,
+      "retired": true
+    },
+    "upgrade_candidate_adapters_match": true,
+    "browser_runs_passed": 3,
+    "browser_handoff": {
+      "generated_and_http_bytes_verified": true,
+      "native_controls_reload_fresh_tab_and_string_precision_instructions_verified": true,
+      "separate_external_browser_agent_run_claimed": false
+    },
+    "preservation": {
+      "passed": true,
+      "all_preexisting_containers_unchanged": 199,
+      "original_configuration_runtime_files_unchanged": 121,
+      "http_input_files_byte_unchanged": 60,
+      "http_input_file_set_unchanged": true,
+      "upgrade_source_files_byte_preserved_after_teardown": 60,
+      "repository_source_clean": true
+    }
+  },
+  "evaluator_correction": {
+    "original_failed_check_retained": true,
+    "cause": "Docker returned unchanged mounts in a different list order.",
+    "changed_container_values": 0,
+    "normalized_check_passed": true,
+    "preexisting_containers_verified": 199
+  },
+  "revoked_candidates": [
+    {
+      "revision": "23d0cab6cd3e6e505d1f31aa255e7e0cde4b02c7",
+      "reason": "A cached database session failed the first read after materialization or PostgreSQL recreation.",
+      "fix": "Check pooled connections and release request/task sessions; no write retries."
+    },
+    {
+      "revision": "24660e0858a0a266b17464993e7f8b025e78f379",
+      "reason": "Annotation ingestion and immediate materialization raced while creating a linked table.",
+      "fix": "Shared PostgreSQL transaction and advisory lock for both creators."
+    }
+  ],
+  "retained_browser_failure": {
+    "candidate": "24660e0858a0a266b17464993e7f8b025e78f379",
+    "error": "ERR_NETWORK_CHANGED",
+    "observed_during_other_stack_lifecycle_work": true,
+    "original_failed_run_not_retried": true,
+    "final_acceptance_workflows_serialized": true
+  },
+  "limitations": [
+    "Same-host Linux x86-64 repeatability; no OS reinstall or other server platform tested.",
+    "OS, Docker daemon, installed tools and package/download caches shared; only run G used --no-cache backend builds.",
+    "Small synthetic volumes establish geometry, editing and recovery behavior, not petascale throughput.",
+    "Single local editor identity; loopback/SSH access only.",
+    "Private/signed cloud inputs, time/channel axes, nonzero origins, Zarr v3, automatic edit migration and database major-version upgrades unsupported.",
+    "Pinned upstream npm audit reported 55 findings: 13 moderate, 34 high, 8 critical. Functional tests do not establish runtime exploitability.",
+    "Public release license and dependency review remain future work."
+  ],
+  "external_browser_followup": {
+    "date_local": "2026-10-12",
+    "timezone": "America/New_York",
+    "evidence_source": "User-provided report from a separate local browser agent, followed by a read-only server check.",
+    "tested_code_commit": "dee41c0d429564019bc14d7459a58f4f45d62f31",
+    "installation_run": "G",
+    "graph_id": "pkg_final_g",
+    "client": "Codex in-app browser on macOS",
+    "reported_browser_version": "155.0.0.0",
+    "version_precision": "Reduced user-agent version; patch version unavailable.",
+    "reported_checks": {
+      "alignment": "PASS",
+      "segmentation": "PASS",
+      "meshes": "PASS",
+      "native_merge": "PASS",
+      "native_split": "PASS",
+      "reload": "PASS",
+      "fresh_tab": "PASS"
+    },
+    "reported_console_errors": 0,
+    "reported_edit_method": "Actual viewer mouse/keyboard controls; root queries were read-only, with IDs kept as strings.",
+    "atoms": [
+      "72057594037927937",
+      "72057594037927938"
+    ],
+    "reported_roots": {
+      "before": [
+        "288230376151712022",
+        "288230376151712060"
+      ],
+      "after_merge": [
+        "288230376151712143",
+        "288230376151712143"
+      ],
+      "after_split_reload_fresh_tab": [
+        "288230376151712010",
+        "288230376151712121"
+      ]
+    },
+    "reported_interaction_corrections": [
+      "An off-coordinate merge marker at (4, 5, 2) was cleared before submission.",
+      "The first B split-marker click selected A again and showed an already-selected message. The absent B marker was inspected, then correctly added before submission."
+    ],
+    "reported_access_adjustment": "The in-app browser blocked 127.0.0.1; the equivalent localhost viewer address was used.",
+    "reported_screenshots": [
+      "01-initial-in-app.jpg",
+      "02-merge-selected.jpg",
+      "03-after-merge.jpg",
+      "04-split-selected.jpg",
+      "05-after-split.jpg",
+      "06-3d-meshes.jpg",
+      "07-after-reload.jpg",
+      "08-fresh-tab.jpg"
+    ],
+    "screenshot_files_received": false,
+    "screenshots_independently_inspected": false,
+    "server_verification": {
+      "passed": true,
+      "read_only_observer": true,
+      "atom_count": 19,
+      "root_count": 6,
+      "all_root_leaves_verified": true,
+      "complete_initial_partition_restored": true,
+      "reported_final_roots_match": true,
+      "assigned_final_roots": [
+        "288230376151712010",
+        "288230376151712121"
+      ],
+      "annotation_and_materialization_unchanged": true,
+      "edit_count_before": 8,
+      "edit_count_after": 10,
+      "new_native_operation_count": 2
+    },
+    "additional_fresh_installation": false,
+    "product_changes_required": false
+  }
+}

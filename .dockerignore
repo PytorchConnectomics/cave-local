@@ -1,0 +1,10 @@
+.git
+.venv
+.runtime
+deployments
+reports
+skills
+tests
+vendor/neuroglancer
+**/node_modules
+**/.git

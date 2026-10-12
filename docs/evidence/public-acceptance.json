@@ -1,0 +1,1277 @@
+{
+  "schema_version": 1,
+  "draft": false,
+  "date_local": "2026-10-12",
+  "timezone": "America/New_York",
+  "release_acceptance_status": "PASS",
+  "release_acceptance_passed": true,
+  "scope": "Linux x86-64 single-server, single-editor, loopback/SSH preview with synthetic supported inputs.",
+  "gates": {
+    "clean_pinned_fast_suite": {
+      "status": "PASS",
+      "validated_source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+      "expected_passing_main_cases": 324,
+      "expected_passing_subtests": 77,
+      "expected_opt_in_skips": 1,
+      "expected_junit_cases_including_subtests": 402,
+      "source_worktree_clean": true,
+      "confirmed_source_reports": [
+        {
+          "source_report_sha256": "cecb19eb79baaf712356026b72b875fc36aa3cd8dd13fb71bcccb8a89302b62f",
+          "python": "3.14.6",
+          "status": "PASS",
+          "source_worktree_clean": true
+        }
+      ],
+      "precommit_fast_runs": [
+        {
+          "python": "3.11",
+          "status": "PASS_WORKING_TREE_ONLY",
+          "observed_git_head": "707f3d0888f76c8f6ca76fad50796a7b8eb45b6a",
+          "source_worktree_dirty": true,
+          "counted_as_clean_source_evidence": false,
+          "source_report_sha256": "3f49814c39a2ecc96240a45964a3cd35ec1af95e45369b907af8820d34b93fc8"
+        },
+        {
+          "python": "3.14",
+          "status": "PASS_WORKING_TREE_ONLY",
+          "observed_git_head": "707f3d0888f76c8f6ca76fad50796a7b8eb45b6a",
+          "source_worktree_dirty": true,
+          "counted_as_clean_source_evidence": false,
+          "source_report_sha256": "0de00ef1c9035a5cfe8ccc2d314f74355c7093922236b0c7fb37a53f30d97aba"
+        }
+      ],
+      "new_real_sdk_isolation_cases": 16,
+      "note": "Clean pinned independent004 fast report and both clean CI Python versions pass. Live workflow/profile isolation has separate completed evidence.",
+      "local_python": "Python 3.14.6",
+      "source_report_sha256": "cecb19eb79baaf712356026b72b875fc36aa3cd8dd13fb71bcccb8a89302b62f",
+      "passed_main_cases": 324,
+      "passed_subtests": 77,
+      "skipped_opt_in_cases": 1,
+      "junit_cases_including_subtests": 402
+    },
+    "local_fresh_installations": {
+      "status": "PASS",
+      "title": "Earlier local full-003 server-core evidence",
+      "source_report_sha256": "5a36c558833500eaeebd678a939c498878ae44e21d20f707a4fe3ea7d2e975c7",
+      "confirmed_checks": [
+        "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+        "All fixture voxels and complete graph memberships",
+        "Native API Merge/Split/Undo with the selected editing policy",
+        "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+        "Annotation and materialization readback",
+        "Four concurrent linked-table creators",
+        "First reads after database disconnection and PostgreSQL-only restart without request retries",
+        "Whole-stack edit persistence, Undo and repeat-start equality",
+        "Online backup including source, state recording and checksum verification",
+        "Separate restore, full saved-state equality and current candidate adapter bytes",
+        "Native browser checks on restored copy while original state remains unchanged",
+        "Both credentials changed, applications recreated, persistent store containers retained and saved state unchanged",
+        "Generated browser-agent handoff",
+        "Scoped teardown of assigned fixture copies and original fixture",
+        "Fixture inputs, backups, deployment files and unrelated resources retained as specified by the runner"
+      ],
+      "required_fresh_installations": 2,
+      "confirmed_fresh_installations": 2,
+      "required_install_checks": [
+        "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+        "All fixture voxels and complete graph memberships",
+        "Native API Merge/Split/Undo with the selected editing policy",
+        "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+        "Annotation and materialization readback",
+        "Four concurrent linked-table creators",
+        "First reads after database disconnection and PostgreSQL-only restart without request retries",
+        "Whole-stack edit persistence, Undo and repeat-start equality"
+      ],
+      "required_lifecycle_checks": [
+        "Online backup including source, state recording and checksum verification",
+        "Separate restore, full saved-state equality and current candidate adapter bytes",
+        "Native browser checks on restored copy while original state remains unchanged",
+        "Both credentials changed, applications recreated, persistent store containers retained and saved state unchanged",
+        "Generated browser-agent handoff",
+        "Scoped teardown of assigned fixture copies and original fixture",
+        "Fixture inputs, backups, deployment files and unrelated resources retained as specified by the runner"
+      ],
+      "runs": [
+        {
+          "status": "PASS",
+          "title": "Local ZYX nanometer fixture",
+          "source_report_sha256": "268f6ad43a1eeaa3097af6b0cae5006ec1c4665a6002f4d3c106c5a5378b65b7",
+          "confirmed_checks": [
+            "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+            "All fixture voxels and complete graph memberships",
+            "Native API Merge/Split/Undo with the selected editing policy",
+            "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+            "Annotation and materialization readback",
+            "Four concurrent linked-table creators",
+            "First reads after database disconnection and PostgreSQL-only restart without request retries",
+            "Whole-stack edit persistence, Undo and repeat-start equality",
+            "Online backup including source, state recording and checksum verification",
+            "Separate restore, full saved-state equality and current candidate adapter bytes",
+            "Native browser checks on restored copy while original state remains unchanged",
+            "Both credentials changed, applications recreated, persistent store containers retained and saved state unchanged",
+            "Generated browser-agent handoff",
+            "Scoped teardown of assigned fixture copies and original fixture",
+            "Fixture inputs, backups, deployment files and unrelated resources retained as specified by the runner"
+          ],
+          "editing_basis": "source_labels",
+          "source_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+          "unit_counts": {
+            "passed_main_cases": 293,
+            "passed_subtests": 77,
+            "opt_in_skips": 1,
+            "junit_total": 371
+          },
+          "browser_preflight_passed": true,
+          "browser_major_version": 155,
+          "fresh_state": [
+            "Git checkout",
+            "Python venv",
+            "vendor checkouts",
+            "viewer output",
+            "input fixture",
+            "graph",
+            "Postgres",
+            "Redis",
+            "generated secrets"
+          ],
+          "lifecycle_result": {
+            "fresh_install_passed": true,
+            "backup_state_verified": true,
+            "restore_state_equal": true,
+            "candidate_adapters_verified": true,
+            "restored_browser_passed": true,
+            "credential_rotation_state_equal": true,
+            "persistent_store_containers_preserved": true,
+            "scoped_teardown_verified": true,
+            "source_and_backup_unchanged": true,
+            "cross_version_upgrade_tested": true
+          },
+          "runtime_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+          "source_label_cut_rejection_tested": true,
+          "counted_for_current_exact_source_threshold": false,
+          "current_host_verifier_cache_isolation_claimed": false
+        },
+        {
+          "status": "PASS",
+          "title": "Local XYZ micrometer fixture",
+          "source_report_sha256": "cd5f3c00368ab387d9ad368be21990c49ee7b7ccf917eb698e4a1a8503190f76",
+          "confirmed_checks": [
+            "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+            "All fixture voxels and complete graph memberships",
+            "Native API Merge/Split/Undo with the selected editing policy",
+            "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+            "Annotation and materialization readback",
+            "Four concurrent linked-table creators",
+            "First reads after database disconnection and PostgreSQL-only restart without request retries",
+            "Whole-stack edit persistence, Undo and repeat-start equality",
+            "Online backup including source, state recording and checksum verification",
+            "Separate restore, full saved-state equality and current candidate adapter bytes",
+            "Native browser checks on restored copy while original state remains unchanged",
+            "Both credentials changed, applications recreated, persistent store containers retained and saved state unchanged",
+            "Generated browser-agent handoff",
+            "Scoped teardown of assigned fixture copies and original fixture",
+            "Fixture inputs, backups, deployment files and unrelated resources retained as specified by the runner"
+          ],
+          "editing_basis": "spatial_tiles",
+          "source_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+          "unit_counts": {
+            "passed_main_cases": 293,
+            "passed_subtests": 77,
+            "opt_in_skips": 1,
+            "junit_total": 371
+          },
+          "browser_preflight_passed": true,
+          "browser_major_version": 155,
+          "fresh_state": [
+            "Git checkout",
+            "Python venv",
+            "vendor checkouts",
+            "viewer output",
+            "input fixture",
+            "graph",
+            "Postgres",
+            "Redis",
+            "generated secrets"
+          ],
+          "lifecycle_result": {
+            "fresh_install_passed": true,
+            "backup_state_verified": true,
+            "restore_state_equal": true,
+            "candidate_adapters_verified": true,
+            "restored_browser_passed": true,
+            "credential_rotation_state_equal": true,
+            "persistent_store_containers_preserved": true,
+            "scoped_teardown_verified": true,
+            "source_and_backup_unchanged": true,
+            "cross_version_upgrade_tested": false
+          },
+          "runtime_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+          "source_label_cut_rejection_tested": false,
+          "counted_for_current_exact_source_threshold": false,
+          "current_host_verifier_cache_isolation_claimed": false
+        }
+      ],
+      "optional_prior_version_update": {
+        "configured": true,
+        "status": "PASS",
+        "fixture": "ZYX source-label fixture",
+        "prior_source_commit": "648e9dab6aaaeea6866fb78ab3735b041087b405",
+        "complete_saved_state_and_current_adapters_verified": true,
+        "native_browser_passed": true,
+        "scoped_upgrade_copy_teardown_passed": true,
+        "xyz_upgrade_claimed": false
+      },
+      "not_separately_exercised_live": [
+        "Gateway-only failure recovery",
+        "Deliberately conflicting foreign-volume creation or adoption"
+      ],
+      "source_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+      "runtime_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+      "validated_source_runtime_equivalent": false,
+      "pre_existing_containers_unchanged": 199,
+      "unrelated_volumes_and_networks_unchanged": true,
+      "runner_injected_gateway_only_failure": false,
+      "runner_injected_foreign_volume_conflict": false,
+      "server_core_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+      "server_core_equal_to_current_source": true,
+      "current_host_verifier_cache_isolation_claimed": false,
+      "counted_for_current_exact_source_threshold": false
+    },
+    "independent_fresh_installation_and_skills": {
+      "status": "PASS",
+      "title": "Clean independent evaluation 004",
+      "source_report_sha256": "6b5cffccd377a96b5070abb0dfb722ae96636d2aef42b1b153ba8790060d2bd4",
+      "confirmed_checks": [
+        "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+        "All fixture voxels and complete graph memberships",
+        "Native API Merge/Split/Undo with the selected editing policy",
+        "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+        "Annotation and materialization readback",
+        "Four concurrent linked-table creators",
+        "First reads after database disconnection and PostgreSQL-only restart without request retries",
+        "Whole-stack edit persistence, Undo and repeat-start equality",
+        "Online backup and verification of immutable HTTP inputs",
+        "Separate restore with state and current adapter verification",
+        "Native browser checks on restored copy",
+        "Credential rotation preserving stores and saved state",
+        "Documented stopped-gateway recovery and exact first snapshot",
+        "Prior-version update into a separate installation with native browser checks",
+        "Explicitly scoped recovery-copy removal retaining inputs/evidence",
+        "Generated browser-agent handoff and five skill workflows"
+      ],
+      "required_fresh_installations": 1,
+      "confirmed_fresh_installations": 1,
+      "no_prior_chat_context": true,
+      "skills_required": 5,
+      "skills_confirmed": 5,
+      "input": "Independently generated immutable unsigned HTTP XYZ fixture",
+      "required_checks": [
+        "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+        "All fixture voxels and complete graph memberships",
+        "Native API Merge/Split/Undo with the selected editing policy",
+        "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+        "Annotation and materialization readback",
+        "Four concurrent linked-table creators",
+        "First reads after database disconnection and PostgreSQL-only restart without request retries",
+        "Whole-stack edit persistence, Undo and repeat-start equality"
+      ],
+      "required_install_checks": [
+        "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+        "All fixture voxels and complete graph memberships",
+        "Native API Merge/Split/Undo with the selected editing policy",
+        "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+        "Annotation and materialization readback",
+        "Four concurrent linked-table creators",
+        "First reads after database disconnection and PostgreSQL-only restart without request retries",
+        "Whole-stack edit persistence, Undo and repeat-start equality"
+      ],
+      "note": "Complete clean current-source skill evaluation; retained observer failure is separate from required product and installation workflows.",
+      "evaluation_run": "independent-004",
+      "source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+      "runtime_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+      "validated_source_runtime_equivalent": false,
+      "server_core_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+      "cache_profile_guard": {
+        "status": "PASS",
+        "baseline_required_before_any_host_sdk": true,
+        "baseline_confirmed": true,
+        "baseline_metadata_sha256": "0f4f7d206624964dc5a407c6ac5f6e788d286aaa29bcb314b69327f2d897294b",
+        "unchanged_bytes_modes_mtime_uid_gid": true,
+        "additional_personal_credential_metadata_unchanged": true,
+        "per_command_profile_checks": 60,
+        "all_per_command_checks_passed": true,
+        "diagnostic_hook_used": false,
+        "real_shared_profile_not_task_local_replacement": true,
+        "cache_and_token_locations_changed": false,
+        "startup_hook_sdk_monkeypatch_or_environment_repurposing": false
+      },
+      "source_worktree_clean": true,
+      "functional_workflows": {
+        "native_api_mesh_annotation_materialization": true,
+        "native_browser_main_restore_update": true,
+        "source_label_denial_all_roots_unchanged": true,
+        "forced_linked_table_concurrency": true,
+        "database_reconnect_first_reads": true,
+        "held_edit_full_restart_and_undo": true,
+        "repeated_start_full_snapshot_equal": true,
+        "online_backup_complete_verified": true,
+        "separate_restore_full_state_eight_current_adapters_served_viewer": true,
+        "credential_rotation_both_values_store_ids_exact_state": true,
+        "stopped_gateway_first_snapshot_28_http_200_no_sdk_monkeypatch": true,
+        "older_backup_update_full_state_eight_current_adapters_native_browser": true,
+        "confirmed_copy_teardown_only": true,
+        "handoff_served_bytes_equal": true,
+        "original_host_resources_runtime_sources_backups_and_sdk_profile_unchanged": true
+      },
+      "confirmed_lifecycle_checks": [
+        "Online backup and verification of immutable HTTP inputs",
+        "Separate restore with state and current adapter verification",
+        "Native browser checks on restored copy",
+        "Credential rotation preserving stores and saved state",
+        "Documented stopped-gateway recovery and exact first snapshot",
+        "Prior-version update into a separate installation with native browser checks",
+        "Explicitly scoped recovery-copy removal retaining inputs/evidence",
+        "Generated browser-agent handoff and five skill workflows"
+      ],
+      "unit_counts": {
+        "passed_main_cases": 324,
+        "passed_subtests": 77,
+        "opt_in_skips": 1,
+        "junit_total": 402
+      },
+      "host_python": "3.14.6",
+      "input_geometry": {
+        "shape_xyz": [
+          40,
+          48,
+          24
+        ],
+        "resolution_nm_xyz": [
+          12.0,
+          16.0,
+          40.0
+        ],
+        "graph_chunk_xyz": [
+          16,
+          16,
+          8
+        ],
+        "source_dtype": "uint64",
+        "source_channels": 1,
+        "voxel_offset_xyz": [
+          0,
+          0,
+          0
+        ],
+        "atom_policy": "source_labels"
+      },
+      "exhaustive_geometry": {
+        "all_voxels_verified": 46080,
+        "foreground_voxels_verified": 4946,
+        "all_atoms_verified": 23,
+        "expected_connected_components": 8,
+        "same_label_edges_verified": 24,
+        "face_adjacency_edges_verified": 25
+      },
+      "immutable_http_source_files": 60,
+      "immutable_http_sources_unchanged": true,
+      "native_browser_results": {
+        "main": {
+          "passed": true,
+          "browser": "155.0.8059.39",
+          "component_membership_restored": true
+        },
+        "restore": {
+          "passed": true,
+          "browser": "155.0.8059.39",
+          "component_membership_restored": true
+        },
+        "update": {
+          "passed": true,
+          "browser": "155.0.8059.39",
+          "component_membership_restored": true
+        }
+      },
+      "native_readonly_visual": {
+        "status": "PASS",
+        "first_attempt": true,
+        "native_sections_and_slice_controls": true,
+        "internal_layer_reconstruction_used": false,
+        "read_only": true,
+        "browser": "155.0.8059.39",
+        "page_error_count": 0,
+        "failed_request_count": 0,
+        "blocked_request_count": 0,
+        "ordinary_missing_metadata_404_probes_retained": true,
+        "roots_unchanged": true,
+        "mesh_and_slice_screenshot_visually_inspected": true
+      },
+      "rotation": {
+        "passed": true,
+        "both_credentials_changed": true,
+        "persistent_store_ids_unchanged": true,
+        "rotation_state_unchanged": true,
+        "application_services_recreated": 7
+      },
+      "gateway_recovery": {
+        "passed": true,
+        "documented_start_used": true,
+        "single_first_full_snapshot_equal": true,
+        "request_retries": 0,
+        "http_response_count": 28,
+        "postgres_recreated": true,
+        "gateway_recovered": true,
+        "all_http_responses_200": true,
+        "sdk_monkeypatch_used": false
+      },
+      "prior_version_update": {
+        "passed": true,
+        "prior_source_commit": "dee41c0d429564019bc14d7459a58f4f45d62f31",
+        "candidate_source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+        "full_backup_snapshot_equal": true,
+        "current_adapters_verified": 8,
+        "all_adapter_bytes_equal": true,
+        "viewer_build_equal": true,
+        "native_browser_passed": true
+      },
+      "preservation": {
+        "passed": true,
+        "preexisting_containers_checked": 199,
+        "resources_checked": {
+          "volume": 69,
+          "network": 28
+        },
+        "runtime_config_files_checked": 292
+      },
+      "copies_removed": 2,
+      "main_retained_running_quiescent": true,
+      "browser_processes_closed": true,
+      "reserved_scheduled_worker_inspection_claimed": false,
+      "all_commands_zero_exit_claimed": false
+    },
+    "hosted_full_stack": {
+      "status": "PASS",
+      "title": "Two isolated sequential hosted runners",
+      "confirmed_checks": [
+        "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+        "All fixture voxels and complete graph memberships",
+        "Native API Merge/Split/Undo with the selected editing policy",
+        "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+        "Annotation and materialization readback",
+        "Four concurrent linked-table creators",
+        "First reads after database disconnection and PostgreSQL-only restart without request retries",
+        "Whole-stack edit persistence, Undo and repeat-start equality",
+        "Online backup including source, state recording and checksum verification",
+        "Separate restore, full saved-state equality and current candidate adapter bytes",
+        "Native browser checks on restored copy while original state remains unchanged",
+        "Both credentials changed, applications recreated, persistent store containers retained and saved state unchanged",
+        "Generated browser-agent handoff",
+        "Scoped teardown of assigned fixture copies and original fixture",
+        "Fixture inputs, backups, deployment files and unrelated resources retained as specified by the runner"
+      ],
+      "run_id": 38304469790,
+      "expected_docker_cpus": 2,
+      "confirmed_docker_cpus": 2,
+      "confirmed_fresh_installations": 2,
+      "required_install_checks": [
+        "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+        "All fixture voxels and complete graph memberships",
+        "Native API Merge/Split/Undo with the selected editing policy",
+        "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+        "Annotation and materialization readback",
+        "Four concurrent linked-table creators",
+        "First reads after database disconnection and PostgreSQL-only restart without request retries",
+        "Whole-stack edit persistence, Undo and repeat-start equality"
+      ],
+      "required_lifecycle_checks": [
+        "Online backup including source, state recording and checksum verification",
+        "Separate restore, full saved-state equality and current candidate adapter bytes",
+        "Native browser checks on restored copy while original state remains unchanged",
+        "Both credentials changed, applications recreated, persistent store containers retained and saved state unchanged",
+        "Generated browser-agent handoff",
+        "Scoped teardown of assigned fixture copies and original fixture",
+        "Fixture inputs, backups, deployment files and unrelated resources retained as specified by the runner"
+      ],
+      "prior_version_update_configured": false,
+      "not_exercised_live": [
+        "Prior-version upgrade backup",
+        "Gateway-only failure recovery",
+        "Deliberately conflicting foreign-volume creation or adoption"
+      ],
+      "source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+      "runtime_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+      "validated_source_runtime_equivalent": false,
+      "required_fresh_installations": 2,
+      "expected_runner_count": 2,
+      "expected_max_parallel": 1,
+      "runs": [
+        {
+          "variant": "zyx",
+          "atom_policy": "source_labels",
+          "status": "PASS",
+          "source_report_sha256": "15499a4f8ddfeff4a44d641f6218dacc05f1feb3586e74365087e7bd53cff118",
+          "source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+          "fresh_report_sha256": "2baea3c4c85a219e199ec2bfdc086174555d0908dca94afc5b9cafbf5a1b4e94",
+          "lifecycle_result": {
+            "variant": "zyx",
+            "atom_policy": "source_labels",
+            "fresh_install_passed": true,
+            "backup_state_verified": true,
+            "restore_state_equal": true,
+            "candidate_adapters_verified": true,
+            "restored_browser_passed": true,
+            "credential_rotation_state_equal": true,
+            "persistent_store_containers_preserved": true,
+            "scoped_teardown_verified": true,
+            "source_and_backup_unchanged": true,
+            "cross_version_upgrade_tested": false,
+            "unit_tests": {
+              "tests": 402,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 1,
+              "count_basis": "JUnit test cases, including subtests"
+            }
+          },
+          "confirmed_checks": [
+            "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+            "All fixture voxels and complete graph memberships",
+            "Native API Merge/Split/Undo with the selected editing policy",
+            "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+            "Annotation and materialization readback",
+            "Four concurrent linked-table creators",
+            "First reads after database disconnection and PostgreSQL-only restart without request retries",
+            "Whole-stack edit persistence, Undo and repeat-start equality",
+            "Online backup including source, state recording and checksum verification",
+            "Separate restore, full saved-state equality and current candidate adapter bytes",
+            "Native browser checks on restored copy while original state remains unchanged",
+            "Both credentials changed, applications recreated, persistent store containers retained and saved state unchanged",
+            "Generated browser-agent handoff",
+            "Scoped teardown of assigned fixture copies and original fixture",
+            "Fixture inputs, backups, deployment files and unrelated resources retained as specified by the runner"
+          ],
+          "actual_docker_cpu_capacity": 2,
+          "doctor_report_sha256": "62e868022e876fd43ab0864e0323f3cfbe0159b23773e5074f41f4b55ae73581",
+          "host_python": "3.11.17",
+          "selected_runner": "ubuntu-24.04",
+          "precise_os_setup_log_attribution": "CONFIRMED_FROM_RAW_JOB_LOG",
+          "observed_platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "browser_version": "153.0.8010.12",
+          "browser_report_sha256": "851a347c740fcae556bdeed0a22cb465dbeb61e54d4b2532351ac8050fa61ada",
+          "browser_preflight_log_sha256": "410cee84ae8647ac61e08f4de35ad78af0b221be82e7a66573c3bf76fc8a830f",
+          "prior_version_upgrade_tested": false,
+          "completed_helper_steps": [
+            "zyx-source_labels-fresh-install",
+            "zyx-source_labels-before-lifecycle",
+            "zyx-source_labels-backup",
+            "zyx-source_labels-verify-backup",
+            "zyx-source_labels-restore",
+            "zyx-source_labels-restored-state",
+            "zyx-source_labels-restored-browser",
+            "zyx-source_labels-original-after-restored-browser",
+            "zyx-source_labels-rotate",
+            "zyx-source_labels-after-rotation",
+            "zyx-source_labels-teardown-restored",
+            "zyx-source_labels-original-after-copy-teardown",
+            "zyx-source_labels-browser-handoff",
+            "zyx-source_labels-teardown-original"
+          ],
+          "completed_helper_zero_exit_steps": 14,
+          "observed_os": "Ubuntu 24.04.5 LTS",
+          "raw_job_log_sha256": "5acb482bd40640907c97accf349b0d203d56c0f6cc755bfd672423d10ea9b070",
+          "restored_browser_report_sha256": "8e51861acf9c98f9eb2005d94c72143c3dc149daa2eab1dd439acd5ee90cbe41"
+        },
+        {
+          "variant": "xyz",
+          "atom_policy": "spatial_tiles",
+          "status": "PASS",
+          "source_report_sha256": "1035b3db0216f3c45abe699e467ff48367dd59c882b4c7b95ed9329794b84308",
+          "source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+          "fresh_report_sha256": "579ca3b2a342c230edc1d2cb46e89a13ce5dfd813567bf34f084c8b6b02278a9",
+          "lifecycle_result": {
+            "variant": "xyz",
+            "atom_policy": "spatial_tiles",
+            "fresh_install_passed": true,
+            "backup_state_verified": true,
+            "restore_state_equal": true,
+            "candidate_adapters_verified": true,
+            "restored_browser_passed": true,
+            "credential_rotation_state_equal": true,
+            "persistent_store_containers_preserved": true,
+            "scoped_teardown_verified": true,
+            "source_and_backup_unchanged": true,
+            "cross_version_upgrade_tested": false,
+            "unit_tests": {
+              "tests": 402,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 1,
+              "count_basis": "JUnit test cases, including subtests"
+            }
+          },
+          "confirmed_checks": [
+            "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+            "All fixture voxels and complete graph memberships",
+            "Native API Merge/Split/Undo with the selected editing policy",
+            "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+            "Annotation and materialization readback",
+            "Four concurrent linked-table creators",
+            "First reads after database disconnection and PostgreSQL-only restart without request retries",
+            "Whole-stack edit persistence, Undo and repeat-start equality",
+            "Online backup including source, state recording and checksum verification",
+            "Separate restore, full saved-state equality and current candidate adapter bytes",
+            "Native browser checks on restored copy while original state remains unchanged",
+            "Both credentials changed, applications recreated, persistent store containers retained and saved state unchanged",
+            "Generated browser-agent handoff",
+            "Scoped teardown of assigned fixture copies and original fixture",
+            "Fixture inputs, backups, deployment files and unrelated resources retained as specified by the runner"
+          ],
+          "completed_helper_steps": [
+            "xyz-spatial_tiles-fresh-install",
+            "xyz-spatial_tiles-before-lifecycle",
+            "xyz-spatial_tiles-backup",
+            "xyz-spatial_tiles-verify-backup",
+            "xyz-spatial_tiles-restore",
+            "xyz-spatial_tiles-restored-state",
+            "xyz-spatial_tiles-restored-browser",
+            "xyz-spatial_tiles-original-after-restored-browser",
+            "xyz-spatial_tiles-rotate",
+            "xyz-spatial_tiles-after-rotation",
+            "xyz-spatial_tiles-teardown-restored",
+            "xyz-spatial_tiles-original-after-copy-teardown",
+            "xyz-spatial_tiles-browser-handoff",
+            "xyz-spatial_tiles-teardown-original"
+          ],
+          "completed_helper_zero_exit_steps": 14,
+          "actual_docker_cpu_capacity": 2,
+          "doctor_report_sha256": "62e868022e876fd43ab0864e0323f3cfbe0159b23773e5074f41f4b55ae73581",
+          "host_python": "3.11.17",
+          "selected_runner": "ubuntu-24.04",
+          "observed_os": "Ubuntu 24.04.5 LTS",
+          "precise_os_setup_log_attribution": "CONFIRMED_FROM_RAW_JOB_LOG",
+          "raw_job_log_sha256": "aa14e847d08073381c521bda8d7f0dd80c98224d0c8c204476643a858bc92174",
+          "observed_platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+          "browser_version": "153.0.8010.12",
+          "browser_report_sha256": "73abdf1f76f4210cb6a1d82222e2fd30558439a3c27e0796a16fad735e1fac1e",
+          "restored_browser_report_sha256": "1fca361c6aba811fafaa073b1afa6b389191da92dd7266ad379b5b8180c0dc5f",
+          "browser_preflight_log_sha256": "410cee84ae8647ac61e08f4de35ad78af0b221be82e7a66573c3bf76fc8a830f",
+          "prior_version_upgrade_tested": false
+        }
+      ],
+      "server_core_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+      "note": "Both complete exact-source fixtures passed on separate fresh Ubuntu 24.04.5 LTS runners, sequentially. Each used an actual two-CPU Docker daemon and Chrome 153; no prior-version update or independent-only failure injection is claimed.",
+      "source_report_sha256_by_variant": {
+        "zyx": "15499a4f8ddfeff4a44d641f6218dacc05f1feb3586e74365087e7bd53cff118",
+        "xyz": "1035b3db0216f3c45abe699e467ff48367dd59c882b4c7b95ed9329794b84308"
+      },
+      "whole_matrix_status": "PASS"
+    },
+    "candidate_git_export_integrity": {
+      "status": "PASS",
+      "exported_commit": "3ecbd299a98ba8f54099e76197ccf7b640570403",
+      "file_count": 92,
+      "exact_bytes_and_modes": true,
+      "privacy_scan_passed": true,
+      "single_clean_root_commit": true,
+      "private_source_history_excluded": true,
+      "public_clone_url_transformed": true,
+      "skills": 5,
+      "local_references": 56,
+      "python311_compile_passed": true,
+      "source_report_sha256": "52ceec1058db6483306f72905a2149addb3d7e83b3724fefdd8b1d8d74984bdd",
+      "note": "Current isolation-source export; server core/configuration/locks/skills remain unchanged, but the three host verifier flags changed.",
+      "validated_source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+      "runtime_equivalence_verified": false,
+      "runtime_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+      "server_core_and_component_identity_verified": true
+    },
+    "exported_runtime_installation": {
+      "status": "PASS",
+      "title": "Fresh installation from the exact candidate Git export",
+      "source_report_sha256": "de1cb32f40ffb27df52184dee7e743cf3e454e1bea7ccafc26c915762d48cbcc",
+      "confirmed_checks": [
+        "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+        "All fixture voxels and complete graph memberships",
+        "Native API Merge/Split/Undo with the selected editing policy",
+        "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+        "Annotation and materialization readback",
+        "Four concurrent linked-table creators",
+        "First reads after database disconnection and PostgreSQL-only restart without request retries",
+        "Whole-stack edit persistence, Undo and repeat-start equality"
+      ],
+      "required_checks": [
+        "Fresh checkout/environment, pinned dependencies and locally built viewer provenance",
+        "All fixture voxels and complete graph memberships",
+        "Native API Merge/Split/Undo with the selected editing policy",
+        "Real browser image/segmentation/mesh alignment, native editing, reload and fresh tab",
+        "Annotation and materialization readback",
+        "Four concurrent linked-table creators",
+        "First reads after database disconnection and PostgreSQL-only restart without request retries",
+        "Whole-stack edit persistence, Undo and repeat-start equality"
+      ],
+      "runner": "fresh_install.py",
+      "additional_online_backup_rotation_upgrade_cycle_required": false,
+      "note": "Fresh exported-tree install/API/browser/concurrency/reconnect/restart checks; no separate full lifecycle cycle required by the release procedure.",
+      "source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+      "runtime_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+      "expected_export_commit": "3ecbd299a98ba8f54099e76197ccf7b640570403",
+      "exported_commit": "3ecbd299a98ba8f54099e76197ccf7b640570403",
+      "private_source_marker": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+      "variant": "zyx",
+      "atom_policy": "source_labels",
+      "no_cache_docker_build": true,
+      "rerun_snapshot_equal": true,
+      "browser_version": "155.0.8059.39",
+      "completed_runner_steps": [
+        "doctor",
+        "deps",
+        "unit-tests",
+        "package-checks",
+        "browser-ready",
+        "build",
+        "fixture",
+        "create",
+        "start",
+        "api-browser",
+        "source-label-policy",
+        "segmentation-metadata-concurrency",
+        "database-reconnect",
+        "holding-edit-restart",
+        "snapshot-before-rerun",
+        "rerun-preserves-edits",
+        "snapshot"
+      ],
+      "unit_counts": {
+        "passed_main_cases": 324,
+        "passed_subtests": 77,
+        "opt_in_skips": 1,
+        "junit_total": 402
+      },
+      "sdk_profile_guard": {
+        "status": "PASS",
+        "before_report_sha256": "f09d36a458532646cf1754d6d5909d1cd8834a0d08f8faed231f99787ec947ea",
+        "after_report_sha256": "aca94f264a7d14b2e37244490808dc676763a63ec4ba685c3e4ce738f15bf491",
+        "profile_bytes_modes_mtime_equal": true,
+        "child_entries_checked": 2,
+        "total_entries_including_profile_root": 3,
+        "independent004_per_command_guard_replaced": false
+      }
+    },
+    "real_copybara_migrations": {
+      "status": "PASS",
+      "python_versions": [
+        "3.11",
+        "3.14"
+      ],
+      "release_tests_per_python": 6,
+      "coverage": [
+        "Clean initial squash",
+        "Incremental update",
+        "Managed additions/deletions and executable-mode changes",
+        "Destination-owned file preservation",
+        "Same-source replay beneath a community tip without a new commit",
+        "Managed public edit rejection before push",
+        "Private history exclusion"
+      ],
+      "raw_log_sha256": {
+        "python311": "2f0a117d4e77c1a009fd5d458a717a2205aba0450b1a8d9e4bb4f43169e23e04",
+        "python314": "901f094c591e2f261050798e05eb5ca14d6e3eb5eefdab14e29376fe1e30733a"
+      },
+      "tested_publication_code_equivalent_to": "a532c585725d379b4802bfcea84e223226bd6028",
+      "candidate_publication_files_byte_equal": true,
+      "unchanged_files": [
+        "scripts/export_policy.py",
+        "scripts/export_release.py",
+        "scripts/export_preview.py",
+        "scripts/fetch_export_tools.py",
+        "copybara.lock.json",
+        "tests/test_release.py"
+      ],
+      "note": "Evidence supports the unchanged publishing code; it is not a fresh CAVE installation."
+    },
+    "final_protected_installation_preservation": {
+      "status": "PASS",
+      "title": "Final unrelated-installation, source-input, graph-partition and edit-history comparison",
+      "source_report_sha256": "81d370004d121c8052784dfd7191faee8eedbd90119085ebc67507e89d898ffe",
+      "confirmed_checks": [
+        "Protected original container metadata/state unchanged",
+        "Original runtime/configuration file bytes unchanged",
+        "Immutable HTTP fixture file bytes unchanged",
+        "Sampled original graph roots and edit logs unchanged",
+        "Only explicitly retired old stopped fixtures exempted",
+        "Real shared SDK profile unchanged during independent evaluation and exported installation"
+      ],
+      "runtime_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+      "required_profile_cache_check": true,
+      "protected_containers_checked": 199,
+      "files_checked": {
+        "original_config_files": 121,
+        "retained_http_source_files": 60
+      },
+      "protected_graph_count": 3,
+      "sampled_atoms_with_root_equality": 1551,
+      "all_protected_edit_logs_equal": true,
+      "intentionally_retired_stopped_test_containers": 20,
+      "sdk_profile_guard_status": "PASS",
+      "sdk_profile_guard_evidence": [
+        "independent004 60 per-command checks from pre-first baseline",
+        "Exact exported-install before/after profile comparison"
+      ]
+    },
+    "package_ci_matrix": {
+      "status": "PASS",
+      "validated_source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+      "required_python_versions": [
+        "3.11",
+        "3.14"
+      ],
+      "confirmed_runs": [
+        {
+          "run_id": 38304470588,
+          "source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+          "status": "PASS",
+          "python_jobs": [
+            {
+              "python": "3.11",
+              "status": "PASS",
+              "source_worktree_clean": true,
+              "source_report_sha256": "5513361d6e14124ed5b73ecc5a3710a9f86e925bfd4873a9c219dc80d259042c",
+              "unit_tests": {
+                "tests": 402,
+                "failures": 0,
+                "errors": 0,
+                "skipped": 1,
+                "count_basis": "JUnit test cases, including subtests"
+              }
+            },
+            {
+              "python": "3.14",
+              "status": "PASS",
+              "source_worktree_clean": true,
+              "source_report_sha256": "c3ce0b3c636ccadfb61e2a8374d73da4fb22354e6eed5b12c0cfb7668d29bfd9",
+              "unit_tests": {
+                "tests": 402,
+                "failures": 0,
+                "errors": 0,
+                "skipped": 1,
+                "count_basis": "JUnit test cases, including subtests"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "dependency_review": {
+    "status": "COMPLETED_FOR_PREVIEW",
+    "npm_production_known_findings": 0,
+    "host_python_known_findings": 0,
+    "retained_full_npm_entries": 52,
+    "retained_moderate": 12,
+    "retained_high": 32,
+    "retained_critical": 8,
+    "review_document": "docs/dependencies.md",
+    "machine_readable_review": "docs/evidence/dependency-review.json",
+    "note": "Retained build/test entries and unscanned embedded container dependencies remain explicit boundaries."
+  },
+  "license": {
+    "original_code": "MIT",
+    "upstream_terms_retained": true,
+    "notice_document": "NOTICE.md"
+  },
+  "historical_private_acceptance": {
+    "tested_revision": "dee41c0d429564019bc14d7459a58f4f45d62f31",
+    "fresh_runs": [
+      "G",
+      "H",
+      "I"
+    ],
+    "tests_per_run": 51,
+    "historical_passed": true,
+    "evidence_document": "docs/evidence/private-acceptance.json",
+    "counted_for_current_release": false,
+    "macos_browser_followup": {
+      "user_report_passed": true,
+      "read_only_server_followup_passed": true,
+      "screenshots_independently_available": false,
+      "additional_fresh_server_installation": false,
+      "counted_for_current_release": false
+    }
+  },
+  "revoked_candidates": [
+    {
+      "revision": "d77016e54ea10b03cf9cfb76f4b1b01f9368d700",
+      "counted_for_current_release": false,
+      "failures": [
+        "Python 3.11 rejected exporter f-string syntax",
+        "Invalid runner-context use in workflow configuration"
+      ],
+      "evidence_retained": true
+    },
+    {
+      "revision": "8555baa8a835c6c08f06d44bfc95a482759052d7",
+      "counted_for_current_release": false,
+      "failures": [
+        "Browser installation on unsupported host distribution stopped setup before runtime build",
+        "Restore-volume adoption race",
+        "Same-source replay failed under a destination-owned community tip"
+      ],
+      "hosted_capacity_preflight_failed_before_runtime": true,
+      "evidence_retained": true
+    },
+    {
+      "revision": "a532c585725d379b4802bfcea84e223226bd6028",
+      "counted_for_current_release": false,
+      "local_full_002_passed": true,
+      "failure": "A fixed four-CPU graph quota failed container creation on a two-CPU hosted Docker daemon.",
+      "evidence_retained": true
+    },
+    {
+      "revision": "6db2f2d0cda0fcc610421ec915abc0c20acbbbbb",
+      "counted_for_current_release": false,
+      "runtime_identical_to": "a532c585725d379b4802bfcea84e223226bd6028",
+      "failure": "The same fixed four-CPU quota failed on the two-CPU hosted daemon.",
+      "hosted_failure_run_id": 38297960428,
+      "evidence_retained": true
+    }
+  ],
+  "retained_environment_failure": {
+    "run": "local-full-001",
+    "runtime_revision": "a532c585725d379b4802bfcea84e223226bd6028",
+    "status": "FAIL",
+    "fresh_installation_phase_passed": true,
+    "lifecycle_failure": "Restore could not allocate a Docker network because daemon address pools were exhausted.",
+    "failed_run_evidence_retained": true,
+    "counted_for_current_release": false,
+    "scoped_reclamation": {
+      "verified_old_stopped_fixture_projects": 2,
+      "removed_fixture_networks": 2,
+      "retired_stopped_fixture_containers": 20,
+      "persistent_volumes_retained": 6,
+      "volume_metadata_unchanged": true,
+      "deployment_file_bytes_unchanged": true,
+      "global_prune_used": false,
+      "unrelated_running_projects_targeted": false
+    }
+  },
+  "retained_observer_corrections": [
+    {
+      "failure": "A baseline Compose file path was interpreted as an argument list.",
+      "product_failure": false,
+      "mutation_performed": false,
+      "failed_attempt_retained": true
+    },
+    {
+      "failure": "A preservation observer resolved baseline paths against the wrong directory and compared short retirement identifiers with full container identifiers.",
+      "correction": "Resolve paths against the baseline root and normalize identifiers before applying the explicitly retired fixture list.",
+      "failed_attempt_retained": true,
+      "corrected_mid_release_check_passed": true,
+      "corrected_check_is_not_final_candidate_preservation": true
+    }
+  ],
+  "host_resources_and_limits": {
+    "local_os": "Ubuntu 20.04.4 LTS",
+    "local_architecture": "x86-64",
+    "shared_local_resources": [
+      "OS",
+      "Docker daemon",
+      "installed tools",
+      "download/package caches"
+    ],
+    "fresh_per_installation": [
+      "checkout",
+      "Python environment",
+      "upstream checkout",
+      "local viewer build",
+      "synthetic input",
+      "secrets",
+      "graph",
+      "persistent databases"
+    ],
+    "supported_data": [
+      "Three-spatial-axis zero-origin OME-Zarr v2 image",
+      "Aligned Neuroglancer precomputed integer segmentation"
+    ],
+    "not_established": [
+      "OS reinstall",
+      "Arbitrary host platforms",
+      "Petascale throughput",
+      "Authenticated public hosting",
+      "Arbitrary format conversion"
+    ]
+  },
+  "post_documentation_commit_proof": {
+    "stored_in_git": false,
+    "status": "PENDING_OUTSIDE_GIT",
+    "required": [
+      "New Copybara export of final factual evidence commit",
+      "Exact bytes/modes/privacy and package references",
+      "Prove runtime/configuration/locks/skills/host verifier files unchanged from the accepted current source",
+      "Keep prior server-core comparisons explicitly limited to their unchanged components",
+      "Verify final Git destination commit and clean ancestry",
+      "Verify actual public clone installation and final CI"
+    ],
+    "note": "Final export/public-clone reports stay outside Git to avoid self-referential commit hashes."
+  },
+  "unit_failure_and_boundary_coverage": {
+    "status": "PASS",
+    "source_report_sha256": "eda637a97d91bb5b2051301f6e46a604f0434d0acdf09267f14384fbd29d3bc1",
+    "execution_layer": "Python unit/contract tests with controlled Docker/API/browser command boundaries; real data/archive/package code runs in-process.",
+    "covered_categories": [
+      "Backup and archive integrity failures",
+      "Restore rollback and volume ownership/adoption races",
+      "Credential-rotation failure recovery",
+      "Foreign-volume protection and scoped teardown refusal",
+      "CLI/configuration and browser/handoff failures",
+      "Guarded publication boundary failures"
+    ],
+    "live_docker_fault_injection_claimed": false,
+    "runtime_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+    "note": "Base-runtime contract checks passed at the base; QA-selector cases are additionally covered by the clean new-source fast suite. Controlled failures are not live Docker fault injection."
+  },
+  "validated_source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+  "fresh_install_thresholds": {
+    "exact_validated_source": {
+      "required": 3,
+      "confirmed": 3,
+      "source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+      "planned_cohort": [
+        "Two fresh hosted scenario jobs",
+        "One clean independent installation 004"
+      ],
+      "count_only_complete_confirmed_installations_at_source": true,
+      "confirmed_cohort": [
+        "Complete hosted ZYX scenario at the exact current source",
+        "Complete hosted XYZ scenario at the exact current source",
+        "Complete clean independent004 evaluation at the exact current source"
+      ],
+      "pending_cohort": []
+    },
+    "server_core_repeatability_on_local_host": {
+      "required": 3,
+      "confirmed": 3,
+      "server_core_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+      "counted_cohort": [
+        "Two completed local full-003 server installations at the earlier source",
+        "Complete clean independent004 installation with unchanged server components and changed host-reader flags disclosed"
+      ],
+      "pending_cohort": [],
+      "host_verifier_files_differ": true,
+      "older_host_cache_isolation_claimed": false,
+      "note": "This is repeated server-core behavior on this machine, not three identical complete current-source checkouts on this machine."
+    },
+    "current_host_verifier_isolation": {
+      "required_clean_current_source_evaluations": 1,
+      "confirmed": 1,
+      "required_global_profile_baseline_before_any_host_sdk": true,
+      "diagnostic_hook_allowed": false
+    }
+  },
+  "runtime_base_fast_evidence": {
+    "status": "PASS",
+    "runtime_candidate": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+    "source_worktree_clean": true,
+    "local_python": "3.14",
+    "passed_main_cases": 293,
+    "passed_subtests": 77,
+    "skipped_opt_in_cases": 1,
+    "junit_cases_including_subtests": 371,
+    "source_report_sha256": "eda637a97d91bb5b2051301f6e46a604f0434d0acdf09267f14384fbd29d3bc1",
+    "package_ci_matrix_runs": [
+      {
+        "run_id": 38300120297,
+        "source_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+        "status": "PASS",
+        "python_matrix": [
+          "3.11",
+          "3.14"
+        ]
+      },
+      {
+        "run_id": 38300115117,
+        "source_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+        "status": "PASS",
+        "python_matrix": [
+          "3.11",
+          "3.14"
+        ]
+      }
+    ],
+    "package_ci_summary_sha256": "57fcb71ed5724665ad670226c8c360aa804398be3caa3f6b36073393e7e7c874",
+    "note": "Default fast checks skip the actual migration integration case; real migration tests are recorded separately.",
+    "execution_layer": "Unit/data/package contracts and controlled service-boundary tests, not live Docker lifecycle workflows."
+  },
+  "retained_hosted_capacity_failure": {
+    "run_id": 38300114858,
+    "source_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+    "overall_status": "FAIL",
+    "whole_suite_passed": false,
+    "source_report_sha256": "da122e303baa9d5d83ad1b55fdbeff0667262c4bf5166e4d0e6363850cc14568",
+    "first_scenario": {
+      "variant": "zyx",
+      "atom_policy": "source_labels",
+      "full_installation_and_helper_lifecycle_status": "PASS",
+      "docker_cpu_capacity": 2,
+      "browser_major_version": 153,
+      "prior_version_upgrade_tested": false,
+      "unit_counts": {
+        "passed_main_cases": 293,
+        "passed_subtests": 77,
+        "opt_in_skips": 1,
+        "junit_total": 371
+      }
+    },
+    "second_scenario": {
+      "variant": "xyz",
+      "atom_policy": "spatial_tiles",
+      "status": "FAIL_BEFORE_BUILD",
+      "reason": "After the first build/lifecycle, remaining runner disk fell below the 20 GiB doctor requirement."
+    },
+    "counted_for_current_exact_source_threshold": false,
+    "remedy_scope": "QA runner/workflow changes only: select one scenario per fresh runner, with two sequential matrix jobs.",
+    "runtime_base_revoked": false,
+    "partial_pass_not_claimed_as_two_passes": true,
+    "failed_whole_suite_evidence_retained": true
+  },
+  "server_core_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+  "component_identity": {
+    "server_core_base_commit": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+    "superseded_source_commit": "707f3d0888f76c8f6ca76fad50796a7b8eb45b6a",
+    "validated_source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+    "changed_host_verifier_files": [
+      "scripts/snapshot.py",
+      "scripts/verify_segmentation_iteration.py",
+      "scripts/verify_segmentation_metadata.py"
+    ],
+    "new_real_sdk_test": "tests/test_client_cache_isolation.py",
+    "retained_qa_only_changes": [
+      ".github/workflows/acceptance.yml",
+      "docs/testing.md",
+      "scripts/test_suite.py",
+      "tests/test_package_contracts.py"
+    ],
+    "server_adapters_configuration_locks_skills_and_licenses_equal": true,
+    "all_runtime_files_byte_equal_to_core_claimed": false,
+    "unchanged_source_inventory_sha256": "29779e95124022c223534e429ed681906c3806d15f58f8ef9841776cf6118ed6"
+  },
+  "host_verifier_change": {
+    "previous_source_commit": "707f3d0888f76c8f6ca76fad50796a7b8eb45b6a",
+    "current_source_commit": "61f7c915aba2f36f074d048e0408bac19abddfb8",
+    "changed_files": [
+      "scripts/snapshot.py",
+      "scripts/verify_segmentation_iteration.py",
+      "scripts/verify_segmentation_metadata.py"
+    ],
+    "change": "Explicit write_server_cache=False in all three shipped host-side CAVEclient constructors.",
+    "reason": "Default SDK behavior wrote to the shared per-user datastack-to-server cache.",
+    "server_adapters_configuration_locks_skills_unchanged": true,
+    "all_runtime_files_byte_equal_to_server_core_claimed": false
+  },
+  "superseded_source_fast_evidence": {
+    "status": "PASS",
+    "validated_source_commit": "707f3d0888f76c8f6ca76fad50796a7b8eb45b6a",
+    "expected_passing_main_cases": 308,
+    "expected_passing_subtests": 77,
+    "expected_opt_in_skips": 1,
+    "expected_junit_cases_including_subtests": 386,
+    "source_worktree_clean": true,
+    "confirmed_source_reports": [],
+    "package_ci_matrix_runs": [],
+    "precommit_fast_runs": [
+      {
+        "python": "3.11",
+        "status": "PASS_WORKING_TREE_ONLY",
+        "observed_git_head": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+        "source_worktree_dirty": true,
+        "counted_as_clean_source_evidence": false,
+        "source_report_sha256": "7a826ca92aa1b5e517add1f2910778e500bb3710d52f5ca3a14e36229f63b29c"
+      },
+      {
+        "python": "3.14",
+        "status": "PASS_WORKING_TREE_ONLY",
+        "observed_git_head": "ddf3df1e8708c0284b2c699fdc7a7e3022b961e9",
+        "source_worktree_dirty": true,
+        "counted_as_clean_source_evidence": false,
+        "source_report_sha256": "3bb9f79e078d5c30f53c853dcdb3133c9b7aa2b572330eb73ad72d76115a083b"
+      }
+    ],
+    "note": "Actual clean pinned independent fast report passes; new package-CI matrix results are a separate gate.",
+    "source_report_sha256": "b4a539e443134abd107561e1af0a294d1ee1da34be5dcdeb1567a241872a7818",
+    "local_python": "Python 3.14.6",
+    "passed_main_cases": 308,
+    "passed_subtests": 77,
+    "skipped_opt_in_cases": 1,
+    "junit_cases_including_subtests": 386
+  },
+  "superseded_independent_cache_failure": {
+    "evaluation_run": "independent-003",
+    "source_commit": "707f3d0888f76c8f6ca76fad50796a7b8eb45b6a",
+    "overall_status": "FAIL",
+    "counted_for_current_exact_source_threshold": false,
+    "source_report_sha256": "712b984ee93b41d91e4da82da0a61458a677f904c0135a2882f84a3047fa7197",
+    "issue": "Host CAVEclient defaults wrote a shared per-user datastack-to-server mapping cache.",
+    "global_cache_before_first_constructor_baseline_available": false,
+    "pre_first_cache_preservation_or_exact_restoration_claimed": false,
+    "diagnostic_hook": {
+      "used": true,
+      "scope": "Remaining host Python commands used a task-local SDK cache location.",
+      "candidate_source_modified": false,
+      "deployed_services_modified": false,
+      "normal_clean_skill_acceptance_claimed": false,
+      "no_further_shared_cache_writes_after_hook_proved": true
+    },
+    "functional_and_server_preservation_results_retained_separately": true,
+    "requires_new_clean_current_source_evaluation_without_hook": true,
+    "supplemental_helpers": {
+      "attempts": [
+        {
+          "number": 1,
+          "status": "FAIL"
+        },
+        {
+          "number": 2,
+          "status": "FAIL"
+        },
+        {
+          "number": 3,
+          "status": "FAIL"
+        }
+      ],
+      "method": "Unsupported private helper rebuilt viewer layers through internal restoreState.",
+      "errors_retained": true,
+      "missing_disjointSets_page_errors_observed": 2,
+      "shipped_workflow_claimed": false,
+      "counted_for_acceptance": false,
+      "full_graph_annotation_snapshot_unchanged_after_helpers": true,
+      "native_shipped_browser_checks_retained_separately": true
+    }
+  },
+  "superseded_public_candidate_sources": [
+    {
+      "source_commit": "707f3d0888f76c8f6ca76fad50796a7b8eb45b6a",
+      "reason": "Shared host SDK cache writes prevented a clean isolation claim.",
+      "counted_for_current_exact_source_threshold": false,
+      "server_core_functional_evidence_retained": true,
+      "new_host_verifier_required": true
+    }
+  ],
+  "retained_current_non_product_observer_failure": {
+    "name": "worker-quiescence",
+    "outside_shipped_required_workflow": true,
+    "original_exit_code": 1,
+    "underlying_celery_command_exit_code": 0,
+    "cause": "The application prints a CORS/ADC warning to stdout before valid empty-active-list JSON; observer assumed JSON-only stdout.",
+    "no_product_changes_or_lifecycle_reruns": true,
+    "reserved_scheduled_inspect_not_claimed": true,
+    "evaluation_run": "independent-004",
+    "status": "RESOLVED_WITH_RAW_EVIDENCE",
+    "product_failure": false,
+    "raw_failed_attempt_retained": true,
+    "sdk_profile_unchanged": true,
+    "all_commands_zero_exit_claimed": false,
+    "source_report_sha256": "6b5cffccd377a96b5070abb0dfb722ae96636d2aef42b1b153ba8790060d2bd4"
+  },
+  "pending_runtime_gates": [],
+  "acceptance_scope": "Release candidate 61f and its tested exact candidate Git export. Final factual documentation export/public-clone checks remain outside Git."
+}

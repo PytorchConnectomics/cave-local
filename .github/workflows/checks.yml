@@ -1,0 +1,38 @@
+name: Package checks
+
+on:
+  push:
+    branches: [main, 'codex/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Python ${{ matrix.python }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.14']
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install locked host dependencies
+        run: python -m pip install -r requirements.lock.txt
+      - name: Run the complete fast suite
+        run: python scripts/test_suite.py fast --commit "$GITHUB_SHA" --output "$RUNNER_TEMP/cave-fast-suite"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: fast-suite-python-${{ matrix.python }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/cave-fast-suite
+          retention-days: 14
+          if-no-files-found: warn

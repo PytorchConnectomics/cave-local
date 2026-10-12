@@ -1,0 +1,33 @@
+{
+  "version": "v20261012",
+  "url": "https://github.com/google/copybara/releases/download/v20261012/copybara_deploy.jar",
+  "sha256": "af92d7dbd569f8bd9a7c3f6cb9dafd68cdb1b6271f86074a73704c516b6a89c9",
+  "java_major": 25,
+  "java": {
+    "version": "25.0.4.1+1",
+    "platform": "linux-x86_64",
+    "url": "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.4.1%2B1/OpenJDK25U-jre_x64_linux_hotspot_25.0.4.1_1.tar.gz",
+    "sha256": "1731a34baadec5479258ea0202e4d5d865d2efeee60cb0c7d7eb056fe96ca219",
+    "directory": "jdk-25.0.4.1+1-jre"
+  },
+  "git": {
+    "version": "2.51.2",
+    "url": "https://www.kernel.org/pub/software/scm/git/git-2.51.2.tar.xz",
+    "sha256": "233d7143a2d58e60755eee9b76f559ec73ea2b3c297f5b503162ace95966b4e3",
+    "checksum_source": "https://www.kernel.org/pub/software/scm/git/sha256sums.asc",
+    "build_flags": ["NO_GETTEXT=YesPlease", "NO_TCLTK=YesPlease", "NO_EXPAT=YesPlease"],
+    "purpose": "Copybara local migration and verified HTTPS publication."
+  },
+  "openssl": {
+    "version": "3.5.9",
+    "url": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz",
+    "sha256": "603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a",
+    "checksum_source": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz.sha256"
+  },
+  "curl": {
+    "version": "8.22.0",
+    "url": "https://github.com/curl/curl/releases/download/curl-8_22_0/curl-8.22.0.tar.xz",
+    "sha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7",
+    "checksum_source": "https://api.github.com/repos/curl/curl/releases/tags/curl-8_22_0"
+  }
+}

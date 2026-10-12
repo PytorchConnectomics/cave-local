@@ -1,0 +1,10 @@
+{
+  "emulators": {
+    "revision": "4b55687158696cd3d906e467b9afc2f9a41c9575",
+    "remote": "https://github.com/fullstorydev/emulators.git"
+  },
+  "neuroglancer": {
+    "revision": "d4aeac3b66eb4bd3fa86dbdc0202a7f006439740",
+    "remote": "https://github.com/seung-lab/neuroglancer.git"
+  }
+}

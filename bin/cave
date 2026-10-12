@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+task_root=$(cd "$(dirname "$0")/.." && pwd)
+if [ -x "$task_root/.venv/bin/python" ]; then
+  exec "$task_root/.venv/bin/python" "$task_root/scripts/cli.py" "$@"
+else
+  exec "${CAVE_PYTHON:-python3}" "$task_root/scripts/cli.py" "$@"
+fi

@@ -1,0 +1,28 @@
+{
+  "graph_id": "my_dataset_001",
+  "local_url": "http://127.0.0.1:8181",
+  "display_name": "My dataset",
+  "image_https": "file:///source/image/",
+  "segmentation_https": "file:///source/segmentation/",
+  "shape_xyz": [
+    48,
+    40,
+    20
+  ],
+  "resolution_nm_xyz": [
+    100,
+    100,
+    300
+  ],
+  "graph_chunk_xyz": [
+    16,
+    16,
+    8
+  ],
+  "atom_policy": "source_labels",
+  "voxel_offset_xyz": [
+    0,
+    0,
+    0
+  ]
+}

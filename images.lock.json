@@ -1,0 +1,13 @@
+{
+  "annotation": "caveconnectome/annotationengine@sha256:06919b9b479389f9446d7a31b6f2ed271872c6a1bd4784cb0d89c20932d39101",
+  "gateway": "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+  "info": "caveconnectome/annotationframeworkinfoservice@sha256:89ddfb91795b56f41f4b12dfbb24811ec8856e3ed32ee9fa05896089d92fa9ee",
+  "mat-worker": "caveconnectome/materializationengine@sha256:35fa486129bb519ae3d196aea614a8d3d4dd8739e3800c96209fcb19d560f7ac",
+  "materialize": "caveconnectome/materializationengine@sha256:35fa486129bb519ae3d196aea614a8d3d4dd8739e3800c96209fcb19d560f7ac",
+  "postgres": "postgis/postgis@sha256:94146ac37bc61e2322f88016056c5920729cb8c64c8542ed590af8fc2abdac07",
+  "redis": "redis@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+  "schema": "caveconnectome/emannotationschemas@sha256:b7ba71f83bedbac8184a3d01cf8912f488c29dc03091babcf832b59156ab2a42",
+  "caveconnectome/pychunkedgraph:v2.22.0.dev11": "caveconnectome/pychunkedgraph@sha256:3794e14d0d862d33d98483dff2f6449052e6c43393117a47cb0c099ed8a26550",
+  "alpine:3.22": "alpine@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c871e97afc13e9cd5e8fa8",
+  "golang:1.25-alpine": "golang@sha256:1ae0735f00daffa3aaf1363a5184c0d2dc55c78e3db4ec70241cdac97bf84b59"
+}

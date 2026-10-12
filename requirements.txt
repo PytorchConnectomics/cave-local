@@ -1,0 +1,11 @@
+PyYAML==6.0.2
+numpy==2.4.6
+requests==2.34.2
+zarr==2.18.7
+numcodecs==0.15.1
+cloud-volume==12.15.1
+caveclient==8.2.1
+connected-components-3d==4.1.0
+playwright==1.63.0
+pytest==9.1.1
+scipy==1.17.1

@@ -1,0 +1,1766 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-10-12",
+  "release_target": "v0.1.0 (preview / GitHub prerelease)",
+  "review_scope": "Known npm advisories in exact upstream/effective viewer locks, pinned host Python requirements, upstream component licenses and local image digest inventory. Not a penetration test or comprehensive container CVE/SBOM scan.",
+  "source_revision": "d4aeac3b66eb4bd3fa86dbdc0202a7f006439740",
+  "source_modified": false,
+  "dependency_lock_modified": true,
+  "upstream_package_lock_sha256": "5291f265cebb198767923bb55ef4cecd5c39faec53247066fe28e6fd455ed3f1",
+  "package_lock_sha256": "5ae6f5505ea10eb62a0aae2878f032b23514344046f52bb0cbdcfd79b7a9177a",
+  "dependency_overlay_sha256": "fab7e1e858a81202b44325d0c2d9ed6800bcba4a242962dcb85f23db82606f31",
+  "npm_version": "11.11.0",
+  "node_version": "v25.8.1",
+  "npm_before": {
+    "full": {
+      "info": 0,
+      "low": 0,
+      "moderate": 13,
+      "high": 34,
+      "critical": 8,
+      "total": 55
+    },
+    "production": {
+      "info": 0,
+      "low": 0,
+      "moderate": 1,
+      "high": 2,
+      "critical": 0,
+      "total": 3
+    }
+  },
+  "npm_after": {
+    "full": {
+      "info": 0,
+      "low": 0,
+      "moderate": 12,
+      "high": 32,
+      "critical": 8,
+      "total": 52
+    },
+    "production": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "mitigated_runtime_packages": [
+    {
+      "package": "fflate",
+      "previous_version": "0.8.2",
+      "version": "0.8.3",
+      "resolved": "https://registry.npmjs.org/fflate/-/fflate-0.8.3.tgz",
+      "integrity": "sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==",
+      "advisories": [
+        {
+          "id": "GHSA-px8p-9vwx-vf98",
+          "url": "https://github.com/advisories/GHSA-px8p-9vwx-vf98",
+          "range": ">=0.8.0 <0.8.3"
+        }
+      ]
+    },
+    {
+      "package": "lodash-es",
+      "previous_version": "4.17.21",
+      "version": "4.18.1",
+      "resolved": "https://registry.npmjs.org/lodash-es/-/lodash-es-4.18.1.tgz",
+      "integrity": "sha512-J8xewKD/Gk22OZbhpOVSwcs60zhd95ESDwezOFuA3/099925PdHJ7OFHNTGtajL3AlZkykD32HykiMo+BIBI8A==",
+      "advisories": [
+        {
+          "id": "GHSA-r5fr-rjxr-66jc",
+          "url": "https://github.com/advisories/GHSA-r5fr-rjxr-66jc",
+          "range": ">=4.0.0 <=4.17.23"
+        },
+        {
+          "id": "GHSA-f23m-r3pf-42rh",
+          "url": "https://github.com/advisories/GHSA-f23m-r3pf-42rh",
+          "range": "<=4.17.23"
+        },
+        {
+          "id": "GHSA-xxjr-mmjv-4gpg",
+          "url": "https://github.com/advisories/GHSA-xxjr-mmjv-4gpg",
+          "range": ">=4.0.0 <=4.17.22"
+        }
+      ]
+    },
+    {
+      "package": "valibot",
+      "previous_version": "1.1.0",
+      "version": "1.5.0",
+      "resolved": "https://registry.npmjs.org/valibot/-/valibot-1.5.0.tgz",
+      "integrity": "sha512-nil6AkP2TChWL43Z5uJ6GTxX01CUA+g8LWUM+N/rB9NBbkUMaUsi9PUNzlUPgoKASgmx9f7eGOYpJ04/fSa6FQ==",
+      "advisories": [
+        {
+          "id": "GHSA-vqpr-j7v3-hqw9",
+          "url": "https://github.com/advisories/GHSA-vqpr-j7v3-hqw9",
+          "range": ">=0.31.0 <1.2.0"
+        },
+        {
+          "id": "GHSA-5qjj-4xww-7phc",
+          "url": "https://github.com/advisories/GHSA-5qjj-4xww-7phc",
+          "range": "<=1.4.1"
+        }
+      ]
+    }
+  ],
+  "retained_dev_packages": [
+    {
+      "package": "@humanfs/node",
+      "audit_severity": "moderate",
+      "direct": false,
+      "installed_versions": [
+        "0.16.6"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-p498-v437-472g",
+          "title": "humanfs: Recursive copy follows symlinked files and copies data from outside the source tree",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-p498-v437-472g",
+          "range": "<0.16.8"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "@isaacs/brace-expansion",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "5.0.0"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-7h2j-956f-4vf2",
+          "title": "@isaacs/brace-expansion has Uncontrolled Resource Consumption",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-7h2j-956f-4vf2",
+          "range": "<=5.0.0"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "@rspack/cli",
+      "audit_severity": "moderate",
+      "direct": true,
+      "installed_versions": [
+        "1.6.1"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "@rspack/dev-server"
+      ],
+      "fix_available": {
+        "name": "@rspack/cli",
+        "version": "2.2.8",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "@rspack/dev-server",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "1.1.4"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "chokidar",
+        "webpack-dev-server"
+      ],
+      "fix_available": {
+        "name": "@rspack/cli",
+        "version": "2.2.8",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "@typescript-eslint/eslint-plugin",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "8.46.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "@typescript-eslint/type-utils",
+        "@typescript-eslint/utils"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "@typescript-eslint/parser",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "8.46.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "@typescript-eslint/typescript-estree"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "@typescript-eslint/type-utils",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "8.46.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "@typescript-eslint/typescript-estree",
+        "@typescript-eslint/utils"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "@typescript-eslint/typescript-estree",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "8.46.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "fast-glob"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "@typescript-eslint/utils",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "8.46.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "@typescript-eslint/typescript-estree"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "@vitest/browser",
+      "audit_severity": "critical",
+      "direct": true,
+      "installed_versions": [
+        "3.0.5"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Vitest Browser Mode API; packaging never starts it.",
+      "advisories": [
+        {
+          "id": "GHSA-p63j-vcc4-9vmv",
+          "title": "@vitest/browser: Browser Mode provider commands bypass the file-access permission gate",
+          "severity": "critical",
+          "url": "https://github.com/advisories/GHSA-p63j-vcc4-9vmv",
+          "range": "<3.2.7"
+        },
+        {
+          "id": "GHSA-g8mr-85jm-7xhm",
+          "title": "Vitest Browser: Exposed Browser Mode API Can Proxy CDP and Overwrite Config Files, Leading to RCE",
+          "severity": "critical",
+          "url": "https://github.com/advisories/GHSA-g8mr-85jm-7xhm",
+          "range": ">=3.0.0 <=3.2.4"
+        }
+      ],
+      "inherited_from": [
+        "@vitest/mocker",
+        "vitest"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "@vitest/mocker",
+      "audit_severity": "moderate",
+      "direct": false,
+      "installed_versions": [
+        "3.0.5"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-82fw-gwwq-j7x9",
+          "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+          "range": ">=2.1.0 <4.1.11"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "@vitest/ui",
+      "audit_severity": "critical",
+      "direct": true,
+      "installed_versions": [
+        "3.0.5"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Vitest UI server dependency; packaging never starts it.",
+      "advisories": [],
+      "inherited_from": [
+        "vitest"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "@vitest/web-worker",
+      "audit_severity": "critical",
+      "direct": true,
+      "installed_versions": [
+        "3.0.5"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Vitest test worker dependency; packaging never runs upstream Vitest.",
+      "advisories": [],
+      "inherited_from": [
+        "vitest"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "ajv",
+      "audit_severity": "moderate",
+      "direct": false,
+      "installed_versions": [
+        "6.12.6",
+        "8.12.0",
+        "8.17.1"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-2g4f-4pwh-qvx6",
+          "title": "ajv has ReDoS when using `$data` option",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-2g4f-4pwh-qvx6",
+          "range": "<6.14.0"
+        },
+        {
+          "id": "GHSA-2g4f-4pwh-qvx6",
+          "title": "ajv has ReDoS when using `$data` option",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-2g4f-4pwh-qvx6",
+          "range": ">=7.0.0-alpha.0 <8.18.0"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "body-parser",
+      "audit_severity": "moderate",
+      "direct": false,
+      "installed_versions": [
+        "1.20.3",
+        "2.2.0"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-wqch-xfxh-vrr4",
+          "title": "body-parser is vulnerable to denial of service when url encoding is used",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-wqch-xfxh-vrr4",
+          "range": ">=2.2.0 <2.2.1"
+        },
+        {
+          "id": "GHSA-v422-hmwv-36x6",
+          "title": "body-parser vulnerable to denial of service when invalid limit value silently disables size enforcement",
+          "severity": "low",
+          "url": "https://github.com/advisories/GHSA-v422-hmwv-36x6",
+          "range": ">=2.0.0 <2.3.0"
+        },
+        {
+          "id": "GHSA-v422-hmwv-36x6",
+          "title": "body-parser vulnerable to denial of service when invalid limit value silently disables size enforcement",
+          "severity": "low",
+          "url": "https://github.com/advisories/GHSA-v422-hmwv-36x6",
+          "range": "<1.20.6"
+        }
+      ],
+      "inherited_from": [
+        "qs"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "brace-expansion",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "1.1.12",
+        "2.0.2"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-f886-m6hf-6m8v",
+          "title": "brace-expansion: Zero-step sequence causes process hang and memory exhaustion",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-f886-m6hf-6m8v",
+          "range": "<1.1.13"
+        },
+        {
+          "id": "GHSA-f886-m6hf-6m8v",
+          "title": "brace-expansion: Zero-step sequence causes process hang and memory exhaustion",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-f886-m6hf-6m8v",
+          "range": ">=2.0.0 <2.0.3"
+        },
+        {
+          "id": "GHSA-3jxr-9vmj-r5cp",
+          "title": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp",
+          "range": ">=2.0.0 <2.1.2"
+        },
+        {
+          "id": "GHSA-3jxr-9vmj-r5cp",
+          "title": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-3jxr-9vmj-r5cp",
+          "range": "<1.1.16"
+        },
+        {
+          "id": "GHSA-mh99-v99m-4gvg",
+          "title": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg",
+          "range": "<1.1.17"
+        },
+        {
+          "id": "GHSA-mh99-v99m-4gvg",
+          "title": "brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-mh99-v99m-4gvg",
+          "range": ">=2.0.0 <2.1.3"
+        },
+        {
+          "id": "GHSA-rgw5-rvv9-x895",
+          "title": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-rgw5-rvv9-x895",
+          "range": ">=2.0.0 <2.1.4"
+        },
+        {
+          "id": "GHSA-rgw5-rvv9-x895",
+          "title": "brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-rgw5-rvv9-x895",
+          "range": "<1.1.18"
+        },
+        {
+          "id": "GHSA-q2hr-2g5m-vwhr",
+          "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+          "range": "<1.1.21"
+        },
+        {
+          "id": "GHSA-q2hr-2g5m-vwhr",
+          "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+          "range": ">=2.0.0 <2.1.7"
+        },
+        {
+          "id": "GHSA-qhr7-859c-m2p7",
+          "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+          "range": "<1.1.20"
+        },
+        {
+          "id": "GHSA-qhr7-859c-m2p7",
+          "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+          "range": ">=2.0.0 <2.1.6"
+        },
+        {
+          "id": "GHSA-6j4f-fj2g-mc7p",
+          "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+          "range": "<1.1.19"
+        },
+        {
+          "id": "GHSA-6j4f-fj2g-mc7p",
+          "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+          "range": ">=2.0.0 <2.1.5"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "braces",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "3.0.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-vfj7-8cjw-p6xm",
+          "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+          "range": "<=3.0.3"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": {
+        "name": "@rspack/cli",
+        "version": "2.2.8",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "chokidar",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "3.6.0"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "braces"
+      ],
+      "fix_available": {
+        "name": "@rspack/cli",
+        "version": "2.2.8",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "compression",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "1.8.1"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-vc2v-76pw-4v95",
+          "title": "compression vulnerable to Denial of Service via memory leak on premature response close",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-vc2v-76pw-4v95",
+          "range": "<1.8.2"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "express",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "4.21.2"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "body-parser",
+        "path-to-regexp",
+        "qs"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "fast-glob",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "3.3.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "micromatch"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "fast-uri",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "3.0.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-v2hh-gcrm-f6hx",
+          "title": "fast-uri vulnerable to host confusion via literal backslash authority delimiter",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-v2hh-gcrm-f6hx",
+          "range": ">=3.0.0 <=3.1.3"
+        },
+        {
+          "id": "GHSA-7p8r-x3mc-p8w7",
+          "title": "fast-uri vulnerable to host confusion via backslash authority introducer",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-7p8r-x3mc-p8w7",
+          "range": ">=3.0.0 <3.1.5"
+        },
+        {
+          "id": "GHSA-q3j6-qgpj-74h6",
+          "title": "fast-uri vulnerable to path traversal via percent-encoded dot segments",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-q3j6-qgpj-74h6",
+          "range": ">=3.0.0 <=3.1.0"
+        },
+        {
+          "id": "GHSA-v39h-62p7-jpjc",
+          "title": "fast-uri vulnerable to host confusion via percent-encoded authority delimiters",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-v39h-62p7-jpjc",
+          "range": ">=3.0.0 <=3.1.1"
+        },
+        {
+          "id": "GHSA-f65p-4m7j-42xc",
+          "title": "fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-f65p-4m7j-42xc",
+          "range": ">=3.0.0 <3.1.6"
+        },
+        {
+          "id": "GHSA-jqff-g426-hqxp",
+          "title": "fast-uri vulnerable to host confusion via percent-encoded scheme normalization",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-jqff-g426-hqxp",
+          "range": ">=3.0.0 <3.1.6"
+        },
+        {
+          "id": "GHSA-4c8g-83qw-93j6",
+          "title": "fast-uri vulnerable to host confusion via failed IDN canonicalization",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-4c8g-83qw-93j6",
+          "range": ">=3.0.0 <3.1.3"
+        },
+        {
+          "id": "GHSA-qw65-cvwx-89v3",
+          "title": "fast-uri vulnerable to authority injection via an unvalidated port in serialize",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-qw65-cvwx-89v3",
+          "range": ">=3.0.0 <3.1.7"
+        },
+        {
+          "id": "GHSA-hrr3-gc8f-f4qj",
+          "title": "fast-uri vulnerable to inconsistent host case normalization via percent-encoded octets",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-hrr3-gc8f-f4qj",
+          "range": ">=3.0.0 <3.1.8"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "flatted",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "3.3.2"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-25h7-pfq9-p65f",
+          "title": "flatted vulnerable to unbounded recursion DoS in parse() revive phase",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-25h7-pfq9-p65f",
+          "range": "<3.4.0"
+        },
+        {
+          "id": "GHSA-rf6f-7fwh-wjgh",
+          "title": "Prototype Pollution via parse() in NodeJS flatted",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-rf6f-7fwh-wjgh",
+          "range": "<=3.4.1"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "follow-redirects",
+      "audit_severity": "moderate",
+      "direct": false,
+      "installed_versions": [
+        "1.15.9"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-r4q5-vmmm-2653",
+          "title": "follow-redirects leaks Custom Authentication Headers to Cross-Domain Redirect Targets",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-r4q5-vmmm-2653",
+          "range": "<=1.15.11"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "glob",
+      "audit_severity": "high",
+      "direct": true,
+      "installed_versions": [
+        "11.0.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-5j98-mcp5-4vw2",
+          "title": "glob CLI: Command injection via -c/--cmd executes matches with shell:true",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-5j98-mcp5-4vw2",
+          "range": ">=11.0.0 <11.1.0"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "http-proxy-middleware",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "2.0.9"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-64mm-vxmg-q3vj",
+          "title": "http-proxy-middleware `router` host+path substring matching allows Host-header-driven backend routing bypass",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-64mm-vxmg-q3vj",
+          "range": ">=0.16.0 <2.0.10"
+        }
+      ],
+      "inherited_from": [
+        "micromatch"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "js-yaml",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "4.1.0"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-mh29-5h37-fv8m",
+          "title": "js-yaml has prototype pollution in merge (<<)",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-mh29-5h37-fv8m",
+          "range": ">=4.0.0 <4.1.1"
+        },
+        {
+          "id": "GHSA-h67p-54hq-rp68",
+          "title": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-h67p-54hq-rp68",
+          "range": ">=4.0.0 <=4.1.1"
+        },
+        {
+          "id": "GHSA-52cp-r559-cp3m",
+          "title": "js-yaml: YAML merge-key chains can force quadratic CPU consumption",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-52cp-r559-cp3m",
+          "range": ">=4.0.0 <4.3.0"
+        },
+        {
+          "id": "GHSA-5p4m-2wfm-xmqj",
+          "title": "JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) \u2014 CVE-2026-59870 fix not backported",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-5p4m-2wfm-xmqj",
+          "range": ">=4.0.0 <4.3.1"
+        },
+        {
+          "id": "GHSA-2883-xcg3-v3hh",
+          "title": "js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-2883-xcg3-v3hh",
+          "range": ">=4.0.0 <4.3.2"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "launch-editor",
+      "audit_severity": "moderate",
+      "direct": false,
+      "installed_versions": [
+        "2.12.0"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-v6wh-96g9-6wx3",
+          "title": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3",
+          "range": "<=2.14.0"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "lodash",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "4.17.21"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-r5fr-rjxr-66jc",
+          "title": "lodash vulnerable to Code Injection via `_.template` imports key names",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-r5fr-rjxr-66jc",
+          "range": ">=4.0.0 <=4.17.23"
+        },
+        {
+          "id": "GHSA-f23m-r3pf-42rh",
+          "title": "lodash vulnerable to Prototype Pollution via array path bypass in `_.unset` and `_.omit`",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-f23m-r3pf-42rh",
+          "range": "<=4.17.23"
+        },
+        {
+          "id": "GHSA-xxjr-mmjv-4gpg",
+          "title": "Lodash has Prototype Pollution Vulnerability in `_.unset` and `_.omit` functions",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-xxjr-mmjv-4gpg",
+          "range": ">=4.0.0 <=4.17.22"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "micromatch",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "4.0.8"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "braces"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "minimatch",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "10.1.1",
+        "3.1.2",
+        "9.0.5"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-3ppc-4f35-3m26",
+          "title": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-3ppc-4f35-3m26",
+          "range": "<3.1.3"
+        },
+        {
+          "id": "GHSA-3ppc-4f35-3m26",
+          "title": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-3ppc-4f35-3m26",
+          "range": ">=9.0.0 <9.0.6"
+        },
+        {
+          "id": "GHSA-3ppc-4f35-3m26",
+          "title": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-3ppc-4f35-3m26",
+          "range": ">=10.0.0 <10.2.1"
+        },
+        {
+          "id": "GHSA-7r86-cg39-jmmj",
+          "title": "minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-7r86-cg39-jmmj",
+          "range": "<3.1.3"
+        },
+        {
+          "id": "GHSA-7r86-cg39-jmmj",
+          "title": "minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-7r86-cg39-jmmj",
+          "range": ">=9.0.0 <9.0.7"
+        },
+        {
+          "id": "GHSA-7r86-cg39-jmmj",
+          "title": "minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-7r86-cg39-jmmj",
+          "range": ">=10.0.0 <10.2.3"
+        },
+        {
+          "id": "GHSA-23c5-xmqv-rm74",
+          "title": "minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-23c5-xmqv-rm74",
+          "range": "<3.1.4"
+        },
+        {
+          "id": "GHSA-23c5-xmqv-rm74",
+          "title": "minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-23c5-xmqv-rm74",
+          "range": ">=9.0.0 <9.0.7"
+        },
+        {
+          "id": "GHSA-23c5-xmqv-rm74",
+          "title": "minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-23c5-xmqv-rm74",
+          "range": ">=10.0.0 <10.2.3"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "nanoid",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "3.3.11"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-28wg-ghj8-5hjv",
+          "title": "nanoid: non-secure generators can loop indefinitely with negative size",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-28wg-ghj8-5hjv",
+          "range": "<3.3.16"
+        },
+        {
+          "id": "GHSA-2v37-7h3g-55p8",
+          "title": "nanoid: custom generators can loop indefinitely when size is zero",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-2v37-7h3g-55p8",
+          "range": "<3.3.18"
+        },
+        {
+          "id": "GHSA-xwg4-73v4-xw9w",
+          "title": "nanoid: Integer Overflow or Wraparound",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-xwg4-73v4-xw9w",
+          "range": "<3.3.12"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "node-forge",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "1.3.1"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-554w-wpv2-vw27",
+          "title": "node-forge has ASN.1 Unbounded Recursion",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-554w-wpv2-vw27",
+          "range": "<1.3.2"
+        },
+        {
+          "id": "GHSA-5gfm-wpxj-wjgq",
+          "title": "node-forge has an Interpretation Conflict vulnerability via its ASN.1 Validator Desynchronization",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-5gfm-wpxj-wjgq",
+          "range": "<1.3.2"
+        },
+        {
+          "id": "GHSA-65ch-62r8-g69g",
+          "title": "node-forge is vulnerable to ASN.1 OID Integer Truncation",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-65ch-62r8-g69g",
+          "range": "<1.3.2"
+        },
+        {
+          "id": "GHSA-2328-f5f3-gj25",
+          "title": "Forge has a basicConstraints bypass in its certificate chain verification (RFC 5280 violation)",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-2328-f5f3-gj25",
+          "range": "<=1.3.3"
+        },
+        {
+          "id": "GHSA-q67f-28xg-22rw",
+          "title": "Forge has signature forgery in Ed25519 due to missing S > L check",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-q67f-28xg-22rw",
+          "range": "<1.4.0"
+        },
+        {
+          "id": "GHSA-5m6q-g25r-mvwx",
+          "title": "Forge has Denial of Service via Infinite Loop in BigInteger.modInverse() with Zero Input",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-5m6q-g25r-mvwx",
+          "range": "<1.4.0"
+        },
+        {
+          "id": "GHSA-ppp5-5v6c-4jwp",
+          "title": "Forge has signature forgery in RSA-PKCS due to ASN.1 extra field  ",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-ppp5-5v6c-4jwp",
+          "range": "<1.4.0"
+        },
+        {
+          "id": "GHSA-86w9-cpqp-85rv",
+          "title": "node-forge RSA PKCS#1 v1.5 signature verification accepts extra nested DigestAlgorithm elements",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+          "range": "<=1.4.0"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "path-to-regexp",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "0.1.12",
+        "8.3.0"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-37ch-88jc-xwx2",
+          "title": "path-to-regexp vulnerable to Regular Expression Denial of Service via multiple route parameters",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-37ch-88jc-xwx2",
+          "range": "<0.1.13"
+        },
+        {
+          "id": "GHSA-j3q9-mxjg-w52f",
+          "title": "path-to-regexp vulnerable to Denial of Service via sequential optional groups",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-j3q9-mxjg-w52f",
+          "range": ">=8.0.0 <8.4.0"
+        },
+        {
+          "id": "GHSA-27v5-c462-wpq7",
+          "title": "path-to-regexp vulnerable to Regular Expression Denial of Service via multiple wildcards",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-27v5-c462-wpq7",
+          "range": ">=8.0.0 <8.4.0"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "picomatch",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "2.3.1",
+        "4.0.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-3v7f-55p6-f55p",
+          "title": "Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p",
+          "range": "<2.3.2"
+        },
+        {
+          "id": "GHSA-3v7f-55p6-f55p",
+          "title": "Picomatch: Method Injection in POSIX Character Classes causes incorrect Glob Matching",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-3v7f-55p6-f55p",
+          "range": ">=4.0.0 <4.0.4"
+        },
+        {
+          "id": "GHSA-c2c7-rcm5-vvqj",
+          "title": "Picomatch has a ReDoS vulnerability via extglob quantifiers",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj",
+          "range": "<2.3.2"
+        },
+        {
+          "id": "GHSA-c2c7-rcm5-vvqj",
+          "title": "Picomatch has a ReDoS vulnerability via extglob quantifiers",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-c2c7-rcm5-vvqj",
+          "range": ">=4.0.0 <4.0.4"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "postcss",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "8.5.6"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-qx2v-qp2m-jg93",
+          "title": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-qx2v-qp2m-jg93",
+          "range": "<8.5.10"
+        },
+        {
+          "id": "GHSA-6g55-p6wh-862q",
+          "title": "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-6g55-p6wh-862q",
+          "range": "<=8.5.11"
+        },
+        {
+          "id": "GHSA-fxqj-rqcc-2cmp",
+          "title": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q \u2014 attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-fxqj-rqcc-2cmp",
+          "range": "<=8.5.22"
+        },
+        {
+          "id": "GHSA-r28c-9q8g-f849",
+          "title": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-r28c-9q8g-f849",
+          "range": "<=8.5.17"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "postcss-selector-parser",
+      "audit_severity": "moderate",
+      "direct": false,
+      "installed_versions": [
+        "6.1.1"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-w9m9-85wc-3x92",
+          "title": "postcss-selector-parser allows denial of service through uncontrolled AST recursion",
+          "severity": "low",
+          "url": "https://github.com/advisories/GHSA-w9m9-85wc-3x92",
+          "range": ">=6.1.0 <6.1.3"
+        },
+        {
+          "id": "GHSA-rj75-hqrm-r3gf",
+          "title": "PostCSS: Quadratic complexity in flat selector parsing allows CPU exhaustion",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-rj75-hqrm-r3gf",
+          "range": "<7.1.6"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "proxy-addr",
+      "audit_severity": "critical",
+      "direct": false,
+      "installed_versions": [
+        "2.0.7"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Express development-server trust-proxy support; runtime gateway is nginx, not an npm server.",
+      "advisories": [
+        {
+          "id": "GHSA-jqcg-44mw-7w3h",
+          "title": "proxy-addr vulnerable to IP spoofing via IPv4-mapped IPv6 trust subnet",
+          "severity": "critical",
+          "url": "https://github.com/advisories/GHSA-jqcg-44mw-7w3h",
+          "range": ">=1.1.0 <2.0.8"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "qs",
+      "audit_severity": "moderate",
+      "direct": false,
+      "installed_versions": [
+        "6.13.0",
+        "6.14.0",
+        "6.5.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-w7fw-mjwx-w883",
+          "title": "qs's arrayLimit bypass in comma parsing allows denial of service",
+          "severity": "low",
+          "url": "https://github.com/advisories/GHSA-w7fw-mjwx-w883",
+          "range": ">=6.7.0 <=6.14.1"
+        },
+        {
+          "id": "GHSA-6rw7-vpxm-498p",
+          "title": "qs's arrayLimit bypass in its bracket notation allows DoS via memory exhaustion",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-6rw7-vpxm-498p",
+          "range": "<6.14.1"
+        },
+        {
+          "id": "GHSA-q8mj-m7cp-5q26",
+          "title": "qs has a remotely triggerable DoS: qs.stringify crashes with TypeError on null/undefined entries in comma-format arrays when encodeValuesOnly is set",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-q8mj-m7cp-5q26",
+          "range": ">=6.11.1 <=6.15.1"
+        },
+        {
+          "id": "GHSA-4mjr-xmp4-gh2g",
+          "title": "qs: Denial of Service via Attacker Controlled isBuffer",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g",
+          "range": ">=2.2.5 <6.16.0"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "rollup",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "4.52.5"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-mw96-cpmx-2vgc",
+          "title": "Rollup 4 has Arbitrary File Write via Path Traversal",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-mw96-cpmx-2vgc",
+          "range": ">=4.0.0 <4.59.0"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "shell-quote",
+      "audit_severity": "critical",
+      "direct": false,
+      "installed_versions": [
+        "1.8.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Node command-line helpers; not in npm production graph. Build command arguments and source are repository-controlled.",
+      "advisories": [
+        {
+          "id": "GHSA-w7jw-789q-3m8p",
+          "title": "shell-quote quote() does not escape newlines in object .op values",
+          "severity": "critical",
+          "url": "https://github.com/advisories/GHSA-w7jw-789q-3m8p",
+          "range": ">=1.1.0 <=1.8.3"
+        },
+        {
+          "id": "GHSA-395f-4hp3-45gv",
+          "title": "shell-quote: Quadratic-complexity Denial of Service in `parse()` (CWE-407)",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-395f-4hp3-45gv",
+          "range": "<=1.8.4"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "sockjs",
+      "audit_severity": "moderate",
+      "direct": false,
+      "installed_versions": [
+        "0.3.24"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "uuid"
+      ],
+      "fix_available": {
+        "name": "@rspack/cli",
+        "version": "2.2.8",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "source-map-js",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "1.2.1"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-68fv-2mgg-jv7q",
+          "title": "source-map-js allows event-loop denial of service through indexed source-map section offsets",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-68fv-2mgg-jv7q",
+          "range": ">=1.0.0 <1.2.2"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "tinypool",
+      "audit_severity": "critical",
+      "direct": false,
+      "installed_versions": [
+        "1.0.2"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Vitest worker-pool dependency; packaging never invokes that test runner. A prototype-pollution prerequisite is still a build/test concern if upstream tools are run.",
+      "advisories": [
+        {
+          "id": "GHSA-5gmw-xhrv-c9v3",
+          "title": "Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution",
+          "severity": "critical",
+          "url": "https://github.com/advisories/GHSA-5gmw-xhrv-c9v3",
+          "range": "<=2.1.0"
+        },
+        {
+          "id": "GHSA-85c8-ppgw-ccpr",
+          "title": "Tinypool: Prototype Pollution Gadget to RCE in run() options",
+          "severity": "critical",
+          "url": "https://github.com/advisories/GHSA-85c8-ppgw-ccpr",
+          "range": "<2.1.2"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "typescript-eslint",
+      "audit_severity": "high",
+      "direct": true,
+      "installed_versions": [
+        "8.46.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [],
+      "inherited_from": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/typescript-estree",
+        "@typescript-eslint/utils"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "uuid",
+      "audit_severity": "moderate",
+      "direct": false,
+      "installed_versions": [
+        "8.3.2"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-w5hq-g745-h8pq",
+          "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
+          "range": "<11.1.1"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": {
+        "name": "@rspack/cli",
+        "version": "2.2.8",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "vite",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "6.4.1"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-4w7w-66w2-5vf9",
+          "title": "Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-4w7w-66w2-5vf9",
+          "range": "<=6.4.1"
+        },
+        {
+          "id": "GHSA-p9ff-h696-f583",
+          "title": "Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-p9ff-h696-f583",
+          "range": ">=6.0.0 <=6.4.1"
+        },
+        {
+          "id": "GHSA-v6wh-96g9-6wx3",
+          "title": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3",
+          "range": "<=6.4.2"
+        },
+        {
+          "id": "GHSA-fx2h-pf6j-xcff",
+          "title": "vite: `server.fs.deny` bypass on Windows alternate paths",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff",
+          "range": "<=6.4.2"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "vitest",
+      "audit_severity": "critical",
+      "direct": true,
+      "installed_versions": [
+        "3.0.5"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Vitest UI/test server; packaging never runs upstream Vitest.",
+      "advisories": [
+        {
+          "id": "GHSA-5xrq-8626-4rwp",
+          "title": "When Vitest UI server is listening, arbitrary file can be read and executed",
+          "severity": "critical",
+          "url": "https://github.com/advisories/GHSA-5xrq-8626-4rwp",
+          "range": "<3.2.6"
+        },
+        {
+          "id": "GHSA-82fw-gwwq-j7x9",
+          "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+          "range": ">=2.1.0 <4.1.11"
+        }
+      ],
+      "inherited_from": [
+        "@vitest/browser",
+        "@vitest/mocker",
+        "@vitest/ui",
+        "tinypool"
+      ],
+      "fix_available": true
+    },
+    {
+      "package": "webpack-dev-server",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "5.2.2"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-79cf-xcqc-c78w",
+          "title": "webpack-dev-server vulnerable to cross-origin source code exposure on non-HTTPS origins",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-79cf-xcqc-c78w",
+          "range": "<=5.2.3"
+        },
+        {
+          "id": "GHSA-mx8g-39q3-5c79",
+          "title": "webpack-dev-server vulnerable to HMR WebSocket interception via permissive user proxies",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-mx8g-39q3-5c79",
+          "range": "<5.2.5"
+        },
+        {
+          "id": "GHSA-f5vj-f2hx-8m93",
+          "title": "webpack-dev-server vulnerable to cross-site request forgery via internal developer endpoints",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-f5vj-f2hx-8m93",
+          "range": "<=5.2.5"
+        },
+        {
+          "id": "GHSA-m28w-2pqf-7qgj",
+          "title": "webpack-dev-server vulnerable to denial of service via a malformed Host or Origin header",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-m28w-2pqf-7qgj",
+          "range": "<=5.2.5"
+        }
+      ],
+      "inherited_from": [
+        "chokidar",
+        "sockjs"
+      ],
+      "fix_available": {
+        "name": "@rspack/cli",
+        "version": "2.2.8",
+        "isSemVerMajor": true
+      }
+    },
+    {
+      "package": "websocket-driver",
+      "audit_severity": "critical",
+      "direct": false,
+      "installed_versions": [
+        "0.7.4"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Development-server WebSocket transport; static runtime assets have no Node WebSocket server.",
+      "advisories": [
+        {
+          "id": "GHSA-mp7j-qc5w-4988",
+          "title": "websocket-driver: Resource limit bypass via message compression",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-mp7j-qc5w-4988",
+          "range": "<0.7.5"
+        },
+        {
+          "id": "GHSA-xv26-6w52-cph6",
+          "title": "websocket-driver: Message corruption via abuse of protocol length headers",
+          "severity": "critical",
+          "url": "https://github.com/advisories/GHSA-xv26-6w52-cph6",
+          "range": "<0.7.5"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "ws",
+      "audit_severity": "high",
+      "direct": false,
+      "installed_versions": [
+        "7.5.10",
+        "8.18.3"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-58qx-3vcg-4xpx",
+          "title": "ws: Uninitialized memory disclosure",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-58qx-3vcg-4xpx",
+          "range": ">=8.0.0 <8.20.1"
+        },
+        {
+          "id": "GHSA-96hv-2xvq-fx4p",
+          "title": "ws: Memory exhaustion DoS from tiny fragments and data chunks",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-96hv-2xvq-fx4p",
+          "range": ">=8.0.0 <8.21.0"
+        },
+        {
+          "id": "GHSA-96hv-2xvq-fx4p",
+          "title": "ws: Memory exhaustion DoS from tiny fragments and data chunks",
+          "severity": "high",
+          "url": "https://github.com/advisories/GHSA-96hv-2xvq-fx4p",
+          "range": ">=7.0.0 <7.5.11"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    },
+    {
+      "package": "yauzl",
+      "audit_severity": "moderate",
+      "direct": true,
+      "installed_versions": [
+        "3.2.0"
+      ],
+      "dependency_class": "dev (outside npm --omit=dev dependency graph)",
+      "scope_reason": "Retained in the upstream build/lint/test dependency graph; not individually proved non-exploitable during builds.",
+      "advisories": [
+        {
+          "id": "GHSA-gmq8-994r-jv83",
+          "title": "yauzl contains an off-by-one error",
+          "severity": "moderate",
+          "url": "https://github.com/advisories/GHSA-gmq8-994r-jv83",
+          "range": "=3.2.0"
+        }
+      ],
+      "inherited_from": [],
+      "fix_available": true
+    }
+  ],
+  "python": {
+    "scanner": "pip-audit",
+    "scanner_version": "2.10.1",
+    "service": "PyPI advisory API",
+    "requirements_lock_sha256": "a3c20048b3d21295e89f43911811fc4c1927f335bb85b85841aa52433578da1a",
+    "package_count": 108,
+    "known_advisory_count": 0,
+    "command": "pip-audit --no-deps --disable-pip -r requirements.lock.txt --format json",
+    "scope_exclusions": [
+      "Python packages inside service containers",
+      "Native shared libraries",
+      "Build backends and package indexes themselves"
+    ],
+    "skipped_packages": []
+  },
+  "container_review": {
+    "digest_pins": {
+      "annotation": "caveconnectome/annotationengine@sha256:06919b9b479389f9446d7a31b6f2ed271872c6a1bd4784cb0d89c20932d39101",
+      "gateway": "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236",
+      "info": "caveconnectome/annotationframeworkinfoservice@sha256:89ddfb91795b56f41f4b12dfbb24811ec8856e3ed32ee9fa05896089d92fa9ee",
+      "mat-worker": "caveconnectome/materializationengine@sha256:35fa486129bb519ae3d196aea614a8d3d4dd8739e3800c96209fcb19d560f7ac",
+      "materialize": "caveconnectome/materializationengine@sha256:35fa486129bb519ae3d196aea614a8d3d4dd8739e3800c96209fcb19d560f7ac",
+      "postgres": "postgis/postgis@sha256:94146ac37bc61e2322f88016056c5920729cb8c64c8542ed590af8fc2abdac07",
+      "redis": "redis@sha256:858f009f9709ce576febc734aa78b8f6d624b82571f9ddb6bda4377c833b3499",
+      "schema": "caveconnectome/emannotationschemas@sha256:b7ba71f83bedbac8184a3d01cf8912f488c29dc03091babcf832b59156ab2a42",
+      "caveconnectome/pychunkedgraph:v2.22.0.dev11": "caveconnectome/pychunkedgraph@sha256:3794e14d0d862d33d98483dff2f6449052e6c43393117a47cb0c099ed8a26550",
+      "alpine:3.22": "alpine@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c871e97afc13e9cd5e8fa8",
+      "golang:1.25-alpine": "golang@sha256:1ae0735f00daffa3aaf1363a5184c0d2dc55c78e3db4ec70241cdac97bf84b59"
+    },
+    "performed": [
+      "Read-only local image digest/architecture/creation-time inventory for runtime images",
+      "Upstream component license source review; PyChunkedGraph exact v2.22.0.dev11 release checked"
+    ],
+    "not_performed": [
+      "Operating-system CVE scan",
+      "Embedded service Python dependency advisory scan",
+      "Full transitive component SBOM/license inventory",
+      "Remote deployment authentication/security review"
+    ],
+    "release_support_boundary": "Loopback-only single-editor preview; use SSH forwarding for a remote server. Not an internet-exposed service release."
+  },
+  "license": {
+    "original_code": "MIT",
+    "copyright": "2026 cave-local contributors",
+    "upstream_licenses_retained": true,
+    "tracked_source_review": "No vendored graph/viewer implementation found; adapters use upstream APIs. MIT CAVE notices retained for adapted minimal table-creation setup.",
+    "license_sources": [
+      "https://github.com/PytorchConnectomics/pytorch_connectomics/blob/master/LICENSE",
+      "https://github.com/seung-lab/neuroglancer/blob/d4aeac3b66eb4bd3fa86dbdc0202a7f006439740/LICENSE",
+      "https://github.com/fullstorydev/emulators/blob/4b55687158696cd3d906e467b9afc2f9a41c9575/bigtable/LICENSE",
+      "https://github.com/CAVEconnectome/PyChunkedGraph/blob/v2.22.0.dev11/LICENSE",
+      "https://github.com/CAVEconnectome/DynamicAnnotationDB/blob/master/LICENSE",
+      "https://github.com/CAVEconnectome/MaterializationEngine/blob/master/LICENSE"
+    ]
+  },
+  "validation": {
+    "real_build_passed": true,
+    "source_checkout_remained_clean": true,
+    "installed_dependency_versions_verified": true,
+    "upstream_and_npm_runtime_notices_generated": true,
+    "focused_viewer_tests_passed": 17,
+    "fresh_acceptance_required_after_viewer_change": true,
+    "fresh_acceptance_results": "Recorded separately for the exact release candidate in acceptance evidence.",
+    "inline_upstream_and_third_party_attribution_retained": true,
+    "generated_notices_sha256": "879d6eaeff8d4a3eadd11b8969bccbc083344e0285061a23275364e2c46e4931",
+    "generated_notices_bytes": 114495
+  },
+  "raw_evidence_hashes": {
+    "npm-audit-full-before.json": "dc2c13b929c673a13ca2ad0919faa5123725b18e09652c5d9794aa77d3d55790",
+    "npm-audit-production-before.json": "ed8394519d51f86cbdf914db4ab5ccb2f04ac49c6c22875b8f8dfe0e78d481ad",
+    "npm-audit-full-after.json": "4d2daff81ab5616a15093b220d837bc25b8d82223d580429cd8a532c737dc528",
+    "npm-audit-production-after.json": "32abe7a1b3c4565f2aad0716826ba462f8061170975226eb67fdc607af4d35f7",
+    "pip-audit-host.json": "f348b50c99c8314c62e9709e5e5470202bc1b54f9d9582ac05d4ab64d19e127c",
+    "viewer-build-final.log": "6258118ec22b71134025bbb2bffcb4da6c8a196409be377a32c87f0ea9e83658",
+    "viewer-tests-final.log": "2bb2eadc6c2a1b118c98ac0e6c7eb2258ded0a0b372d1a31cbe852c5176f33de"
+  },
+  "retained_observer_failures": [
+    "Initial npm audit was mistakenly run from the packaging root, which has no npm lock; it returned ENOLOCK. Corrected by targeting the pinned viewer directory.",
+    "The remote default branch points to the legacy viewer branch. An audit of that branch was kept privately but excluded from counts; the supported spelunker branch is still at the pinned revision."
+  ]
+}

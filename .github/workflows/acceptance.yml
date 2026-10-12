@@ -1,0 +1,113 @@
+name: Disposable stack acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cave-disposable-acceptance
+  cancel-in-progress: false
+
+jobs:
+  acceptance:
+    name: Fixture ${{ matrix.variant }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        variant: [zyx, xyz]
+    steps:
+      - name: Set isolated runner paths
+        run: |
+          printf 'PLAYWRIGHT_BROWSERS_PATH=%s/cave-browsers\nCAVE_CI_DESTINATION=%s/cave-full-suite\n' \
+            "$RUNNER_TEMP" "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with:
+          node-version: '22.23.3'
+      - name: Reclaim unused SDKs only on an ephemeral hosted runner
+        run: |
+          python - <<'PY'
+          import os
+          import platform
+          import shutil
+          import subprocess
+          from pathlib import Path
+          free = shutil.disk_usage('.').free / 1024**3
+          ephemeral_ubuntu = (os.environ.get('GITHUB_ACTIONS') == 'true'
+                              and os.environ.get('RUNNER_ENVIRONMENT') == 'github-hosted'
+                              and os.environ.get('RUNNER_OS') == 'Linux'
+                              and platform.freedesktop_os_release().get('ID') == 'ubuntu'
+                              and platform.freedesktop_os_release().get('VERSION_ID') == '24.04')
+          if free < 30 and ephemeral_ubuntu:
+              for name in ('/usr/local/lib/android', '/usr/share/dotnet'):
+                  path = Path(name)
+                  if path.is_dir() and not path.is_symlink():
+                      print('Removing unused preinstalled SDK:', name, flush=True)
+                      subprocess.run(['sudo', 'rm', '-rf', '--', name], check=True)
+          elif not ephemeral_ubuntu:
+              print('SDK reclamation refused: this is not a verified GitHub-hosted Ubuntu 24.04 runner')
+          print(f'Free disk after SDK preparation: {shutil.disk_usage(".").free / 1024**3:.1f} GiB')
+          PY
+      - name: Verify runner capacity and container access
+        run: |
+          python - <<'PY'
+          import shutil
+          from pathlib import Path
+          free = shutil.disk_usage('.').free / 1024**3
+          total_kib = int(next(line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemTotal:')))
+          memory = total_kib / 1024**2
+          print(f'Free disk: {free:.1f} GiB; total RAM: {memory:.1f} GiB')
+          if free < 20 or memory < 6:
+              raise SystemExit('This integration workflow needs at least 20 GiB free disk and 6 GiB RAM; use the documented local release acceptance instead.')
+          PY
+          docker info --format '{{.ServerVersion}}'
+          docker compose version
+      - name: Install Chromium and its Linux libraries
+        run: |
+          python - <<'PY'
+          import subprocess
+          import sys
+          from pathlib import Path
+          requirement = next(line for line in Path('requirements.lock.txt').read_text().splitlines() if line.startswith('playwright=='))
+          subprocess.run([sys.executable, '-m', 'pip', 'install', requirement], check=True)
+          PY
+          python -m playwright install --with-deps chromium
+      - name: Test the assigned fixture and its supported lifecycle
+        run: |
+          git update-ref refs/heads/ci-acceptance "$GITHUB_SHA"
+          python scripts/test_suite.py full --source "$GITHUB_WORKSPACE" --commit "$GITHUB_SHA" \
+            --output "$CAVE_CI_DESTINATION" --branch ci-acceptance --python "$(command -v python)" \
+            --variant "${{ matrix.variant }}"
+      - name: Collect fixture reports, screenshots and redacted failure logs
+        if: always()
+        run: |
+          python scripts/test_suite.py collect --source "$CAVE_CI_DESTINATION" \
+            --output "$RUNNER_TEMP/cave-acceptance-evidence"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: disposable-acceptance-${{ matrix.variant }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/cave-acceptance-evidence
+          retention-days: 14
+          if-no-files-found: warn
+          include-hidden-files: true
+      - name: Stop only remaining assigned disposable projects
+        if: always()
+        run: |
+          for clone in "$CAVE_CI_DESTINATION"/*-checkout; do
+            for name in deployment suite-restored suite-upgraded; do
+              if test -f "$clone/.runtime/$name/compose.yml"; then
+                "$clone/bin/cave" stop "$clone/.runtime/$name"
+              fi
+            done
+          done

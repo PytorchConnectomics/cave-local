@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "upstream_revision": "d4aeac3b66eb4bd3fa86dbdc0202a7f006439740",
+  "upstream_package_lock_sha256": "5291f265cebb198767923bb55ef4cecd5c39faec53247066fe28e6fd455ed3f1",
+  "replacements": {
+    "lodash-es": {
+      "previous_version": "4.17.21",
+      "version": "4.18.1",
+      "resolved": "https://registry.npmjs.org/lodash-es/-/lodash-es-4.18.1.tgz",
+      "integrity": "sha512-J8xewKD/Gk22OZbhpOVSwcs60zhd95ESDwezOFuA3/099925PdHJ7OFHNTGtajL3AlZkykD32HykiMo+BIBI8A=="
+    },
+    "valibot": {
+      "previous_version": "1.1.0",
+      "version": "1.5.0",
+      "resolved": "https://registry.npmjs.org/valibot/-/valibot-1.5.0.tgz",
+      "integrity": "sha512-nil6AkP2TChWL43Z5uJ6GTxX01CUA+g8LWUM+N/rB9NBbkUMaUsi9PUNzlUPgoKASgmx9f7eGOYpJ04/fSa6FQ=="
+    },
+    "fflate": {
+      "previous_version": "0.8.2",
+      "version": "0.8.3",
+      "resolved": "https://registry.npmjs.org/fflate/-/fflate-0.8.3.tgz",
+      "integrity": "sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA=="
+    }
+  },
+  "package_lock_sha256": "5ae6f5505ea10eb62a0aae2878f032b23514344046f52bb0cbdcfd79b7a9177a"
+}
