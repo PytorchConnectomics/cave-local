@@ -82,6 +82,14 @@ def create(output, variant="zyx", policy="source_labels", graph=None, port=8181)
         "graph_chunk_xyz": [16, 16, 8], "atom_policy": policy, "voxel_offset_xyz": [0, 0, 0]}
     if policy == "spatial_tiles":
         manifest["atom_tile_xyz"] = [8, 8, 4]
+    if policy == "agglomerated_supervoxels":
+        # Labels 7 and 2**63+123 touch; they start as one segment joined by a 0.9 region-graph edge.
+        # Every other label is ungrouped (segment 0) and starts as its own root.
+        fragment = np.unique(labels[labels != 0])
+        segment = np.where(np.isin(fragment, np.array([7, 2**63 + 123], np.uint64)), np.uint64(1), np.uint64(0))
+        np.savez(output / "agglomeration.npz", fragment=fragment, segment=segment,
+                 rg_a=np.array([7], np.uint64), rg_b=np.array([2**63 + 123], np.uint64), rg_aff=np.array([0.9]))
+        manifest["agglomeration_https"] = "file:///source/agglomeration.npz"
     for name, data in [("manifest.json", manifest), ("expected.json", {
         "variant": variant, "shape_xyz": shape, "axes": axes, "unit": unit,
         "foreground_voxels": int(np.count_nonzero(labels)), "labels": expected,
@@ -95,7 +103,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("output", type=Path)
     parser.add_argument("--variant", choices=["zyx", "xyz"], default="zyx")
-    parser.add_argument("--atom-policy", choices=["source_labels", "spatial_tiles"], default="source_labels")
+    parser.add_argument("--atom-policy", choices=["source_labels", "spatial_tiles", "agglomerated_supervoxels"], default="source_labels")
     parser.add_argument("--graph-id")
     parser.add_argument("--port", type=int, default=8181)
     args = parser.parse_args()

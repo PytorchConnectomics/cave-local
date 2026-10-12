@@ -35,15 +35,21 @@ def validate_manifest(meta):
     if meta.get('voxel_offset_xyz', [0, 0, 0]) != [0, 0, 0]:
         raise ValueError('This release supports zero-origin volumes; nonzero origins are not yet supported')
     policy = meta.get('atom_policy', 'source_labels')
-    if policy not in ('source_labels', 'spatial_tiles'):
-        raise ValueError('atom_policy must be source_labels or spatial_tiles')
+    if policy not in ('source_labels', 'spatial_tiles', 'agglomerated_supervoxels'):
+        raise ValueError('atom_policy must be source_labels, spatial_tiles or agglomerated_supervoxels')
+    if policy == 'agglomerated_supervoxels':
+        if not meta.get('agglomeration_https'):
+            raise ValueError('agglomerated_supervoxels needs agglomeration_https: an .npz with fragment, segment, rg_a, rg_b, rg_aff')
+        default = meta.get('agglomeration_default_affinity', 0.001)
+        if type(default) not in (int, float) or not 0 <= default <= 1:
+            raise ValueError('agglomeration_default_affinity must be a number in [0, 1]')
     if policy == 'spatial_tiles':
         tiles = meta.get('atom_tile_xyz')
         if not isinstance(tiles, list) or len(tiles) != 3 or any(type(v) is not int or v <= 0 for v in tiles):
             raise ValueError('spatial_tiles needs three positive atom_tile_xyz integers')
         if any(c % t for c, t in zip(meta['graph_chunk_xyz'], tiles)):
             raise ValueError('Every graph chunk dimension must be divisible by the corresponding tile dimension')
-    for field in ('image_https', 'segmentation_https'):
+    for field in ('image_https', 'segmentation_https') + (('agglomeration_https',) if policy == 'agglomerated_supervoxels' else ()):
         source = urlsplit(meta.get(field, ''))
         if any(character.isspace() or character in '{};"' for character in meta.get(field, '')):
             raise ValueError(f'{field} contains unsupported unescaped URL characters')
@@ -72,14 +78,16 @@ def create(manifest, dest, source_dir=None, project_name=None):
     if not re.fullmatch(r'cave-pkg-[a-z0-9][a-z0-9-]{0,100}', project):
         raise ValueError('project_name must begin cave-pkg- and contain lowercase letters, digits or hyphens')
     source = Path(source_dir).resolve() if source_dir else None
-    local_inputs = [urlsplit(meta[k]).path for k in ('image_https', 'segmentation_https') if meta[k].startswith('file://')]
+    fields = ('image_https', 'segmentation_https') + (('agglomeration_https',) if meta.get('atom_policy') == 'agglomerated_supervoxels' else ())
+    # Image and segmentation are directories; the agglomeration is one .npz file.
+    local_inputs = [(urlsplit(meta[k]).path, k == 'agglomeration_https') for k in fields if meta[k].startswith('file://')]
     if local_inputs:
         if source is None or not source.is_dir():
             raise ValueError('Local inputs require --source-dir pointing to their containing folder')
-        for item in local_inputs:
+        for item, is_file in local_inputs:
             actual = (source / Path(item).relative_to('/source')).resolve()
-            if not actual.is_relative_to(source) or not actual.is_dir():
-                raise ValueError(f'Local source directory is missing or escapes the mount: {item}')
+            if not actual.is_relative_to(source) or not (actual.is_file() if is_file else actual.is_dir()):
+                raise ValueError(f'Local source {"file" if is_file else "directory"} is missing or escapes the mount: {item}')
     with socket.socket() as probe:
         try:
             probe.bind(('127.0.0.1', port))

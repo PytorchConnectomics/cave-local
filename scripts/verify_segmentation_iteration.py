@@ -31,7 +31,9 @@ def require_disposable(dest, spec):
 
 def host_source_spec(spec):
     result = dict(spec)
-    for name in ("image_https", "segmentation_https"):
+    for name in ("image_https", "segmentation_https", "agglomeration_https"):
+        if name not in result:
+            continue
         source = result[name]
         if source.startswith("file:///source/"):
             if not spec.get("source_dir"):
@@ -118,9 +120,14 @@ def verify_storage(dest, spec):
     if not np.array_equal(regions, np.load(dest / "data/region_adjacency.npy")):
         raise RuntimeError("Stored region adjacency differs from voxel face adjacency")
     pos = np.searchsorted(index[:, 0], regions)
-    edges = regions[index[pos[:, 0], 1] == index[pos[:, 1], 1]]
+    if mode == "agglomerated_supervoxels":
+        from ingest_segmentation_iteration import label_groups, load_agglomeration
+        groups = label_groups(load_agglomeration(host_spec), index[:, 1])
+        edges = regions[groups[pos[:, 0]] == groups[pos[:, 1]]]
+    else:
+        edges = regions[index[pos[:, 0], 1] == index[pos[:, 1], 1]]
     if not np.array_equal(edges, np.load(dest / "data/edges.npy")):
-        raise RuntimeError("Initial graph edges differ from same-label face adjacency")
+        raise RuntimeError("Initial graph edges differ from same-label (or same-segment) face adjacency")
     pos = np.searchsorted(index[:, 0], edges)
     matrix = coo_matrix((np.ones(len(pos)), (pos[:, 0], pos[:, 1])), shape=(len(index), len(index)))
     expected_count, expected_components = connected_components(matrix, directed=False)
@@ -171,6 +178,9 @@ def verify(dest):
     else:
         split = post("/split", {"sources": [nodes[0]], "sinks": [nodes[1]]})
         relation(True)
+        # PyChunkedGraph's merge undo (misc.get_activated_edges) reads roots 100 ms before the merge's timestamp; a
+        # merge landing within 100 ms of the split sees the pre-split component and the undo fails its assertion.
+        time.sleep(0.5)
         merged = post("/merge", nodes)
         relation(False)
         report["operations"]["undo_merge"] = post("/undo", {"operation_id": merged["operation_id"]})

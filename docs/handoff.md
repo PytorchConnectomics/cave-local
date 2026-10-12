@@ -112,6 +112,12 @@ Choose the editing basis deliberately:
   chosen tiles. This permits splits along those extra boundaries. It is an
   explicit alternative, not a reconstruction of learned affinities. Set
   `atom_tile_xyz`; each dimension must divide its graph chunk dimension.
+- `agglomerated_supervoxels` takes over-segmented supervoxels (for example the
+  watershed fragments behind an ABISS or other agglomeration) plus a separate
+  file mapping each supervoxel to its initial segment, with region-graph
+  affinities. Proofreading starts from the agglomeration, and splits follow
+  the real supervoxel boundaries, weighted by those affinities. See
+  [dataset details](datasets.md#agglomerated-supervoxels).
 
 The agent should report these choices before ingestion and stop at unsupported
 metadata rather than silently rebasing, dropping axes or altering source data.

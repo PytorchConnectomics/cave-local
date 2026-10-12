@@ -15,7 +15,9 @@ Get the input locations, intended graph name, image/label alignment and free
 local port. Use the metadata to establish XYZ shape, spacing in nanometers,
 origin and the desired source-label policy. `source_labels` preserves
 individual connected source-label components as editing units; `spatial_tiles`
-requires an explicit choice and tile size. Unsupported input must fail with an
+requires an explicit choice and tile size; `agglomerated_supervoxels` takes
+supervoxels plus an agglomeration `.npz` (supervoxel→segment, region-graph
+affinities) and is the right basis when the labels came from an agglomeration. Unsupported input must fail with an
 explanation before original data changes.
 
 Prepare this clone:

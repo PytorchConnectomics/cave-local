@@ -19,7 +19,9 @@ regions sharing the same source ID remain separate roots. A split with the
 same source ID in both seed groups is rejected. `spatial_tiles` explicitly
 allows source components to be divided into connected pieces within spatial
 tiles. It uses compact categorical IDs, avoiding overflow even when a source
-label is the largest possible uint64 value.
+label is the largest possible uint64 value. `agglomerated_supervoxels` keeps
+supervoxels indivisible like `source_labels`, joins same-segment contacts from
+its mapping file, and checks every root against exactly one initial segment.
 
 `scripts/make_fixture.py` creates invented, redistributable inputs and an
 `expected.json` describing their source components. It refuses to overwrite

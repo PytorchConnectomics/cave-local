@@ -82,11 +82,44 @@ pieces bounded by `atom_tile_xyz`. It preserves label identity and foreground,
 but permits splits along those additional internal boundaries. Every tile
 dimension must divide its graph chunk dimension. Set the policy deliberately.
 
+### Agglomerated supervoxels
+
+`agglomerated_supervoxels` is for a segmentation produced by agglomerating
+finer supervoxels, such as watershed fragments and their region graph. Supply
+the supervoxels as the precomputed segmentation, and the agglomeration as one
+NumPy `.npz` file named by `agglomeration_https` (a `file:///source/...` path or
+public URL):
+
+| Array | Meaning |
+| --- | --- |
+| `fragment` | every supervoxel ID in the segmentation, unique, nonzero |
+| `segment` | its initial segment; `0` = ungrouped (starts as its own root) |
+| `rg_a`, `rg_b`, `rg_aff` | region-graph affinity in [0, 1] between supervoxel pairs |
+
+```json
+{"atom_policy": "agglomerated_supervoxels",
+ "agglomeration_https": "file:///source/agglomeration.npz",
+ "agglomeration_default_affinity": 0.001}
+```
+
+Supervoxels are indivisible (as with `source_labels`; the split guard rejects
+one supervoxel in both seed groups). Touching supervoxels of the same initial
+segment are joined with their region-graph affinity; joined contacts absent
+from the region graph get `agglomeration_default_affinity` (default 0.001), so
+the split tool cuts weak boundaries first. Contacts between different segments
+start unjoined; `data/region_affinity.npy` records the affinity of every
+contact, aligned with `data/region_adjacency.npy`, as a candidate-merge list.
+Ingestion rejects supervoxels missing from the mapping and records how many
+segments start as several roots because their supervoxels do not touch inside
+the volume (common at crop edges). Supervoxel and segment IDs may use the full
+uint64 range.
+
 Choose graph chunks that fit available memory. The native grid must contain
 at least two chunks along one axis and fit within the supported graph ID
 coordinate limits. Derived storage chunks follow this grid, including clipped
-chunks at the volume edge. Initial ingestion builds geometric face adjacency;
-it does not recreate learned affinity scores or the original model hierarchy.
+chunks at the volume edge. Initial ingestion builds geometric face adjacency.
+Only `agglomerated_supervoxels` carries learned affinities and an initial
+grouping into the graph; the other policies do not recreate them.
 
 ## Another segmentation iteration
 

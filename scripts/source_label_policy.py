@@ -23,7 +23,7 @@ def install(common):
 
     def split(table_id):
         prepared = Path('/data/prepared.json')
-        if prepared.exists() and json.loads(prepared.read_text()).get('atom_policy') == 'source_labels':
+        if prepared.exists() and json.loads(prepared.read_text()).get('atom_policy') in ('source_labels', 'agglomerated_supervoxels'):
             geometry = json.loads(prepared.read_text())
             if geometry['spec']['graph_id'] != table_id:
                 raise BadRequest('Source-label metadata belongs to another graph.')

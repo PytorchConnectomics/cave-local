@@ -61,6 +61,7 @@ The two scenarios run **sequentially**:
 | --- | --- |
 | ZYX image, nanometer metadata, `source_labels` | Source labels remain indivisible editing units |
 | XYZ image, micrometer metadata, `spatial_tiles` | Labels are deliberately subdivided into configured tile units |
+| ZYX image, `agglomerated_supervoxels` (`bin/cave fixture --atom-policy agglomerated_supervoxels`) | Two touching supervoxels start as one segment with a 0.9 region-graph edge; split, merge and undo follow the supervoxel boundary |
 
 The default command runs both on one host. For a targeted run, add `--variant
 zyx` or `--variant xyz`. The report records the requested scenarios and only

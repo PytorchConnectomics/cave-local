@@ -105,7 +105,7 @@ def main():
     sub.add_parser('deps')
     sub.add_parser('fetch')
     p = sub.add_parser('build'); p.add_argument('--no-cache', action='store_true'); p.add_argument('--skip-viewer', action='store_true')
-    p = sub.add_parser('fixture'); p.add_argument('output'); p.add_argument('--variant', default='zyx', choices=['zyx', 'xyz']); p.add_argument('--atom-policy', default='source_labels', choices=['source_labels', 'spatial_tiles']); p.add_argument('--graph-id', default='pkg_fixture'); p.add_argument('--port', default=8181, type=int)
+    p = sub.add_parser('fixture'); p.add_argument('output'); p.add_argument('--variant', default='zyx', choices=['zyx', 'xyz']); p.add_argument('--atom-policy', default='source_labels', choices=['source_labels', 'spatial_tiles', 'agglomerated_supervoxels']); p.add_argument('--graph-id', default='pkg_fixture'); p.add_argument('--port', default=8181, type=int)
     p = sub.add_parser('create'); p.add_argument('manifest'); p.add_argument('destination'); p.add_argument('--source-dir'); p.add_argument('--project-name')
     for name in ('start', 'stop', 'status', 'logs', 'snapshot', 'browser-handoff'):
         p = sub.add_parser(name); p.add_argument('deployment')
