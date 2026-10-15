@@ -68,6 +68,11 @@ whole supervoxels. Under `source_labels`, one supplied label cannot be
 subdivided; finer upstream labels are needed for that. Labels with disconnected
 pieces initially have distinct graph components.
 
+For development experiments, the [offline refinement prototype](docs/local-refinement.md)
+can subdivide one atom in a bounded exported fixture, with separately versioned
+patches, preview and undo. It does not add refinement to the live viewer or
+native graph history.
+
 The validation command above makes real edits only on the generated disposable
 fixture. It checks graph behavior, mesh generation, annotation snapshots and
 browser behavior. For your own data, use read-only `bin/cave validate DEPLOYMENT`.
