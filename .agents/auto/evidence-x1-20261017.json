@@ -1,0 +1,816 @@
+{
+  "inspection": "read-only local bundle integrity, metadata, XML topology, and review membership checks; no scoring or image interpretation",
+  "bundle": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z",
+  "export_realpath": "/data/runs/msi-datasim-26/results/q5-cave/deployments/cereb32x1_u10_mt0700_v2/exports/20261017T032104Z",
+  "manifest": {
+    "volume": "cereb32x1-u10-mt0700-v2",
+    "graph": "cereb32x1_u10_mt0700_v2",
+    "export": "/data/runs/msi-datasim-26/results/q5-cave/deployments/cereb32x1_u10_mt0700_v2/exports/20261017T032104Z",
+    "export_stamp": "20261017T032104Z",
+    "export_utc": "2026-10-17T03:21:04.925540+00:00",
+    "objects": 2593,
+    "edits": 96,
+    "edits_by_kind": {
+      "merge": 71,
+      "split": 25
+    },
+    "labels": {
+      "objects": 198,
+      "by_label": {
+        "axon": 136,
+        "dendrite": 11,
+        "glia": 50,
+        "unsure": 1
+      },
+      "by_status": {
+        "confirmed": 128,
+        "corrected": 35,
+        "proofread only": 35
+      },
+      "conflicts": 0
+    },
+    "queues": {
+      "axons": {
+        "done": 136,
+        "skip": 1
+      },
+      "false merges": {
+        "done": 9,
+        "skip": 3
+      },
+      "final check 2026-10-15": {
+        "done": 80,
+        "skip": 1
+      },
+      "suspicious axons 2026-10-16": {
+        "todo": 42
+      }
+    },
+    "latest_review_by_object": {
+      "done": 193,
+      "skip": 1
+    },
+    "flagged_objects": [],
+    "reviewed_axons": 134,
+    "reviewed_axon_voxels": 11510850,
+    "points": {
+      "total": 441,
+      "by_status": {
+        "unsegmented, belongs to target": 58,
+        "to merge (unsegmented gap)": 59,
+        "merged (gap unsegmented)": 257,
+        "to merge": 37,
+        "merged": 30
+      }
+    },
+    "class_voxels": {
+      "none": 41799361,
+      "axon": 11616786,
+      "dendrite": 7632381,
+      "glia": 6059331,
+      "other": 1005
+    },
+    "files": {
+      "classes.h5": {
+        "bytes": 5524937,
+        "sha256": "fdb4b0ef67028d22702b0de6b3387af458ea79608a8cad8d3614c6da61b94079"
+      },
+      "objects.csv": {
+        "bytes": 21628,
+        "sha256": "f2dc247af2508123d901e2f73c4e01645464c3d5000ccac4f6b9b9745ade2bfe"
+      },
+      "review.json": {
+        "bytes": 390216,
+        "sha256": "1cfef98e640db035c3407922deebe221c4eae0937712664f02afd1abf1a8ec22"
+      },
+      "reviewed_axons.json": {
+        "bytes": 3352,
+        "sha256": "83a7e9dd2f5961613687ab0d926330231802ba6d7cd08fabb3ee1984a882078b"
+      }
+    }
+  },
+  "export_manifest": {
+    "export_format": 1,
+    "volume_host": "cave-cereb32x1-u10-mt0700-v2.seg.bio",
+    "graph": "cereb32x1_u10_mt0700_v2",
+    "deployment": "/data/runs/msi-datasim-26/results/q5-cave/deployments/cereb32x1_u10_mt0700_v2",
+    "stamp": "20261017T032104Z",
+    "timestamp": 1792207264.9255397,
+    "utc": "2026-10-17T03:21:04.925540+00:00",
+    "shape_zyx": [
+      256,
+      512,
+      512
+    ],
+    "resolution_zyx_nm": [
+      12.5,
+      10.15625,
+      10.15625
+    ],
+    "supervoxels": 268522,
+    "roots_initial": 2644,
+    "roots_now": 2593,
+    "edited_roots": 65,
+    "supervoxels_moved": 63284,
+    "edits": 96,
+    "edits_by_kind": {
+      "merge": 71,
+      "split": 25
+    },
+    "edits_by_account": {
+      "rebuild": 50,
+      "mindspan": 39,
+      "None": 7
+    },
+    "files": {
+      "atoms.npz": {
+        "bytes": 1333009,
+        "sha256": "e2a6279358ae08a6cb1b0d01b53ce2b9e2e5df8dc143a12c144827ff42deb43b"
+      },
+      "edits.json": {
+        "bytes": 1970478,
+        "sha256": "5fbc3444a56e6550167a5bd91c47a859d9b1bfa71ead75020a39e30215181d2f"
+      },
+      "seg.h5": {
+        "bytes": 10665736,
+        "sha256": "864076cf99956ffe0e38670f452b0fde9d146af54ec43ef1c1cc76f27d3eeb30"
+      }
+    },
+    "exported_seconds": 6.1
+  },
+  "nml_stats": {
+    "gt": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z",
+    "export": "20261017T032104Z",
+    "name": "ExPID99-32x_1_cerebellum",
+    "origin_zyx": [
+      365,
+      320,
+      320
+    ],
+    "spacing_xyz_nm": [
+      10.15625,
+      10.15625,
+      12.5
+    ],
+    "teasar_params": {
+      "scale": 1.5,
+      "const": 100.0,
+      "pdrf_scale": 100000,
+      "pdrf_exponent": 4,
+      "soma_detection_threshold": 1000000000.0,
+      "soma_acceptance_threshold": 1000000000.0
+    },
+    "min_voxels": 200,
+    "tol_nm": 40.0,
+    "segments_total": 2593,
+    "skeleton_parts": 2366,
+    "parts": 2329,
+    "nodes_out": 13385,
+    "edges_out": 11056,
+    "vertices_in": 166705,
+    "segments": 2307,
+    "points_used": 345,
+    "point_attach_edges": 96,
+    "point_chain_ends_unattached": 2,
+    "node_reduction": 0.9218,
+    "points": {
+      "settled": 0,
+      "open, not used": 96
+    },
+    "attach_max_nm": 2000.0,
+    "removed_vertex_deviation_nm": {
+      "mean": 15.598761146711663,
+      "p95": 36.11331065354173,
+      "max": 74.4708118128711
+    },
+    "per_class": {
+      "unlabelled": {
+        "skeleton_pieces": 2112,
+        "parts": 2111,
+        "nodes_out": 6711,
+        "vertices_in": 77167,
+        "segments": 2110
+      },
+      "reviewed axon": {
+        "skeleton_pieces": 189,
+        "parts": 153,
+        "nodes_out": 1789,
+        "vertices_in": 37785,
+        "segments": 133
+      },
+      "glia": {
+        "skeleton_pieces": 50,
+        "parts": 50,
+        "nodes_out": 3795,
+        "vertices_in": 34352,
+        "segments": 50
+      },
+      "dendrite": {
+        "skeleton_pieces": 12,
+        "parts": 12,
+        "nodes_out": 1074,
+        "vertices_in": 16835,
+        "segments": 11
+      },
+      "other": {
+        "skeleton_pieces": 1,
+        "parts": 1,
+        "nodes_out": 2,
+        "vertices_in": 22,
+        "segments": 1
+      },
+      "axon": {
+        "skeleton_pieces": 2,
+        "parts": 2,
+        "nodes_out": 14,
+        "vertices_in": 544,
+        "segments": 2
+      }
+    },
+    "files": {
+      "ExPID99-32x_1_cerebellum_proofread.nml": {
+        "bytes": 3457632,
+        "sha256": "a704344af3610299ea71727d002386b983c77b424c15df31ae4cd13863a0b14f"
+      },
+      "ExPID99-32x_1_cerebellum_reviewed_axons.nml": {
+        "bytes": 435470,
+        "sha256": "875796dab7cac530a1ec677ca82a279e3ab407886a305e447ebcf579176fc3d1"
+      }
+    },
+    "code_sha256": "a3cbbdecada6db08c5f6b1daef036c365d4141759fe21dc18e3f96f6ba51525f",
+    "seconds": 35.2
+  },
+  "checksums": [
+    {
+      "path": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/classes.h5",
+      "realpath": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/classes.h5",
+      "bytes": 5524937,
+      "sha256": "fdb4b0ef67028d22702b0de6b3387af458ea79608a8cad8d3614c6da61b94079",
+      "sha256_match": true,
+      "bytes_match": true
+    },
+    {
+      "path": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/objects.csv",
+      "realpath": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/objects.csv",
+      "bytes": 21628,
+      "sha256": "f2dc247af2508123d901e2f73c4e01645464c3d5000ccac4f6b9b9745ade2bfe",
+      "sha256_match": true,
+      "bytes_match": true
+    },
+    {
+      "path": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/review.json",
+      "realpath": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/review.json",
+      "bytes": 390216,
+      "sha256": "1cfef98e640db035c3407922deebe221c4eae0937712664f02afd1abf1a8ec22",
+      "sha256_match": true,
+      "bytes_match": true
+    },
+    {
+      "path": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/reviewed_axons.json",
+      "realpath": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/reviewed_axons.json",
+      "bytes": 3352,
+      "sha256": "83a7e9dd2f5961613687ab0d926330231802ba6d7cd08fabb3ee1984a882078b",
+      "sha256_match": true,
+      "bytes_match": true
+    },
+    {
+      "path": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/export/atoms.npz",
+      "realpath": "/data/runs/msi-datasim-26/results/q5-cave/deployments/cereb32x1_u10_mt0700_v2/exports/20261017T032104Z/atoms.npz",
+      "bytes": 1333009,
+      "sha256": "e2a6279358ae08a6cb1b0d01b53ce2b9e2e5df8dc143a12c144827ff42deb43b",
+      "sha256_match": true,
+      "bytes_match": true
+    },
+    {
+      "path": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/export/edits.json",
+      "realpath": "/data/runs/msi-datasim-26/results/q5-cave/deployments/cereb32x1_u10_mt0700_v2/exports/20261017T032104Z/edits.json",
+      "bytes": 1970478,
+      "sha256": "5fbc3444a56e6550167a5bd91c47a859d9b1bfa71ead75020a39e30215181d2f",
+      "sha256_match": true,
+      "bytes_match": true
+    },
+    {
+      "path": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/export/seg.h5",
+      "realpath": "/data/runs/msi-datasim-26/results/q5-cave/deployments/cereb32x1_u10_mt0700_v2/exports/20261017T032104Z/seg.h5",
+      "bytes": 10665736,
+      "sha256": "864076cf99956ffe0e38670f452b0fde9d146af54ec43ef1c1cc76f27d3eeb30",
+      "sha256_match": true,
+      "bytes_match": true
+    },
+    {
+      "path": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/skeleton_nml_v2/ExPID99-32x_1_cerebellum_proofread.nml",
+      "realpath": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/skeleton_nml_v2/ExPID99-32x_1_cerebellum_proofread.nml",
+      "bytes": 3457632,
+      "sha256": "a704344af3610299ea71727d002386b983c77b424c15df31ae4cd13863a0b14f",
+      "sha256_match": true,
+      "bytes_match": true
+    },
+    {
+      "path": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/skeleton_nml_v2/ExPID99-32x_1_cerebellum_reviewed_axons.nml",
+      "realpath": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/skeleton_nml_v2/ExPID99-32x_1_cerebellum_reviewed_axons.nml",
+      "bytes": 435470,
+      "sha256": "875796dab7cac530a1ec677ca82a279e3ab407886a305e447ebcf579176fc3d1",
+      "sha256_match": true,
+      "bytes_match": true
+    },
+    {
+      "path": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/manifest.json",
+      "bytes": 1809,
+      "sha256": "6521eef87181dc31cd460640d2a0873cc10649c3062ad50fbc4b840427740625",
+      "sha256_match": null
+    },
+    {
+      "path": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/export/export.json",
+      "bytes": 1088,
+      "sha256": "00833038ae5a8783185a6b3ea61da77cc5f635119d55dabff235e9a4cd7e6438",
+      "sha256_match": null
+    },
+    {
+      "path": "/data/runs/msi-liconn-moe20um-2608/results/gt_cereb32x1_mt0700/20261017T032104Z/skeleton_nml_v2/skeletons_stats.json",
+      "bytes": 2153,
+      "sha256": "7d150ae082d5ff54c03eb38e85cc81c609fbb88f19d6b3833fc796ae32e4158c",
+      "sha256_match": null
+    }
+  ],
+  "skeleton_source": {
+    "path": "/home/donglai/dw-os/research/projects/msi-liconn-moe20um-2608/scripts/proof_skeleton_nml.py",
+    "sha256": "63affd2d8354d901be407e555b58de1043d357c1c875b99b80269d1e8e6a6595",
+    "matches_stats_code_sha256": false,
+    "exact_matching_git_revision": "d1e3dbf52ef055f5f14de56d8ab44c233797b321",
+    "matching_revision_sha256": "a3cbbdecada6db08c5f6b1daef036c365d4141759fe21dc18e3f96f6ba51525f",
+    "matching_revision_matches_stats": true
+  },
+  "h5_metadata": {
+    "export/seg.h5": {
+      "main": {
+        "shape": [
+          256,
+          512,
+          512
+        ],
+        "dtype": "uint64",
+        "attrs": {
+          "axes": "zyx",
+          "graph": "cereb32x1_u10_mt0700_v2",
+          "resolution_zyx_nm": [
+            12.5,
+            10.15625,
+            10.15625
+          ],
+          "timestamp": 1792207264.9255397
+        }
+      }
+    },
+    "classes.h5": {
+      "classes": {
+        "shape": [
+          256,
+          512,
+          512
+        ],
+        "dtype": "uint8",
+        "attrs": {
+          "axes": "zyx",
+          "codes": "{\"none\": 0, \"axon\": 1, \"dendrite\": 2, \"glia\": 3, \"other\": 4}",
+          "export": "20261017T032104Z"
+        }
+      },
+      "reviewed_axon": {
+        "shape": [
+          256,
+          512,
+          512
+        ],
+        "dtype": "bool",
+        "attrs": {}
+      }
+    }
+  },
+  "atom_arrays": {
+    "atom": {
+      "shape": [
+        268522
+      ],
+      "dtype": "uint64"
+    },
+    "segment": {
+      "shape": [
+        268522
+      ],
+      "dtype": "uint64"
+    },
+    "initial_root": {
+      "shape": [
+        268522
+      ],
+      "dtype": "uint64"
+    },
+    "root": {
+      "shape": [
+        268522
+      ],
+      "dtype": "uint64"
+    },
+    "edited_roots": {
+      "shape": [
+        65
+      ],
+      "dtype": "uint64"
+    }
+  },
+  "operations": {
+    "count": 96,
+    "status_counts": {
+      "0": 89,
+      "2": 1,
+      "1": 6
+    },
+    "attribution_counts": {
+      "operation_id": 89,
+      "none": 7
+    },
+    "account_counts": {
+      "rebuild": 50,
+      "mindspan": 39,
+      "None": 7
+    },
+    "undo_reference_count": 0,
+    "redo_reference_count": 0
+  },
+  "review_checks": {
+    "reviewed_root_count": 134,
+    "object_csv_reviewed_count": 134,
+    "labels": 198,
+    "queue_items": 272,
+    "point_count": 441,
+    "point_status_counts": {
+      "unsegmented, belongs to target": 58,
+      "to merge (unsegmented gap)": 59,
+      "merged (gap unsegmented)": 257,
+      "to merge": 37,
+      "merged": 30
+    },
+    "points_exported": "2026-10-16T23:21:13-0400",
+    "latest_queue_update_epoch": 1792097987.9535737,
+    "queue_updates_after_export": 0,
+    "todo_queue_count": 42,
+    "todo_unique_roots": 42,
+    "todo_roots_also_in_reviewed_cohort": [
+      "288230376151712009",
+      "288230376151712025",
+      "288230376151712032",
+      "288230376151712043",
+      "288230376151712056",
+      "288230376151712086",
+      "288230376151712087",
+      "288230376151712118",
+      "288230376151712139",
+      "288230376151712145",
+      "288230376151712147",
+      "288230376151712164",
+      "288230376151712170",
+      "288230376151712173",
+      "288230376151712188",
+      "288230376151712196",
+      "288230376151712328",
+      "288230376151712337",
+      "288230376151712679",
+      "288230376151713678",
+      "288230376151714370",
+      "288230376151717954",
+      "288230376151720258",
+      "288230376151722306",
+      "288230376151731010",
+      "288230376151732546",
+      "288230376151739202",
+      "288230376151749186",
+      "288230376151752258",
+      "288230376151769766",
+      "288230376151770730",
+      "288230376151772994",
+      "288230376151782466",
+      "288230376151786562",
+      "288230376151797134",
+      "288230376151801666",
+      "288230376151804994",
+      "288230376151829314",
+      "288230376151862594",
+      "288230376151862850",
+      "288230376151905602",
+      "288230376151906370"
+    ]
+  },
+  "nml_inspection": {
+    "ExPID99-32x_1_cerebellum_proofread.nml": {
+      "parts": 2329,
+      "unique_segment_ids": 2307,
+      "nodes": 13385,
+      "edges": 11056,
+      "edge_endpoint_type_counts": {
+        "skeleton_skeleton": 10674,
+        "point_point": 291,
+        "point_skeleton": 91
+      },
+      "point_nodes": 345,
+      "unique_point_ids": 345,
+      "duplicate_node_ids": 0,
+      "outside_crop_nodes": 0,
+      "topology_errors": [],
+      "reviewed_roots_absent": [
+        "288230376151797134"
+      ],
+      "reviewed_root_absent_object_rows": [
+        {
+          "root": "288230376151797134",
+          "voxels": "22",
+          "label": "axon",
+          "label_status": "proofread only",
+          "proofread_label": "axon",
+          "auto_label": "",
+          "conflict": "0",
+          "latest_review": "done",
+          "latest_review_item": "final check 2026-10-15#30",
+          "queue_items": "final check 2026-10-15#30:done suspicious axons 2026-10-16#21:todo",
+          "reviewed_axon": "1"
+        }
+      ],
+      "point_ids_not_in_review": [],
+      "scale": {
+        "x": "10.15625",
+        "y": "10.15625",
+        "z": "12.5"
+      },
+      "offset": {
+        "x": "0",
+        "y": "0",
+        "z": "0"
+      },
+      "node_frame": "full-cube voxel XYZ; subtract origin XYZ [320,320,365] for crop-local voxels"
+    },
+    "ExPID99-32x_1_cerebellum_reviewed_axons.nml": {
+      "parts": 153,
+      "unique_segment_ids": 133,
+      "nodes": 1789,
+      "edges": 1636,
+      "edge_endpoint_type_counts": {
+        "skeleton_skeleton": 1259,
+        "point_point": 288,
+        "point_skeleton": 89
+      },
+      "point_nodes": 341,
+      "unique_point_ids": 341,
+      "duplicate_node_ids": 0,
+      "outside_crop_nodes": 0,
+      "topology_errors": [],
+      "reviewed_roots_absent": [
+        "288230376151797134"
+      ],
+      "reviewed_root_absent_object_rows": [
+        {
+          "root": "288230376151797134",
+          "voxels": "22",
+          "label": "axon",
+          "label_status": "proofread only",
+          "proofread_label": "axon",
+          "auto_label": "",
+          "conflict": "0",
+          "latest_review": "done",
+          "latest_review_item": "final check 2026-10-15#30",
+          "queue_items": "final check 2026-10-15#30:done suspicious axons 2026-10-16#21:todo",
+          "reviewed_axon": "1"
+        }
+      ],
+      "point_ids_not_in_review": [],
+      "scale": {
+        "x": "10.15625",
+        "y": "10.15625",
+        "z": "12.5"
+      },
+      "offset": {
+        "x": "0",
+        "y": "0",
+        "z": "0"
+      },
+      "node_frame": "full-cube voxel XYZ; subtract origin XYZ [320,320,365] for crop-local voxels"
+    }
+  },
+  "all_declared_file_hashes_match": true,
+  "baseline_lineage": {
+    "v2_rebuild_provenance": {
+      "path": "/data/runs/msi-datasim-26/results/q5-cave/inputs/cereb32x1_u10_mt0700_v2/provenance.json",
+      "bytes": 594,
+      "sha256": "a6f2c0524844f9d1af571cff0d1c9b165fe9d77cbf8fd8c5088fa156939abdd2",
+      "data": {
+        "rebuilt_from_volume": "cereb32x1-u10-mt0700",
+        "old_deployment": "/data/runs/msi-datasim-26/results/q5-cave/deployments/cereb32x1_u10_mt0700_crop",
+        "export": "/data/runs/msi-datasim-26/results/q5-cave/deployments/cereb32x1_u10_mt0700_crop/exports/20261015T100654Z",
+        "export_stamp": "20261015T100654Z",
+        "export_roots": 2594,
+        "export_edits": 97,
+        "subfragments": "/data/runs/msi-datasim-26/results/q5-cave/inputs/cereb32x1_u10_mt0700_crop_sub300_c01_byroot",
+        "old_input": "/data/runs/msi-datasim-26/results/q5-cave/inputs/cereb32x1_u10_mt0700_crop",
+        "pieces": 238661,
+        "groups": 2594
+      }
+    },
+    "original_input_provenance": {
+      "path": "/data/runs/msi-datasim-26/results/q5-cave/inputs/cereb32x1_u10_mt0700_crop/provenance.json",
+      "bytes": 2460,
+      "sha256": "5c3428461197015e190bccddf9d7287f25c80f6d79bce2b2651db587480471f4",
+      "data": {
+        "fragments": "/data/runs/msi-liconn-moe20um-2608/results/cubes/ExPID99-32x_1_cerebellum/fragments/fragments.h5",
+        "grouping_level": "mt0700",
+        "n_fragments": 149760,
+        "n_segments": 2434,
+        "n_fragments_in_dust": 0,
+        "n_rg_edges": 495067,
+        "level_labels_reproduced_in_crop": true,
+        "dust_fragment_voxels_zeroed": 1195033,
+        "level_labels_sha256": "3c90d7c6b2a1e2e71a353cf2dd04dc81e9dd5baf602ccef8b2173f8b781f7a77",
+        "source_cube": "/data/runs/msi-liconn-moe20um-2608/results/cubes/ExPID99-32x_1_cerebellum",
+        "segmentation": "/data/runs/msi-liconn-moe20um-2608/results/cubes/ExPID99-32x_1_cerebellum/seg.h5:mt0700",
+        "image": "/data/runs/msi-liconn-moe20um-2608/results/cubes/ExPID99-32x_1_cerebellum/img_u8.zarr",
+        "decode": {
+          "volume": "ExPID99-32x_1_cerebellum",
+          "decoder": "abiss_max_low0.4",
+          "ws_high": 0.9882352948188782,
+          "ws_high_spec": "94%",
+          "ws_low": 0.4,
+          "ws_size": 10000000,
+          "ws_dust": 200,
+          "merge_function": "max",
+          "merge_thresholds": [
+            0.6,
+            0.7,
+            0.8
+          ],
+          "main": "mt0800",
+          "voxel_nm_zyx": [
+            12.5,
+            10.15625,
+            10.15625
+          ],
+          "model": "9",
+          "shape_zyx": [
+            987,
+            1152,
+            1152
+          ],
+          "segments": {
+            "mt0600": {
+              "mt": 0.6,
+              "n_segments": 18619,
+              "labelled_fraction": 0.5357,
+              "largest_fraction": 0.1302,
+              "median_size_vox": 805.0,
+              "n_ge_10k_vox": 4592,
+              "n_ge_10k_per_1000um3": 2718.96
+            },
+            "mt0700": {
+              "mt": 0.7,
+              "n_segments": 41494,
+              "labelled_fraction": 0.5256,
+              "largest_fraction": 0.1046,
+              "median_size_vox": 397.0,
+              "n_ge_10k_vox": 5492,
+              "n_ge_10k_per_1000um3": 3251.86
+            },
+            "mt0800": {
+              "mt": 0.8,
+              "n_segments": 87267,
+              "labelled_fraction": 0.5104,
+              "largest_fraction": 0.0822,
+              "median_size_vox": 361.0,
+              "n_ge_10k_vox": 5939,
+              "n_ge_10k_per_1000um3": 3516.53
+            }
+          },
+          "seconds": 135.0,
+          "done": true
+        },
+        "crop_origin_zyx_in_source": [
+          365,
+          320,
+          320
+        ],
+        "crop_shape_zyx": [
+          256,
+          512,
+          512
+        ],
+        "voxel_nm_zyx": [
+          12.5,
+          10.15625,
+          10.15625
+        ],
+        "n_labels_nonzero": 149760,
+        "labelled_fraction": 0.5024812519550323,
+        "labels_sha256": "d426980ae31e38e7a9f2006c39f01da6e6cc037cf586f20219da46791d459555",
+        "image_sha256": "c2bd2469c880b022417e7092e9dc93c87a4bfa46fe44bfb0e0a613815168014c"
+      }
+    },
+    "original_input_manifest": {
+      "path": "/data/runs/msi-datasim-26/results/q5-cave/inputs/cereb32x1_u10_mt0700_crop/manifest.json",
+      "bytes": 587,
+      "sha256": "bf67dc2d811e93e862e883a8364b25fa968fcb582229a23d975ce77e4de1292c",
+      "data": {
+        "graph_id": "cereb32x1_u10_mt0700",
+        "local_url": "http://127.0.0.1:8195",
+        "display_name": "ExPID99-32x_1_cerebellum ABISS fragments, mt0700 grouping crop",
+        "image_https": "file:///source/image/",
+        "segmentation_https": "file:///source/segmentation/",
+        "shape_xyz": [
+          512,
+          512,
+          256
+        ],
+        "resolution_nm_xyz": [
+          10.15625,
+          10.15625,
+          12.5
+        ],
+        "graph_chunk_xyz": [
+          128,
+          128,
+          128
+        ],
+        "atom_policy": "agglomerated_supervoxels",
+        "voxel_offset_xyz": [
+          0,
+          0,
+          0
+        ],
+        "agglomeration_https": "file:///source/agglomeration.npz"
+      }
+    },
+    "pre_rebuild_export_manifest": {
+      "path": "/data/runs/msi-datasim-26/results/q5-cave/deployments/cereb32x1_u10_mt0700_crop/exports/20261015T100654Z/export.json",
+      "bytes": 1064,
+      "sha256": "f595d9269fe7a348f82e72b15f8dc0cd7cc8371c4a8e0735b4e2f89e8c71579f",
+      "data": {
+        "export_format": 1,
+        "volume_host": "cave-cereb32x1-u10-mt0700.seg.bio",
+        "graph": "cereb32x1_u10_mt0700",
+        "deployment": "/data/runs/msi-datasim-26/results/q5-cave/deployments/cereb32x1_u10_mt0700_crop",
+        "stamp": "20261015T100654Z",
+        "timestamp": 1792058814.269768,
+        "utc": "2026-10-15T10:06:54.269768+00:00",
+        "shape_zyx": [
+          256,
+          512,
+          512
+        ],
+        "resolution_zyx_nm": [
+          12.5,
+          10.15625,
+          10.15625
+        ],
+        "supervoxels": 169332,
+        "roots_initial": 2627,
+        "roots_now": 2594,
+        "edited_roots": 58,
+        "supervoxels_moved": 32434,
+        "edits": 97,
+        "edits_by_kind": {
+          "split": 36,
+          "merge": 61
+        },
+        "edits_by_account": {
+          "mindspan": 89,
+          "None": 8
+        },
+        "files": {
+          "atoms.npz": {
+            "bytes": 774244,
+            "sha256": "bf41747f4af6bf6cd3a2be1935593bd8781855c6b94b25e187119c17ea90044c"
+          },
+          "edits.json": {
+            "bytes": 610172,
+            "sha256": "8ecc77022c88a6e3105969cc827e9ed697de600ac739979d286acfe48ffc1c65"
+          },
+          "seg.h5": {
+            "bytes": 10634162,
+            "sha256": "f09c67a04b367900905aa298d5a8eb5c3b8bd7a45b71b1cce87fb107c71ddea5"
+          }
+        },
+        "exported_seconds": 4.6
+      }
+    },
+    "conclusion": "v2 initial grouping is explicitly seeded from the October 15 pre-rebuild export after 97 logged operations; original prehuman segmentation source and original immutable input are now identified, but raw image/segmentation content hashes and cross-basis partition replay have not been revalidated in this inspection."
+  },
+  "limitations": [
+    "Integrity/metadata/XML topology checks are not biological correctness or score verification.",
+    "gather_gt reads current labels/points/queues after graph export; point export timestamp is about 8 seconds later. Zero queue updates after graph export observed, but semantic metadata snapshot atomicity is not established.",
+    "All 42 suspicious-axon todo queue roots are included in the supplied reviewed cohort because latest non-todo status wins. Preserve source cohort and stratify/adjudicate this subset.",
+    "NML v2 contains derived point-chain and attachment edges. NML edge elements do not carry explicit chain/attachment provenance.",
+    "Current generator source differs from run but exact historical git blob matches recorded code_sha256.",
+    "One reviewed 22-voxel root is absent from NML because min_voxels is 200.",
+    "x1 October 17 is primary; x1 October 15 historical only; no newer x2 provided."
+  ],
+  "observed_date": "2026-10-18",
+  "status_enum": {
+    "0": "SUCCESS",
+    "1": "CREATED",
+    "2": "EXCEPTION"
+  }
+}
