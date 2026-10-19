@@ -4,7 +4,7 @@ This is a proposed sequence, not a scheduled commitment or authorization to laun
 
 | Stage | Concrete output | Exit / stop condition |
 |---|---|---|
-| 0. Freeze the evidence | Validate voxel/partition reconstruction from the located pre-review x1 input; manifest supplied October 17 reference with pending-review and inferred-NML-edge flags; explicit older x2 choice; normalized effective edits | Stop end-to-end claims if pre-review input or registration cannot be established; continue bounded decision analysis |
+| 0. Freeze the evidence | Validate voxel/partition reconstruction from the located pre-review x1 input; preserve the October 17 snapshot and reconcile October 19 review/point changes; record excluded bad references and inferred NML edges; reserve new test data | Stop end-to-end claims if pre-review input or registration cannot be established; continue bounded decision analysis |
 | 1. Offline candidate and evidence harness | Deterministic candidate IDs, raw multiview packets, geometry, exact coordinates and dependency hashes; replay curated cases without writes | Coverage and repairability ceiling quantified; no reference-derived model inputs |
 | 2. Minimal graph checker | Typed merge/split proposals, independently checked exact effects, constrained anchors and explicit failure classes | All adversarial graph fixtures pass; stop on crop-local “proofs” that miss global paths |
 | 2b. Reusable morphology obligations | Two or three scoped inference rules, competing hypotheses, explicit missing observations, premise DAG and invalidation; worked continuation and branch examples | Same-evidence comparison against a flat scorer shows value; no noisy claim silently becomes a trusted axiom |
@@ -23,7 +23,7 @@ Proposed code modules, to be created only during implementation: `auto/contracts
 ## Dependencies that must remain visible
 
 - Voxel-level validation of located pre-review x1 input and atom lineage through the v2 rebuild.
-- Treatment of 42 pending suspicious roots and generated gap edges in the supplied x1 reference; applicability of older x2 review coverage.
+- Case-level outcomes for the 42 now-reviewed suspicious roots, provenance of annotation-linked partners, exact exclusions for bad references and treatment of generated gap edges. Both x1/x2 now inform development.
 - Full physical alignment among raw microscopy, exported labels and comparison predictions.
 - Reconciled native successful/failed/reversed operations and trusted negatives.
 - Shared exact split planner for preview and commit; expected-state checks within the write boundary.

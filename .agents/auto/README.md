@@ -1,6 +1,6 @@
 # Automatic proofreading: design and research plan
 
-Date: 2026-10-18. Status: proposed design; no automatic proofreader implemented or benchmarked in this work.
+Date: 2026-10-18; review-policy update 2026-10-19. Status: proposed automatic proofreader, with a revised consolidation policy implemented in the companion `cave-seg-bio` repository. No automatic proofreader has been benchmarked.
 
 ## Recommendation
 
@@ -18,6 +18,7 @@ The first useful deliverable is a reproducible **offline replay and recommendati
 4. [Cerebellum evaluation](04-evaluation.md): known data, leakage controls, experiments and decision gates.
 5. [Implementation sequence](05-roadmap.md): bounded milestones, owners, stop conditions and open questions.
 6. Inspection evidence: [supplied October 17 x1 bundle](evidence-x1-20261017.json) and [older snapshots/revisions](evidence.json), separate from future experimental results.
+7. [Boutons, annotation provenance and review policy](06-error-analysis.md): October 19 feedback, implemented triage changes and evaluation consequences.
 
 ## What changes the design
 
@@ -25,7 +26,8 @@ The first useful deliverable is a reproducible **offline replay and recommendati
 - “Morphology rules” alone are established prior art. The research opportunity is a reusable, scoped language of morphology claims and evidence, checked edit semantics, and a demonstrated accuracy/cost improvement over strong visual and graph baselines.
 - The mathematical paper uses RL as one component. The useful distinction is the quality of the objective, feedback and action space. Human mouse imitation is an optional baseline; it is not necessary for an API-native proofreader.
 - This checkout edits whole supervoxels. Errors inside one atom require the separate refinement work. Native preview and the robust multicut fork do not currently execute identical algorithms.
-- The cerebellum records include a rebuilt x1 graph initialized from prior proofreading. Its original input is located, but voxel/partition reconstruction still needs checking. The supplied October 17 x1 cohort includes 42 later suspicious/todo roots, and its NML skeletons contain inferred gap edges; both need explicit evaluation treatment.
+- The cerebellum records include a rebuilt x1 graph initialized from prior proofreading. Its original input is located, but voxel/partition reconstruction still needs checking. The October 17 x1 snapshot contains 42 suspicious/todo roots; DW completed that review on October 19 and reported mostly correct large boutons. Preserve the historical snapshot and reconcile per-item outcomes separately. Its NML skeletons also contain inferred gap edges.
+- Caliber, branch density and metric disagreement alone are advisory. A co-selected or annotation-linked partner is a separate object until graph membership establishes otherwise. Neither review completion nor an unchanged graph establishes a negative error label.
 - ConnectomeBench measures important subproblems. Its scores do not establish proposal recall, executable 3D corrections, or safety over a sequence of edits.
 
 ## Scope and provenance
@@ -38,6 +40,6 @@ Root `git pull --ff-only` failed because `codex/mac-mini-learning-digest` has no
 
 ## Immediate next action
 
-Validate the located pre-review cerebellum input across the rebuild lineage, materialize a training/evaluation manifest from the supplied October 17 x1 bundle and explicitly dated x2 reference, and build the offline candidate/evidence harness. Keep the pending-review subset and inferred NML edges visible. Do not start with an RL training run or a broad biological ontology.
+Validate the located pre-review cerebellum input across the rebuild lineage, reconcile the October 19 review and annotation changes, and build the offline candidate/evidence harness. Both crops now inform development; reserve new independent data for evaluation. Keep excluded bad references, unresolved cases and inferred NML edges visible. Do not start with an RL training run or a broad biological ontology.
 
 Scientific owner: DW. Implementation owner: next assigned CAVE development session. Proposed review: 2026-10-25 or after the first data-manifest milestone, whichever comes first; no scheduled automation or capacity commitment is implied.

@@ -2,6 +2,8 @@
 
 Status: proposed protocol plus read-only artifact inspection. No model inference, graph correction, training or benchmark scoring was performed in this planning task.
 
+October 19 update: DW completed both review rounds and reported that most suspects were correct large boutons; two bad merged segments should be discarded from the trusted reference. He clarified that this round made **no graph edits**: some points were added and some irrelevant extra segments were deselected in the viewer. Preserve these as reported outcomes, not inferred edit labels. The [revised analysis policy](06-error-analysis.md) separates morphology advisories, graph connectivity and annotation/display associations. Both crops now inform development; neither is a locked test for this policy.
+
 ## Primary reference and supporting snapshots
 
 DW supplied the newer x1 reference during this session:
@@ -65,6 +67,7 @@ Before claiming end-to-end improvement, freeze:
 | Candidate generation, rendering and reference hashes | Prevent hindsight and leakage |
 | Spatial/neuron/specimen grouping and train/calibration/test assignment | Control correlated examples and cross-crop reuse |
 | Cell classes, uncertainty flags, exclusions and sampled negatives | Avoid treating unreviewed tissue as correct |
+| Per-item `queue_apart` anchors, resolved pairs and metadata observation window | Preserve submitted deselections; raw annotation targets alone can include a rejected partner |
 
 **x1 baseline trap, confirmed:** v2 provenance starts from export `20261015T100654Z` after 97 logged operations. Its `initial_root` is initial *v2* state, not pre-human segmentation. The original input is located at `/data/runs/msi-datasim-26/results/q5-cave/inputs/cereb32x1_u10_mt0700_crop`; provenance points to `/data/runs/msi-liconn-moe20um-2608/results/cubes/ExPID99-32x_1_cerebellum/seg.h5:mt0700`, sibling `img_u8.zarr`, ABISS fragments and crop origin ZYX `[365,320,320]`. Those provenance files were inspected and hashed, but original voxel content and cross-basis partition reconstruction were not revalidated. That validation is the next gate. Using human-informed atom refinements can improve repairability in hindsight; report that condition separately. If reconstruction cannot be established, limit the experiment to curated decision cases.
 
@@ -72,7 +75,7 @@ Do not equate logged operations with correct labels. Resolve status and undo/red
 
 ## Dataset construction and leakage prevention
 
-Proposed default: develop on x1; use x2 as a locked within-specimen test only after review coverage, physical overlap, shared neuron lineage and input-context buffers are resolved. If separation cannot be established, call it a separate-crop evaluation rather than held-out performance. Partition x1 training and calibration by neuron lineage where possible and spatial blocks with buffers otherwise. Exclude shared parent identities and duplicate locations across splits. With only two crops, report per-crop results and do not estimate broad population generalization from an artificial two-sample statistic.
+After the October 19 feedback, develop on both x1 and x2. The earlier proposal to reserve x2 as a locked test no longer applies to this policy. Reserve new independent tissue or an explicitly untouched, separated cohort before making a held-out claim; resolve physical overlap, shared neuron lineage and input-context buffers. Partition development training and calibration by neuron lineage where possible and spatial blocks with buffers otherwise. Exclude shared parent identities and duplicate locations across splits. With only two crops, report per-crop results and do not estimate broad population generalization from an artificial two-sample statistic.
 
 Maintain two distinct evaluations:
 
@@ -81,9 +84,13 @@ Maintain two distinct evaluations:
 
 Construct explicit `correct_merge`, `correct_split`, `no_change`, `ambiguous`, `outside_reviewed_scope` and `unrepairable_in_current_atoms` categories. An unchanged location is not automatically a negative. Adjudicate a blinded mixture of proposed changes, disagreements, unchanged hard negatives and random tissue; preserve unresolved examples rather than forcing consensus.
 
-The 42 pending suspicious x1 roots cannot supply trusted negatives without further adjudication. Preserve their membership in the user's reference and report them as a separate stratum. Final labels/NML also cannot become operational must-link/cannot-link constraints: only pre-baseline knowledge or explicitly budgeted new human annotations may guide the agent.
+The 42 suspicious x1 roots were pending in the October 17 snapshot and are now marked done. This establishes workflow completion, not 42 error-free negatives. Preserve the original stratum and record case-level outcomes such as accepted bouton, changed semantic label, added evidence, irrelevant displayed partner, unresolved merge or unknown. DW's approximate 3–4 errors cannot become exact positive labels without that mapping. Final labels/NML also cannot become operational must-link/cannot-link constraints: only pre-baseline knowledge or explicitly budgeted new human annotations may guide the agent.
+
+Discard confirmed bad merged references from the **trusted GT inclusion mask**, retaining their anchored identities, reasons, evidence and original cohort membership in an exclusion ledger. They remain unresolved reconstruction errors when reporting the whole reviewed cohort; exclusion must not improve apparent repair recall by shrinking its denominator. A flag/skip or large size alone is insufficient to assign a confirmed biological-error label. Viewer deselection is not a graph correction, and annotation additions are not demonstrated false-split repairs.
 
 For NML skeletons: inspect how trees, nodes, edges, identities, comments and gap links were generated. Do not interpolate missing edges merely to increase ERL. If a skeleton connects disconnected segments through curator-declared identity, separate identity constraints from image-supported cable. Fix the denominator and inclusion mask before scoring any method.
+
+The old `review.json` bundles omit server `queue_apart`, even though deselection followed by submission persists there. The revised exporter includes it; consumers must honor these pair-specific decisions before interpreting raw point targets as identity constraints. Merely adding the field does not update old NML generators or scoring code that ignores it. Preserve old bundles, use the new metadata to rebuild/adjudicate derived references, and do not mistake a display exclusion for a universally valid biological cannot-link.
 
 Freeze preprocessing, prompts, policy thresholds and rule versions before test access. Never use final masks to orient inputs; never retrieve test cases as few-shot examples. Permuting colors/IDs, hiding filenames/status, and removing overlays are useful leakage audits. Repeated tuning after test inspection requires a newly held-out test or an explicitly exploratory report.
 
