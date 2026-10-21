@@ -74,3 +74,29 @@ def test_independent_projects_readonly_inputs_and_private_secrets(tmp_path, monk
             assert len(mounts) == 1 and mounts[0]['read_only']
         deployments.append(spec['project_name'])
     assert deployments[0] != deployments[1]
+
+
+@pytest.mark.parametrize('block', [True, {'enabled': 1}, {'enabled': True},
+    {'enabled': True, 'grid_xyz': [4, 4, 3]}, {'enabled': True, 'grid_xyz': [True, 4, 4]},
+    {'enabled': True, 'grid_xyz': [4, 4, 4], 'max_atoms': 0},
+    {'enabled': True, 'grid_xyz': [4, 4, 4], 'max_seconds': float('inf')},
+    {'enabled': True, 'grid_xyz': [4, 4, 4], 'unexpected': 1}])
+def test_refinement_config_rejects_invalid_limits_and_geometry(block):
+    meta = manifest()
+    meta.update(atom_policy='agglomerated_supervoxels', agglomeration_https='file:///source/agglomeration.npz',
+                supervoxel_split=block)
+    with pytest.raises(ValueError, match='supervoxel_split|Unknown'):
+        creator.validate_manifest(meta)
+
+
+def test_refinement_is_operational_configuration_not_data_identity():
+    from ingest_segmentation_iteration import data_spec
+    meta = manifest()
+    meta.update(atom_policy='agglomerated_supervoxels', agglomeration_https='file:///source/agglomeration.npz')
+    before = data_spec(meta)
+    meta['supervoxel_split'] = {'enabled': True, 'grid_xyz': [4, 4, 4], 'max_atoms': 2, 'max_seconds': .5}
+    creator.validate_manifest(meta)
+    assert data_spec(meta) == before
+    meta['atom_policy'] = 'source_labels'
+    with pytest.raises(ValueError, match='requires agglomerated_supervoxels'):
+        creator.validate_manifest(meta)

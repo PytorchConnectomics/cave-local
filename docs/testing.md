@@ -61,7 +61,6 @@ The two scenarios run **sequentially**:
 | --- | --- |
 | ZYX image, nanometer metadata, `source_labels` | Source labels remain indivisible editing units |
 | XYZ image, micrometer metadata, `spatial_tiles` | Labels are deliberately subdivided into configured tile units |
-| ZYX image, `agglomerated_supervoxels` (`bin/cave fixture --atom-policy agglomerated_supervoxels`) | Two touching supervoxels start as one segment with a 0.9 region-graph edge; split, merge and undo follow the supervoxel boundary |
 
 The default command runs both on one host. For a targeted run, add `--variant
 zyx` or `--variant xyz`. The report records the requested scenarios and only
@@ -96,6 +95,32 @@ projects; their source files, backups and evidence remain. Do not globally
 prune Docker to clean up afterward.
 
 ## Gates that are separate from the two-fixture run
+
+An `agglomerated_supervoxels` fixture generated with
+`bin/cave fixture --atom-policy agglomerated_supervoxels` has two touching
+supervoxels joined by a 0.9 region-graph edge. After creating and starting its own
+deployment, `bin/cave validate DEPLOYMENT --edit-fixture` checks native split,
+merge and undo along that boundary. This policy is separate from the default
+ZYX/XYZ lifecycle scenarios above.
+
+Opt-in supervoxel refinement has a separate disposable acceptance run:
+generate an `agglomerated_supervoxels` fixture with `--supervoxel-split`, create
+and start its own deployment, then run `bin/cave validate DEPLOYMENT --edit-fixture`.
+See [refinement setup and evidence](operations.md#on-demand-supervoxel-refinement-opt-in).
+The normal lifecycle fixtures do not establish refinement acceptance. Its report
+retains individual passed, failed and pending cases under the deployment's
+`data/supervoxel_splits/verification/` directory.
+All 19 cases must pass in one fresh run. These include crash recovery and
+non-lock exceptions at every publication step, a kill between table-symlink
+creation and rename, failed replay recovered by a public reader after its
+cooldown, prepublication aborts, and concurrent allocation checked against
+the two journals and each atom's connected voxel mask and root membership.
+The lease-expiry case waits for the actual native lease and proves no staged
+cells, atomic voxels, files or table generation were published before the
+successful recomputation against the native edit's merged root. Both the
+lease-expiry and prepublication-abort probes require a nonempty set of staged
+cells. After the symlink crash/recovery case, run `bin/cave backup` and
+`bin/cave verify-backup` on that disposable deployment to verify portability.
 
 To test a supported update from a previous release, add `--upgrade-backup`
 pointing to a trusted, verified online backup of an **older disposable fixture**

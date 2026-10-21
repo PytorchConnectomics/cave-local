@@ -13,6 +13,7 @@ from pathlib import Path
 import numpy as np
 import requests
 from caveclient import CAVEclient
+from supervoxel_history import load_atom_tables, snapshot_read
 
 
 def stable_json(value):
@@ -47,19 +48,30 @@ def api_roots(spec, atoms):
 
 def snapshot(dest):
     spec = json.loads((dest / "deployment.json").read_text())
-    mapping = np.load(dest / "data/atom_index.npy")
-    atoms = mapping[:, 0]
-    roots = api_roots(spec, atoms)
-    base = spec["local_url"].rstrip("/") + "/segmentation/api/v1/table/" + spec["graph_id"]
-    memberships = []
-    for root in np.unique(roots):
-        expected = sorted(str(int(atom)) for atom in atoms[roots == root])
-        response = requests.get(base + "/node/" + str(root) + "/leaves?int64_as_str=true", timeout=180)
+    def graph_snapshot():
+        tables = load_atom_tables(dest / "data")
+        atoms = np.array([atom for atom in tables.index[:, 0] if int(atom) not in tables.retired], np.uint64)
+        roots = api_roots(spec, atoms)
+        base = spec["local_url"].rstrip("/") + "/segmentation/api/v1/table/" + spec["graph_id"]
+        memberships = []
+        for root in np.unique(roots):
+            expected = sorted(str(int(atom)) for atom in atoms[roots == root])
+            response = requests.get(base + "/node/" + str(root) + "/leaves?int64_as_str=true", timeout=180)
+            response.raise_for_status()
+            actual = sorted(str(int(atom)) for atom in response.json()["leaf_ids"])
+            if actual != expected:
+                raise RuntimeError(f"Root {root} leaves disagree with atom-to-root mapping")
+            memberships.append({"root_id": str(int(root)), "atom_count": len(actual), "atoms_sha256": sha(actual)})
+        return atoms, roots, memberships
+    def recover_idle_publication():
+        # The service owns graph credentials and recovery locks. An empty roots
+        # request enters its read barrier without depending on a table snapshot.
+        base = spec["local_url"].rstrip("/") + "/segmentation/api/v1/table/" + spec["graph_id"]
+        response = requests.post(base + "/roots", json={"node_ids": []}, timeout=180)
         response.raise_for_status()
-        actual = sorted(str(int(atom)) for atom in response.json()["leaf_ids"])
-        if actual != expected:
-            raise RuntimeError(f"Root {root} leaves disagree with atom-to-root mapping")
-        memberships.append({"root_id": str(int(root)), "atom_count": len(actual), "atoms_sha256": sha(actual)})
+    atoms, roots, memberships = snapshot_read(
+        graph_snapshot, data_dir=dest / "data", recover=recover_idle_publication)
+    base = spec["local_url"].rstrip("/") + "/segmentation/api/v1/table/" + spec["graph_id"]
     client = CAVEclient(spec["datastack"], server_address=spec["local_url"],
                         auth_token="00000000000000000000000000000000", write_server_cache=False)
     annotation = {}

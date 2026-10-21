@@ -31,6 +31,7 @@ ARCHIVE_IMAGE = json.loads((ROOT / "images.lock.json").read_text())["alpine:3.22
 VOLUME_TARGETS = {"bigtable": "/data", "postgres": "/var/lib/postgresql/data", "redis": "/data"}
 WORKSPACE_ITEMS = ("data", "config", "scripts", "web", ".env", "secrets")
 PROJECT_RE = re.compile(r"cave-pkg-[a-z0-9][a-z0-9-]*\Z")
+ATOM_TABLE_ALIASES = ("atom_index.npy", "atom_bounds.npy", "initial_roots.npy")
 
 
 def progress(message):
@@ -143,9 +144,32 @@ def private_tree(path):
         os.chmod(item, 0o700 if item.is_dir() else 0o600)
 
 
-def tar_add(archive, path, arcname):
+def known_atom_link(member):
+    """Only publication's relative, deployment-local table pointers are portable."""
+    if not member.issym():
+        return False
+    if member.name == "data/atom_tables/current":
+        return re.fullmatch(r"[0-9]+", member.linkname) is not None
+    return any(member.name == "data/" + name
+               and member.linkname == "atom_tables/current/" + name
+               for name in ATOM_TABLE_ALIASES)
+
+
+def tar_add(archive, path, arcname, allow_atom_links=False):
     def portable(info):
-        if not (info.isfile() or info.isdir()):
+        if info.issym() and allow_atom_links and known_atom_link(info):
+            # Check the actual source as well as the archive spelling: a generation
+            # directory must not itself redirect the known pointers outside data/.
+            data = Path(path).resolve(strict=True)
+            source = data.parent / info.name
+            try:
+                target = source.resolve(strict=True)
+            except (OSError, RuntimeError) as error:
+                raise ValueError(f"Invalid atom-table link: {info.name}") from error
+            directory = info.name == "data/atom_tables/current"
+            if data not in target.parents or not (target.is_dir() if directory else target.is_file()):
+                raise ValueError(f"Atom-table link escapes data or has no valid target: {info.name}")
+        elif not (info.isfile() or info.isdir()):
             raise ValueError(f"Portable backup refuses links and special files: {info.name}")
         return info
     archive.add(path, arcname=arcname, filter=portable)
@@ -249,7 +273,7 @@ def backup(deployment_path, archive_path, include_source=False, offline=False):
             for name in WORKSPACE_ITEMS:
                 path = deployment["path"] / name
                 if path.exists():
-                    tar_add(archive, path, name)
+                    tar_add(archive, path, name, allow_atom_links=name == "data")
         if source:
             progress("Copying the local input data; large datasets can take time.")
             with tarfile.open(archive_path / "source.tar.gz", "w:gz") as archive:
@@ -297,17 +321,46 @@ def image_exists(name):
     return subprocess.run(["docker", "image", "inspect", name], capture_output=True).returncode == 0
 
 
-def safe_member(member):
+def safe_member(member, allow_atom_links=False):
     path = PurePosixPath(member.name)
-    if path.is_absolute() or ".." in path.parts or not (member.isfile() or member.isdir()):
+    allowed = member.isfile() or member.isdir() or (allow_atom_links and known_atom_link(member))
+    if path.is_absolute() or ".." in path.parts or not allowed:
         raise ValueError(f"Unsafe backup archive member: {member.name}")
     return member
 
 
-def inspect_tar(path):
+def safe_members(archive, allow_atom_links=False):
+    """Validate all entries before extraction, including paths traversing links."""
+    members = archive.getmembers()
+    by_path = {}
+    for member in members:
+        safe_member(member, allow_atom_links=allow_atom_links)
+        path = PurePosixPath(member.name)
+        if path in by_path:
+            raise ValueError(f"Duplicate backup archive member: {member.name}")
+        by_path[path] = member
+    for path, member in by_path.items():
+        if any(parent in by_path and not by_path[parent].isdir() for parent in path.parents):
+            raise ValueError(f"Unsafe backup archive member beneath a non-directory: {member.name}")
+        if not member.issym():
+            continue
+        target = path.parent / member.linkname
+        # An array alias traverses the current-generation pointer. Resolve that
+        # one allowed intermediate link against archive entries, never host files.
+        current = PurePosixPath("data/atom_tables/current")
+        if current in target.parents and current in by_path and by_path[current].issym():
+            target = current.parent / by_path[current].linkname / target.name
+        resolved = by_path.get(target)
+        directory = path == current
+        if (not target.is_relative_to(PurePosixPath("data")) or resolved is None
+                or not (resolved.isdir() if directory else resolved.isfile())):
+            raise ValueError(f"Unsafe atom-table link target: {member.name}")
+    return members
+
+
+def inspect_tar(path, allow_atom_links=False):
     with tarfile.open(path, "r:gz") as archive:
-        for member in archive:
-            safe_member(member)
+        safe_members(archive, allow_atom_links=allow_atom_links)
 
 
 def verify(archive_path):
@@ -335,19 +388,22 @@ def verify(archive_path):
         if path.is_symlink() or not path.is_file() or checksum(path) != digest:
             raise ValueError(f"Backup checksum mismatch: {name}")
         if name.endswith(".tar.gz"):
-            inspect_tar(path)
+            inspect_tar(path, allow_atom_links=name == "workspace.tar.gz")
     spec = json.loads((archive_path / "deployment.json").read_text())
     if spec.get("graph_id") != manifest.get("graph_id"):
         raise ValueError("Backup graph identity does not match its manifest.")
     return {"backup": str(archive_path), "checksums_verified": True, "state_checked": manifest.get("observations") is not None}
 
 
-def extract_tar(source, destination):
+def extract_tar(source, destination, allow_atom_links=False):
     with tarfile.open(source, "r:gz") as archive:
-        for member in archive.getmembers():
-            safe_member(member)
-        # Links/special files/traversal have been rejected above; compatible with Python 3.10+.
-        archive.extractall(destination)
+        members = safe_members(archive, allow_atom_links=allow_atom_links)
+        destination = Path(destination)
+        # Restore always extracts into a new private scratch directory. Reject
+        # pre-existing entries so an on-disk link cannot bypass archive checks.
+        if destination.is_symlink() or (destination.exists() and any(destination.iterdir())):
+            raise ValueError("Backup extraction requires an empty destination.")
+        archive.extractall(destination, members=members)
 
 
 def runtime_hashes(directory):
@@ -367,7 +423,7 @@ def restore_workspace_state(workspace, destination):
         source = workspace / name
         target = destination / name
         if source.is_dir():
-            shutil.copytree(source, target, dirs_exist_ok=True)
+            shutil.copytree(source, target, dirs_exist_ok=True, symlinks=True)
         elif source.is_file():
             shutil.copy2(source, target)
     if (destination / ".env").is_file():
@@ -417,7 +473,7 @@ def restore(archive_path, destination, port, graph_id=None, source_dir=None):
         scratch = Path(scratch)
         workspace = scratch / "workspace"
         workspace.mkdir()
-        extract_tar(archive_path / "workspace.tar.gz", workspace)
+        extract_tar(archive_path / "workspace.tar.gz", workspace, allow_atom_links=True)
         if source_dir is None and manifest.get("source_included"):
             # Keep included input beside the restored deployment, so temporary extraction can disappear.
             source_dir = destination.with_name(destination.name + "-source")

@@ -84,3 +84,12 @@ installation over (see [backup guidance](../cave-local-backup/SKILL.md)). Return
 the viewer URL, deployment path, configuration and maintenance commands. If a
 step fails, use `bin/cave status` and `bin/cave logs`
 on this deployment and continue via [operation guidance](../cave-local-operate/SKILL.md).
+
+On-demand supervoxel splitting is off by default and applies only to
+`agglomerated_supervoxels`. For its disposable acceptance fixture add
+`--supervoxel-split` to `bin/cave fixture`; this selects a grid that divides the
+small fixture chunks and enables the dedicated verifier. See the
+[refinement options and recovery procedure](../../docs/operations.md#on-demand-supervoxel-refinement-opt-in).
+Keep real-volume enablement separate from fixture acceptance and within the
+user's stated scope. Source volumes remain read-only; refinement writes only the
+deployment's derived atomic volume and graph.

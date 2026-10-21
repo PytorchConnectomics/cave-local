@@ -70,7 +70,11 @@ comparison. Its report states `state_checked: false`. Do not describe that as
 a proven graph-and-annotation recovery.
 
 `verify-backup` reads every file, checks SHA-256 hashes, and rejects missing
-files, unexpected files, links and archive paths that escape extraction.
+files, unexpected files and archive paths that escape extraction. Refined
+deployments retain their atom-table generations and history: backup/restore
+preserves the known relative `data/atom_tables/current` pointer and three
+legacy array aliases, with targets checked inside `data/`. Other links,
+missing link targets and archive entries beneath a link are rejected.
 Checksums detect accidental corruption; they do not establish who supplied a
 backup. Use backups from a trusted operator.
 
@@ -203,3 +207,137 @@ This deletes only that project's containers, network and persistent graph,
 annotation and Redis volumes. It checks ownership labels before deletion.
 Deployment files, source data, backups and other applications remain. Do not
 use global Docker pruning to clean up this project.
+
+## On-demand supervoxel refinement (opt-in)
+
+An `agglomerated_supervoxels` deployment can refine an atom when split seeds
+share it, or after a native mincut fails. It first divides that atom on a
+volume-aligned grid, then uses a seeded distance-transform watershed if opposing
+seeds still share a piece. The calculation uses the current ABISS-derived labels
+and region-graph edges; it needs no affinity volume. Refinement preserves the
+object and its root. The subsequent native multicut changes the object and is
+undoable. Refinement itself is permanent.
+
+The manifest option is off by default. Grid dimensions are XYZ voxel counts,
+positive integers that divide `graph_chunk_xyz`; the default is `[16,16,16]`.
+Limits bound the number of refined atoms and time spent starting refinements in
+one split request. An in-progress publication must finish or enter recovery.
+
+```json
+"supervoxel_split": {
+  "enabled": true,
+  "grid_xyz": [16, 16, 16],
+  "max_atoms": 64,
+  "max_seconds": 30
+}
+```
+
+This option is deployment configuration, outside the ingestion data fingerprint.
+Do not enable it on a proofreading volume as part of fixture acceptance. Enabling
+cereb32x2 requires DW's approval; cereb32x1/v2 remains unchanged.
+
+Use a fresh disposable installation to exercise the feature. Choose an unused
+loopback port; this example's small graph chunks use an explicit `[4,4,4]` grid:
+
+```bash
+bin/cave fixture .runtime/svsplit-input --atom-policy agglomerated_supervoxels \
+  --supervoxel-split --graph-id pkg_svsplit --port 18281
+bin/cave create .runtime/svsplit-input/manifest.json .runtime/svsplit \
+  --source-dir .runtime/svsplit-input
+bin/cave start .runtime/svsplit
+bin/cave validate .runtime/svsplit --edit-fixture
+```
+
+The dedicated verifier records its actual case results and failures in
+`DEPLOYMENT/data/supervoxel_splits/verification/report-<run_id>.json`, with probe
+logs beside it. Cases cover refinement, historical exports, undo/redo, bounded
+retries, publication crashes, concurrent edits/readers, and different-root
+neighbours across chunk faces. Pending cases are not passes. Fixture
+fault injection is enabled only on generated `test_fixture` installations; a
+`CAVE_SVSPLIT_FAULT` environment value is ignored on other deployments. Tests
+must never edit a real proofreading graph or reuse another test's volumes.
+
+A split retries the native multicut at most once after a recognized failure.
+`X-Cave-Supervoxels-Refined: N` reports the number of refined atoms, including when
+the retry fails. Same-source-label seeds in different atoms are allowed when the
+switch is enabled. When disabled, the existing indivisible-source rejection
+message remains in effect. Disabling new refinements keeps history translation,
+publication barriers and recovery active for an installation with refinement
+data. Identical opposing seed voxels are rejected.
+
+Each deployment serializes refinements with `data/supervoxel_splits/.lock`.
+Before publication it also locks **every affected root**, including a neighbour
+across a chunk face that a previous native split put in a different root. The
+journal records the complete sorted root set and level-2 preconditions. After
+raising the fence, the adapter checks latest lock ownership, current roots and
+operation timestamps again before publishing. A native edit checks the journal
+fence after acquiring its own root locks. An expired historical lock cell is not
+accepted as proof of current ownership.
+
+The retained files are:
+
+- `data/supervoxel_splits/journal/<operation_id>/journal.json` and replay payloads:
+  `prepared`, `fenced`, `publishing`, `published`, `verified`, then `done`;
+  failures can be `aborted` before publication or `verify_failed` afterward.
+- `data/supervoxel_splits/log.jsonl`: one committed record per refinement.
+- `data/supervoxel_splits/epoch`: odd during publication, even when stable.
+- `data/atom_tables/current`: one atomic generation containing row-aligned,
+  sorted `atom_index.npy`, `atom_bounds.npy`, `initial_roots.npy`, plus sparse
+  `lineage.npy` and `edge_map.npy`. Legacy file paths point into this generation.
+
+Publication errors attempt recovery before releasing the mutation lock. Worker
+startup and the next refinement also recover interrupted publications from
+retained payloads. If an odd epoch remains with no active publisher, public
+readers, local meshing and snapshots trigger recovery using a nonblocking
+mutation-lock attempt. A failed reader recovery starts a ten-second cooldown
+for that operation, shared across workers; reads return 503 during the cooldown
+without constructing a graph or retrying replay. The next read after the
+cooldown can retry. Explicit repair and new refinements bypass this cooldown.
+Errors before publication abort the preparation and remove its fence. Abort
+persists the state and archives the preparation separately, so either can lift
+the fence if the other fails; cleanup failures remain attached to the original
+error. Persistent failure of both filesystem actions still requires recovery.
+Publication and recovery also remove only recognized temporary atom-table
+symlinks left by an interrupted pointer replacement, so those links cannot
+prevent a subsequent portable backup.
+`verified` is the commit point: recovery only finalizes its log
+and clears its fence, without replaying or re-verifying. A failed verification
+keeps all affected roots fenced until explicit repair succeeds:
+
+```bash
+bin/cave svsplit repair DEPLOYMENT
+```
+
+Repair remains available after disabling new refinements when journals or atom-table
+generations are retained.
+
+New refinements are refused until that repair, including on other roots, so they cannot
+overwrite a shared atomic chunk needed to verify the retained payload.
+
+Keep the journal and payloads when investigating a 503; never clear the fence or
+edit/delete its files by hand. Repair takes the same deployment mutation lock
+and all journal roots, then verifies before clearing the fence. It does not
+re-ingest the graph or modify source data.
+
+Timestamped root queries map a newer atom through its lineage to an ancestor
+that existed at that time. Undo/redo translate retired edge endpoints through
+the edge map; the translated ids are checked again under native locks, with a
+bounded retry if a refinement intervened. The shared factory interception runs
+before native undo's edge-existence checks. Root-id coordinate lookups use the
+same lineage mapping internally. Dense tables retain retired rows for history;
+current snapshots count current leaves only.
+
+PCG reads, local meshes and repository snapshots use the publication epoch to
+reject mixed hierarchy/voxel/table observations. A publication that lasts beyond
+the read bound returns 503 with `Retry-After: 1`. PCG responses include
+`X-Cave-Svsplit-Epoch`. An existing mesh remains valid because refinement alone
+changes neither the root nor its voxel set. Plain Spelunker may need a reload to
+fetch changed segmentation chunks.
+
+Follow-ups in **cave-seg-bio** remain outside this repository: permit same-fragment
+requests when enabled, reload chunks after the refinement header, and validate
+the epoch around leaves/voxel/export reads. Its export reader should resolve the
+atom-table generation once. Static gateway atomic-volume requests have no hard
+publication barrier; external clients must validate epochs. `export_preview.py`
+and `export_release.py` export package source, not segmentation data, and do not
+read atom tables or atomic voxels.

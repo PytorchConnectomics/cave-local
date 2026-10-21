@@ -46,3 +46,18 @@ without a comparison does not prove persistence.
 Stop retrying if it would require modifying original data, deleting databases,
 or changing a database major version. Use the backup skill for a verified
 separate recovery copy, preserving the failed installation for inspection.
+
+For an installation with `supervoxel_split.enabled` or retained refinement data, read the
+[on-demand refinement procedure](../../docs/operations.md#on-demand-supervoxel-refinement-opt-in).
+A 503 can mean publication is in progress or an affected root is fenced pending
+repair. Inspect `data/supervoxel_splits/journal/` in the identified deployment;
+retain its payloads. Run `bin/cave svsplit repair DEPLOYMENT` to recover and verify
+that deployment under its locks. Do not delete a journal or clear a fence by
+hand. A committed `verified` journal is finalized without replay.
+
+Refinement preserves the object, while the subsequent native split changes it.
+Undo reverses that native edit using current edge endpoints; it does not undo
+refinement. Report the saved verifier results separately from planned cases.
+Use `bin/cave validate DEPLOYMENT --edit-fixture` only on the assigned disposable
+fixture. Enabling the feature on any real volume requires the user's explicit
+scope; a maintenance or test request does not supply it.

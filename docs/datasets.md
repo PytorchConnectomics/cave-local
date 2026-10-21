@@ -102,8 +102,10 @@ public URL):
  "agglomeration_default_affinity": 0.001}
 ```
 
-Supervoxels are indivisible (as with `source_labels`; the split guard rejects
-one supervoxel in both seed groups). Touching supervoxels of the same initial
+Supervoxels are indivisible by default (as with `source_labels`; the split guard
+rejects one supervoxel in both seed groups). The optional
+[on-demand refinement switch](operations.md#on-demand-supervoxel-refinement-opt-in)
+allows an involved atom to be subdivided during a split. Touching supervoxels of the same initial
 segment are joined with their region-graph affinity; joined contacts absent
 from the region graph get `agglomeration_default_affinity` (default 0.001), so
 the split tool cuts weak boundaries first. Contacts between different segments

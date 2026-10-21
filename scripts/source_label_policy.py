@@ -1,34 +1,192 @@
-"""Reject cuts through an immutable source supervoxel before graph editing.
-
-The native graph still performs every valid edit. This guard explains the
-source-label policy instead of exposing a native cross-chunk cutting error.
-"""
+"""Source-label guard and opt-in, bounded local supervoxel refinement."""
+import contextlib
 import json
-from functools import lru_cache
+import time
+import uuid
 from pathlib import Path
 
 import numpy as np
-from flask import request
+from flask import g, request
+
+
+@contextlib.contextmanager
+def remapped_body(body):
+    """PCG 2.21.1 parses request.data directly; override only this request's bytes.
+
+    Flask does not expose a public setter for the consumed raw body. Restore its
+    cached bytes in finally; no application-global parser or Flask class is patched.
+    """
+    req = request._get_current_object()
+    previous = req.get_data()
+    # Werkzeug in the pinned image also caches the data property separately.
+    # Invalidate it for the override and restore its prior presence on exit.
+    missing = object()
+    previous_property = req.__dict__.pop('data', missing)
+    req._cached_data = json.dumps(body).encode()
+    try:
+        yield
+    finally:
+        req._cached_data = previous
+        if previous_property is missing:
+            req.__dict__.pop('data', None)
+        else:
+            req.__dict__['data'] = previous_property
+
+
+def retryable(error):
+    message = str(error).lower()
+    return 'mincut failed' in message or 'cut off only the labeled points' in message
+
+
+def source_label_index(data_dir='/data'):
+    """Keep the disabled legacy guard independent of unrelated dense tables."""
+    directory = Path(data_dir)
+    current = directory / 'atom_tables' / 'current'
+    if current.exists() or current.is_symlink():
+        from supervoxel_history import load_atom_tables
+        return load_atom_tables(directory).index
+    return np.load(directory / 'atom_index.npy', mmap_mode='r', allow_pickle=False)
+
+
+def enabled_split(native, table_id, spec, data_dir='/data'):
+    from cloudvolume import CloudVolume
+    from pychunkedgraph.app import app_utils
+    from pychunkedgraph.graph.exceptions import BadRequest, PostconditionError, PreconditionError
+    from supervoxel_history import load_atom_tables, snapshot_read
+    from supervoxel_refine import refine, fixture_fault
+    from supervoxel_service import fixture_configuration
+
+    if table_id != spec['graph_id']:
+        raise BadRequest('Source-label metadata belongs to another graph.')
+    options = spec['supervoxel_split']
+    grid = options.get('grid_xyz', [16, 16, 16])
+    limit = options.get('max_atoms', 64)
+    deadline = time.monotonic() + options.get('max_seconds', 30)
+    body = json.loads(request.data)
+    sources, sinks = body.get('sources', []), body.get('sinks', [])
+    if not sources or not sinks:
+        return native(table_id)
+    coords = np.asarray([seed[1:] for seed in sources + sinks], float)
+    coords = np.floor(coords / np.asarray(spec['resolution_nm_xyz'])).astype(np.int64)
+    if coords.shape[1:] != (3,) or np.any(coords < 0) or np.any(coords >= spec['shape_xyz']):
+        raise BadRequest('Split seeds must lie inside the atomic volume.')
+    source_count = len(sources)
+    if set(map(tuple, coords[:source_count])) & set(map(tuple, coords[source_count:])):
+        raise BadRequest('A voxel cannot be both a source and a sink seed.')
+    cg = app_utils.get_cg(table_id, skip_cache=True)
+    count = 0
+    attempted = set()
+    request_id = uuid.uuid4().hex
+    call_count = 0
+
+    def lookup():
+        cv = CloudVolume('file://' + str(Path(data_dir) / 'atomic'), cache=False, progress=False)
+        ids = np.array([cv[tuple(slice(int(v), int(v) + 1) for v in xyz)].reshape(-1)[0]
+                        for xyz in coords], np.uint64)
+        if np.any(ids == 0):
+            raise BadRequest('Split seeds must lie inside foreground voxels.')
+        return ids
+
+    def atoms():
+        return snapshot_read(lookup, data_dir=data_dir)
+
+    def apply(atom, ids, seeded=False):
+        nonlocal count
+        if count >= limit or time.monotonic() >= deadline or int(atom) in attempted:
+            return
+        attempted.add(int(atom))
+        item = {'atom': int(atom)}
+        if seeded:
+            tables = load_atom_tables(data_dir)
+            pos = np.searchsorted(tables.index[:, 0], atom)
+            low = tables.bounds[pos, :3]
+            item['source_vox'] = (coords[:source_count][ids[:source_count] == atom] - low)[:, ::-1].tolist()
+            item['sink_vox'] = (coords[source_count:][ids[source_count:] == atom] - low)[:, ::-1].tolist()
+        result = refine(cg, [item], grid_xyz=grid, reason='same-atom' if seeded else 'mincut-failed', data_dir=data_dir)
+        count += result.count
+        g.svsplit_refined = count
+
+    ids = atoms()
+    for atom in sorted(set(ids[:source_count]) & set(ids[source_count:])):
+        apply(atom, ids, seeded=True)
+    ids = atoms()
+
+    def run_native():
+        nonlocal call_count
+        call_count += 1
+        current = atoms()
+        remapped = dict(body)
+        remapped['sources'] = [[str(int(atom)), *seed[1:]] for atom, seed in zip(current[:source_count], sources)]
+        remapped['sinks'] = [[str(int(atom)), *seed[1:]] for atom, seed in zip(current[source_count:], sinks)]
+        fault = fixture_configuration(data_dir)
+        if spec.get('test_fixture'):
+            folder = Path(data_dir) / 'supervoxel_splits' / 'native_calls'
+            folder.mkdir(parents=True, exist_ok=True)
+            (folder / (request_id + '.json')).write_text(json.dumps({'calls': call_count, 'refined': count, 'body': remapped}))
+        fixture_fault('before_native', data_dir=data_dir, call=call_count)
+        if fault.get('point') == 'native' and call_count <= fault.get('calls', 1):
+            if fault.get('error', 'mincut') == 'isolating':
+                raise PreconditionError('Split cut off only the labeled points on the Sink side')
+            raise PostconditionError('Mincut failed. Try with a different set of points.')
+        with remapped_body(remapped):
+            return native(table_id)
+
+    try:
+        return run_native()
+    except Exception as error:
+        if not retryable(error):
+            raise
+        # Candidates are current atoms of the seed root intersecting PCG's box.
+        ids = atoms()
+        roots = np.unique(cg.get_roots(ids))
+        tables = load_atom_tables(data_dir)
+        offset = np.asarray(body.get('bb_offset', (120, 120, 12)), int)
+        if offset.shape != (3,) or np.any(offset < 0):
+            raise BadRequest('bb_offset must contain three nonnegative voxel distances.')
+        low, high = coords.min(0) - offset, coords.max(0) + offset + 1
+        mask = np.all(tables.bounds[:, 3:] > low, axis=1) & np.all(tables.bounds[:, :3] < high, axis=1)
+        candidate = tables.index[mask, 0]
+        candidate = np.array([a for a in candidate if int(a) not in tables.retired and int(a) not in attempted], np.uint64)
+        if len(candidate):
+            candidate = candidate[np.isin(cg.get_roots(candidate), roots)]
+            # Counts from the current atomic labels, not bounding-box estimates.
+            cv = CloudVolume('file://' + str(Path(data_dir) / 'atomic'), cache=False, progress=False)
+            sizes = []
+            for atom in candidate:
+                if time.monotonic() >= deadline:
+                    break
+                pos = np.searchsorted(tables.index[:, 0], atom)
+                box = tables.bounds[pos]
+                cut = cv[tuple(slice(int(a), int(b)) for a, b in zip(box[:3], box[3:]))]
+                sizes.append((int(np.count_nonzero(cut == atom)), int(atom)))
+            for _, atom in sorted(sizes, key=lambda pair: (-pair[0], pair[1])):
+                if count >= limit or time.monotonic() >= deadline:
+                    break
+                apply(atom, ids)
+        try:
+            return run_native()
+        except Exception as retried:
+            if retryable(retried):
+                message = getattr(retried, 'message', str(retried))
+                raise BadRequest(f'{message} Refined {count} supervoxels; the split still failed.') from retried
+            raise
 
 
 def install(common):
     from pychunkedgraph.app import app_utils
     from pychunkedgraph.graph.exceptions import BadRequest
-
+    from supervoxel_service import configuration
+    spec = configuration()
     original_split = common.handle_split
 
-    @lru_cache(maxsize=1)
-    def index():
-        return np.load('/data/atom_index.npy', mmap_mode='r')
-
     def split(table_id):
+        if spec.get('supervoxel_split', {}).get('enabled', False):
+            return enabled_split(original_split, table_id, spec)
         prepared = Path('/data/prepared.json')
         if prepared.exists() and json.loads(prepared.read_text()).get('atom_policy') in ('source_labels', 'agglomerated_supervoxels'):
             geometry = json.loads(prepared.read_text())
             if geometry['spec']['graph_id'] != table_id:
                 raise BadRequest('Source-label metadata belongs to another graph.')
-            # Spelunker sends a JSON body without application/json, matching
-            # the native handler's raw-body parsing.
             data = json.loads(request.data)
             sources, sinks = data.get('sources', []), data.get('sinks', [])
             if sources and sinks:
@@ -37,7 +195,7 @@ def install(common):
                 ids = np.array([seed[0] for seed in seeds], dtype=np.uint64)
                 coordinates = np.array([seed[1:] for seed in seeds]) / graph.segmentation_resolution
                 atoms = app_utils.handle_supervoxel_id_lookup(graph, coordinates, ids)
-                mapping = index()
+                mapping = source_label_index()
                 positions = np.searchsorted(mapping[:, 0], atoms)
                 if np.any(positions >= len(mapping)) or np.any(mapping[positions, 0] != atoms):
                     raise BadRequest('Split seeds could not be resolved to source supervoxels.')

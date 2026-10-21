@@ -49,6 +49,24 @@ def validate_manifest(meta):
             raise ValueError('spatial_tiles needs three positive atom_tile_xyz integers')
         if any(c % t for c, t in zip(meta['graph_chunk_xyz'], tiles)):
             raise ValueError('Every graph chunk dimension must be divisible by the corresponding tile dimension')
+    if 'supervoxel_split' in meta:
+        split = meta['supervoxel_split']
+        if not isinstance(split, dict) or type(split.get('enabled', False)) is not bool:
+            raise ValueError('supervoxel_split must be an object with a boolean enabled field')
+        if set(split) - {'enabled', 'grid_xyz', 'max_atoms', 'max_seconds'}:
+            raise ValueError('Unknown supervoxel_split option')
+        grid = split.get('grid_xyz', [16, 16, 16])
+        if (not isinstance(grid, list) or len(grid) != 3 or
+                any(type(v) is not int or v <= 0 for v in grid) or
+                any(c % v for c, v in zip(meta['graph_chunk_xyz'], grid))):
+            raise ValueError('supervoxel_split.grid_xyz must contain positive integers dividing graph_chunk_xyz')
+        if type(split.get('max_atoms', 64)) is not int or split.get('max_atoms', 64) <= 0:
+            raise ValueError('supervoxel_split.max_atoms must be a positive integer')
+        seconds = split.get('max_seconds', 30)
+        if type(seconds) not in (int, float) or not math.isfinite(seconds) or seconds <= 0:
+            raise ValueError('supervoxel_split.max_seconds must be finite and positive')
+        if split.get('enabled') and policy != 'agglomerated_supervoxels':
+            raise ValueError('supervoxel_split requires agglomerated_supervoxels')
     for field in ('image_https', 'segmentation_https') + (('agglomeration_https',) if policy == 'agglomerated_supervoxels' else ()):
         source = urlsplit(meta.get(field, ''))
         if any(character.isspace() or character in '{};"' for character in meta.get(field, '')):
@@ -124,6 +142,8 @@ def create(manifest, dest, source_dir=None, project_name=None):
         service['environment'] = env
         if name == 'pcg':
             env.update(BIGTABLE_PROJECT=meta['bigtable_project'], BIGTABLE_INSTANCE=graph, PROJECT_ID=meta['bigtable_project'], PCG_GRAPH_IDS=graph)
+            if meta.get('test_fixture') and meta.get('supervoxel_split', {}).get('enabled'):
+                env['CAVE_SVSPLIT_FAULT'] = 'file:/data/supervoxel_splits/fault.json'
             env.pop('CAVE_UI_SANDBOX', None)
             service['volumes'] = ['./config:/workspace/config:ro', './scripts:/workspace/scripts:ro', './data:/data', './deployment.json:/workspace/deployment.json:ro']
             if source:
@@ -147,7 +167,9 @@ def create(manifest, dest, source_dir=None, project_name=None):
     token = dest / 'secrets/cave-secret.json'
     token.write_text(json.dumps({'token': '00000000000000000000000000000000'}) + '\n')
     token.chmod(0o600)
-    for name in ('sitecustomize.py', 'wsgi.py', 'celery_app.py', 'local_mesh.py', 'source_label_policy.py', 'database_connections.py', 'segmentation_metadata.py'):
+    for name in ('sitecustomize.py', 'wsgi.py', 'celery_app.py', 'local_mesh.py', 'source_label_policy.py',
+                 'supervoxel_split.py', 'supervoxel_refine.py', 'supervoxel_history.py',
+                 'supervoxel_service.py', 'database_connections.py', 'segmentation_metadata.py'):
         shutil.copyfile(ROOT / 'scripts' / name, dest / 'scripts' / name)
     shutil.copyfile(ROOT / 'scripts/ingest_segmentation_iteration.py', dest / 'scripts/ingest.py')
     for name in ('empty.ini', 'pcg.py', 'common.py'):

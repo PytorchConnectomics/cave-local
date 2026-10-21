@@ -22,6 +22,11 @@ Git. Verify must exit successfully. Backup must report `complete: true` and
 failure; the script still tries to restart exactly the previously running
 services. Check `status` if the restart fails.
 
+After supervoxel refinement, use these same commands. The copy includes all
+atom-table generations, lineage and refinement journals and preserves only
+their recognized relative table links within `data/`. Restore keeps current
+and timestamped graph history; unrelated or escaping links are rejected.
+
 `--offline` is allowed only when the whole deployment is stopped. It provides
 a consistent copy with hashes, but explicitly lacks an original API snapshot.
 Describe that limitation in the handoff.

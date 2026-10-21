@@ -335,3 +335,36 @@ def test_shell_entrypoint_selects_its_environment_and_preserves_argument_boundar
     assert result.returncode == 0, result.stderr
     assert result.stdout.splitlines() == ["local" if has_local_environment else "fallback",
                                           str(package / "scripts/cli.py"), "status", "deployment with spaces"]
+
+
+def test_refinement_validation_and_repair_are_deployment_scoped(monkeypatch, saved_deployment, external_calls):
+    path = saved_deployment / 'deployment.json'
+    meta = json.loads(path.read_text())
+    with pytest.raises(ValueError, match='not enabled'):
+        invoke(monkeypatch, 'svsplit', 'repair', saved_deployment)
+    meta.update(test_fixture=True, supervoxel_split={'enabled': True})
+    path.write_text(json.dumps(meta))
+    invoke(monkeypatch, 'validate', saved_deployment, '--edit-fixture')
+    assert external_calls.pop()[0] == [sys.executable, str(ROOT / 'scripts/verify_supervoxel_split.py'), str(saved_deployment)]
+    invoke(monkeypatch, 'svsplit', 'repair', saved_deployment)
+    command = external_calls.pop()[0]
+    assert command[:6] == ['docker', 'compose', '--env-file', str(saved_deployment / '.env'), '-f', str(saved_deployment / 'compose.yml')]
+    assert command[6:] == ['exec', '-T', 'pcg', 'python', '/workspace/scripts/supervoxel_refine.py', '--repair', '--graph-id', meta['graph_id']]
+
+
+@pytest.mark.parametrize('retained', ['journal', 'generation', 'broken_generation'])
+def test_repair_remains_available_after_disabling_new_refinements(monkeypatch, saved_deployment, external_calls, retained):
+    if retained == 'journal':
+        path = saved_deployment / 'data/supervoxel_splits/journal/12/journal.json'
+        path.parent.mkdir(parents=True)
+        path.write_text('{"state":"verify_failed"}')
+    else:
+        tables = saved_deployment / 'data/atom_tables'
+        tables.mkdir()
+        if retained == 'generation':
+            (tables / '1').mkdir()
+        (tables / 'current').symlink_to('1', target_is_directory=True)
+    invoke(monkeypatch, 'svsplit', 'repair', saved_deployment)
+    assert external_calls[0][0][6:] == [
+        'exec', '-T', 'pcg', 'python', '/workspace/scripts/supervoxel_refine.py',
+        '--repair', '--graph-id', 'cli_example']

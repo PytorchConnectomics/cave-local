@@ -7,6 +7,7 @@ import os, json, time
 from flask import g, request, jsonify
 service=os.environ.get('CAVE_SERVICE','pcg')
 release_database_sessions=None
+svsplit_adapters=False
 if service in ('annotation','materialize'):
     from database_connections import install as install_database_connections
     release_database_sessions=install_database_connections()
@@ -15,6 +16,22 @@ if service in ('annotation','materialize'):
 if service=='pcg':
     from pychunkedgraph.app import create_app
     from pychunkedgraph.app.segmentation import common
+    from supervoxel_service import configuration, requires_adapters
+    svsplit_spec=configuration()
+    # Existing lineage and crash fences remain necessary after new refinement
+    # is disabled. The source-label hook separately checks the enabled switch.
+    svsplit_adapters=requires_adapters(svsplit_spec)
+    if svsplit_adapters:
+        from supervoxel_service import install as install_svsplit
+        install_svsplit(common)
+        # Every worker runs recovery under the shared mutation lock before serving.
+        # First startup precedes ingestion, when there cannot be a journal yet.
+        from pathlib import Path
+        if (Path('/data/ingested.json').exists()
+                or any(Path('/data/supervoxel_splits/journal').rglob('journal.json'))):
+            from pychunkedgraph.graph.chunkedgraph import ChunkedGraph
+            from supervoxel_refine import recover
+            recover(ChunkedGraph(graph_id=svsplit_spec['graph_id']))
     def publish_edit(table_id,user_id,result,is_priority=True,remesh=True):
         import redis
         payload={'graph':table_id,'user_id':str(user_id),'operation_id':int(result.operation_id),'roots':[str(x) for x in result.new_root_ids],'time':time.time()}
@@ -48,6 +65,9 @@ elif service=='materialize':
     with bootstrap.app_context():
         from materializationengine.app import create_app
 app=create_app()
+if svsplit_adapters:
+    from supervoxel_service import attach as attach_svsplit
+    attach_svsplit(app)
 if release_database_sessions:
     app.teardown_request(release_database_sessions)
 if service=='pcg' and os.environ.get('CAVE_UI_SANDBOX')=='1':

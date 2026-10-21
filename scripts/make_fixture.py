@@ -36,7 +36,17 @@ def fixture_arrays(variant):
     return labels, image, shape, resolution, unit, axes
 
 
-def create(output, variant="zyx", policy="source_labels", graph=None, port=8181):
+def add_refinement_geometry(labels):
+    """Add independent finite-contact pairs for retry and neighbour-lock tests."""
+    for left, right, z, y in ((31, 32, 2, 12), (41, 42, 10, 12)):
+        box = np.s_[z:z + 4, y:y + 4, 12:20]
+        if np.any(labels[box]):
+            raise ValueError("Refinement fixture geometry overlaps an existing object")
+        labels[z:z + 4, y:y + 4, 12:16] = left
+        labels[z:z + 4, y:y + 4, 16:20] = right
+
+
+def create(output, variant="zyx", policy="source_labels", graph=None, port=8181, supervoxel_split=False):
     import cc3d
     import zarr
     from cloudvolume import CloudVolume
@@ -44,6 +54,12 @@ def create(output, variant="zyx", policy="source_labels", graph=None, port=8181)
     if output.exists():
         raise ValueError("Fixture output already exists; choose a fresh directory")
     labels, image, shape, resolution, unit, axes = fixture_arrays(variant)
+    if supervoxel_split:
+        if policy != "agglomerated_supervoxels":
+            raise ValueError("The refinement fixture requires agglomerated_supervoxels")
+        # Pair31/32 stays untouched until the cross-root neighbour-lock test.
+        # Pair41/42 supplies a finite cut for the forced mincut-retry scenarios.
+        add_refinement_geometry(labels)
     output.mkdir(parents=True)
     segmentation = CloudVolume("file://" + str(output / "segmentation"),
         info=CloudVolume.create_new_info(num_channels=1, layer_type="segmentation", data_type="uint64",
@@ -87,9 +103,17 @@ def create(output, variant="zyx", policy="source_labels", graph=None, port=8181)
         # Every other label is ungrouped (segment 0) and starts as its own root.
         fragment = np.unique(labels[labels != 0])
         segment = np.where(np.isin(fragment, np.array([7, 2**63 + 123], np.uint64)), np.uint64(1), np.uint64(0))
+        rg_a, rg_b, rg_aff = [7], [2**63 + 123], [0.9]
+        if supervoxel_split:
+            for group_id, left, right in ((2, 31, 32), (3, 41, 42)):
+                segment[np.isin(fragment, np.array([left, right], np.uint64))] = group_id
+                rg_a.append(left); rg_b.append(right); rg_aff.append(0.8)
         np.savez(output / "agglomeration.npz", fragment=fragment, segment=segment,
-                 rg_a=np.array([7], np.uint64), rg_b=np.array([2**63 + 123], np.uint64), rg_aff=np.array([0.9]))
+                 rg_a=np.array(rg_a, np.uint64), rg_b=np.array(rg_b, np.uint64), rg_aff=np.array(rg_aff))
         manifest["agglomeration_https"] = "file:///source/agglomeration.npz"
+    if supervoxel_split:
+        manifest["supervoxel_split"] = {"enabled": True, "grid_xyz": [4, 4, 4],
+                                       "max_atoms": 64, "max_seconds": 30}
     for name, data in [("manifest.json", manifest), ("expected.json", {
         "variant": variant, "shape_xyz": shape, "axes": axes, "unit": unit,
         "foreground_voxels": int(np.count_nonzero(labels)), "labels": expected,
@@ -106,5 +130,6 @@ if __name__ == "__main__":
     parser.add_argument("--atom-policy", choices=["source_labels", "spatial_tiles", "agglomerated_supervoxels"], default="source_labels")
     parser.add_argument("--graph-id")
     parser.add_argument("--port", type=int, default=8181)
+    parser.add_argument("--supervoxel-split", action="store_true")
     args = parser.parse_args()
-    create(args.output.resolve(), args.variant, args.atom_policy, args.graph_id, args.port)
+    create(args.output.resolve(), args.variant, args.atom_policy, args.graph_id, args.port, args.supervoxel_split)
