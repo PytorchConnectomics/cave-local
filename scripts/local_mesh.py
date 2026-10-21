@@ -20,6 +20,14 @@ def bounds():return np.load('/data/atom_bounds.npy')
 def geometry():
     import json
     return json.loads(Path('/data/prepared.json').read_text())
+@lru_cache(maxsize=1)
+def lowres():
+    # Optional data/atomic_ds (a coarser copy of the supervoxel layer, info carries stride_xyz): whole-cube roots exceed the
+    # full-resolution limit below, and supervoxels never change with edits, so one copy serves every root.
+    p=Path('/data/atomic_ds/info')
+    if not p.exists():return None
+    import json
+    i=json.loads(p.read_text());return np.array(i['stride_xyz'],int),np.array(i['scales'][0]['resolution'],float),np.array(i['scales'][0]['size'],int)
 def manifest(table_id,node_id):
     name=str(node_id)+'.drc';p=Path('/data/meshes')/name;p.parent.mkdir(exist_ok=True)
     with LOCK:
@@ -31,12 +39,16 @@ def manifest(table_id,node_id):
             # Spatial iteration order matches increasing encoded node IDs.
             assert np.all(ix[pos,0]==leaves)
             bb=bounds()[pos].astype(int);lo=np.maximum(bb[:,:3].min(axis=0)-1,0);hi=np.minimum(bb[:,3:].max(axis=0)+1,geometry()['shape_xyz'])
+            url,resolution='file:///data/atomic',np.array(geometry()['resolution_nm_xyz'])
+            ds=lowres()
+            # Small roots stay at full resolution (fast, and tiny pieces do not vanish in the coarse copy).
+            if ds is not None and np.prod(hi-lo)>20_000_000:
+                f,resolution,size=ds;lo=lo//f;hi=np.minimum(-(-hi//f),size);url='file:///data/atomic_ds'
             shape=hi-lo
             if np.prod(shape)>200_000_000: return jsonify({'error':'Selected root exceeds local on-demand meshing limit; use sharded L2 workers.'}),413
-            cv=CloudVolume('file:///data/atomic',fill_missing=True)
+            cv=CloudVolume(url,fill_missing=True)
             arr=cv[tuple(slice(int(x),int(y)) for x,y in zip(lo,hi))][...,0]
             mask=np.asfortranarray(np.isin(arr,leaves).astype(np.uint8))
-            resolution=np.array(geometry()['resolution_nm_xyz'])
             mesher=zmesh.Mesher(resolution);mesher.mesh(mask,close=True)
             if not mesher.ids():return jsonify({'fragments':[]})
             mesh=mesher.get(1,reduction_factor=0);vertices=mesh.vertices.astype(np.float32)+(lo*resolution).astype(np.float32)
