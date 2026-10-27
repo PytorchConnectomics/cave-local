@@ -1136,14 +1136,19 @@ def _allocate(cg, snapshot, tables, count):
     return new
 
 
-def refine(cg, requests, *, grid_xyz=(16, 16, 16), reason="same_supervoxel", data_dir="/data"):
+def refine(cg, requests, *, grid_xyz=(16, 16, 16), reason="same_supervoxel", data_dir="/data", max_seconds=None):
     from supervoxel_history import load_atom_tables
     install_lock_ownership_fix()
     if cg.cache is not None:
         raise ValueError("Refinement requires a fresh ChunkedGraph outside a native edit cache")
     started = time.monotonic()
+    def check_budget():
+        if max_seconds is not None and time.monotonic() >= started + max_seconds:
+            from supervoxel_paint import PaintError
+            raise PaintError('deadline', 'The paint deadline expired before refinement publication.')
     result = RefineResult()
     with mutation_lock(data_dir):
+        check_budget()
         _recover_locked(cg, data_dir)
         # A failed verification retains exact staged chunk/table payloads for
         # explicit repair. A new refinement on another root can share those
@@ -1156,10 +1161,21 @@ def refine(cg, requests, *, grid_xyz=(16, 16, 16), reason="same_supervoxel", dat
             request = request if isinstance(request, dict) else {"atom": int(request)}
             atom = int(request["atom"])
             for attempt in range(2):
+                check_budget()
                 tables = load_atom_tables(data_dir)
                 if atom in tables.retired:
                     break
-                before_lock = _discover(cg, atom, data_dir, tables)
+                try:
+                    before_lock = _discover(cg, atom, data_dir, tables)
+                except PreconditionsChanged as error:
+                    # Native edits do not take the refinement file lock. A
+                    # neighbouring cut can retire an L2 between this probe's
+                    # parent and child reads, before any root lock is held.
+                    # Spend the same bounded retry without allocating an edit
+                    # id, acquiring locks or staging a journal from that view.
+                    if attempt == 1:
+                        raise RefinementError("root changed during refinement; retry") from error
+                    continue
                 operation = cg.client.create_operation_id()
                 acquired, locked = _unwrapped_lock(cg.client, before_lock["roots"], operation)
                 if not acquired:
@@ -1174,6 +1190,7 @@ def refine(cg, requests, *, grid_xyz=(16, 16, 16), reason="same_supervoxel", dat
                     if set(snapshot["roots"]) & fenced_roots(data_dir):
                         raise RefinementError("supervoxel refinement in progress or awaiting repair")
                     _renew(cg.client, locked, operation)
+                    check_budget()
                     pieces, count = _compute_pieces(snapshot, request, grid_xyz, cg.segmentation_resolution)
                     _renew(cg.client, locked, operation)
                     if count <= 1:
@@ -1193,6 +1210,7 @@ def refine(cg, requests, *, grid_xyz=(16, 16, 16), reason="same_supervoxel", dat
                     fresh = _discover(cg, atom, data_dir, tables)
                     if not _precondition_equal(snapshot, fresh):
                         raise PreconditionsChanged("Affected root set changed during staging")
+                    check_budget()
                     journal.transition("publishing")
                     publish_journal(journal, PublicationStore(cg, journal, data_dir),
                                     renew=lambda: _renew(cg.client, locked, operation), data_dir=data_dir)

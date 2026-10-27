@@ -93,3 +93,15 @@ small fixture chunks and enables the dedicated verifier. See the
 Keep real-volume enablement separate from fixture acceptance and within the
 user's stated scope. Source volumes remain read-only; refinement writes only the
 deployment's derived atomic volume and graph.
+
+Use `bin/cave fixture NEW_INPUT --paint --graph-id GRAPH --port FREE_PORT` for
+the independent painted-cut acceptance targets. `--paint` selects the
+agglomerated policy and enables both switches. Follow the same create/start/
+validate sequence with a new `cave-pkg-*` project and its own source directory.
+`bin/cave create MANIFEST NEW_DEPLOYMENT --paint` is a convenience switch only
+for generated agglomerated fixtures; it does not add paint geometry to their
+source arrays. Configure a supplied dataset explicitly in its manifest.
+Read the [paint API, limits and provenance contract](../../docs/operations.md#painted-cuts-opt-in).
+Paint remains off by default, and no real-volume enablement follows from a
+successful fixture test. Record the new paint cases separately from existing
+svsplit acceptance. The client brush is a separate cave-seg-bio change.

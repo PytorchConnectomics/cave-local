@@ -46,13 +46,81 @@ def add_refinement_geometry(labels):
         labels[z:z + 4, y:y + 4, 16:20] = right
 
 
-def create(output, variant="zyx", policy="source_labels", graph=None, port=8181, supervoxel_split=False):
+def add_paint_geometry(original):
+    """Keep the svsplit fixture intact and put paint targets on separate slices."""
+    labels = np.zeros((64, max(40, original.shape[1]), max(48, original.shape[2])), np.uint64)
+    labels[tuple(slice(0, n) for n in original.shape)] = original
+    # A neck entirely inside one graph chunk: seeded refinement has no seam.
+    labels[26:30, 2:10, 2:6] = 1001
+    labels[26:30, 2:10, 10:14] = 1001
+    labels[27:29, 5:7, 6:10] = 1001
+    for index, (lo, hi) in enumerate(((2, 5), (5, 8), (8, 11), (11, 14))):
+        labels[26:30, 18:24, lo:hi] = 1101 + index
+    # One fragment meeting itself at x=16: its cross-chunk edge is infinite.
+    labels[34:38, 2:10, 12:20] = 1201
+    # Two independent routes between the painted ends, with the lower route
+    # outside a deliberately narrow solve box around the top route.
+    labels[34:38, 18:36, 2:6] = 1301
+    labels[34:38, 18:36, 42:46] = 1302
+    labels[34:38, 18:22, 6:24] = 1303
+    labels[34:38, 18:22, 24:42] = 1304
+    labels[34:38, 32:36, 6:24] = 1305
+    labels[34:38, 32:36, 24:42] = 1306
+    # Overlapping bounds near the upper paint, actual contact at y=11/12.
+    # Both atoms stay in one base chunk, so this tests voxel contact locality.
+    labels[42:46, 2:14, 2:4] = 1401
+    labels[42:46, 12:14, 4:12] = 1401
+    labels[42:46, 2:12, 6:8] = 1402
+    labels[42:46, 10:12, 8:12] = 1402
+    # Independent, non-touching atoms for near/far fake merges in the verifier.
+    labels[42:46, 2:14, 18:22] = 1501
+    labels[42:46, 2:14, 26:30] = 1502
+    # A second pristine pair is required: reactivating the first fake merge
+    # retains its original creating timestamp, so it cannot test new locality.
+    labels[42:46, 18:30, 18:22] = 1503
+    labels[42:46, 18:30, 26:30] = 1504
+    geometry = {
+        'coordinate_order': 'XYZ', 'coordinates': 'voxel indices; nm centres = (voxel + 0.5) * resolution',
+        'neck': {'labels': [1001], 'sources_vox': [[4, 5, 28]], 'sinks_vox': [[12, 5, 28]],
+                 'bounds_xyz': [[2, 2, 26], [14, 10, 30]]},
+        'multi': {'labels': [1101, 1102, 1103, 1104],
+                  'sources_vox': [[3, 20, 28], [6, 20, 28]],
+                  'sinks_vox': [[9, 20, 28], [12, 20, 28]]},
+        'seam': {'labels': [1201], 'sources_vox': [[14, 5, 35]], 'sinks_vox': [[18, 5, 35]],
+                 'repaint_sources_vox': [[12, 5, 35]], 'repaint_sinks_vox': [[15, 5, 35]],
+                 'face_vox': [16, 5, 35]},
+        'bypass': {'labels': list(range(1301, 1307)), 'sources_vox': [[4, 20, 35]],
+                   'sinks_vox': [[44, 20, 35]], 'lower_route_vox': [24, 34, 35]},
+        'distant_contact': {'labels': [1401, 1402], 'sources_vox': [[2, 3, 44]],
+                            'sinks_vox': [[6, 3, 44]], 'contact_vox': [8, 12, 44],
+                            'max_cut_distance_nm': 24},
+        'fake_edge': {'labels': [1501, 1502], 'sources_vox': [[19, 3, 44]],
+                      'sinks_vox': [[27, 3, 44]],
+                      'near_labels': [1503, 1504],
+                      'near_sources_vox': [[19, 19, 44]], 'near_sinks_vox': [[27, 19, 44]],
+                      'near_merge_vox': [[19, 19, 44], [27, 19, 44]],
+                      'far_merge_vox': [[19, 12, 44], [27, 12, 44]],
+                      'max_cut_distance_nm': 24},
+        'segment_groups': [[1001], [1101, 1102, 1103, 1104], [1201],
+                           list(range(1301, 1307)), [1401, 1402]],
+        'region_edges': [[1101, 1102, .8], [1102, 1103, .1], [1103, 1104, .8],
+                         [1301, 1303, .8], [1303, 1304, .1], [1304, 1302, .8],
+                         [1301, 1305, .8], [1305, 1306, .1], [1306, 1302, .8],
+                         [1401, 1402, .1]],
+    }
+    return labels, geometry
+
+
+def create(output, variant="zyx", policy="source_labels", graph=None, port=8181,
+           supervoxel_split=False, paint=False):
     import cc3d
     import zarr
     from cloudvolume import CloudVolume
     from numcodecs import Blosc
     if output.exists():
         raise ValueError("Fixture output already exists; choose a fresh directory")
+    if paint:
+        policy, supervoxel_split = 'agglomerated_supervoxels', True
     labels, image, shape, resolution, unit, axes = fixture_arrays(variant)
     if supervoxel_split:
         if policy != "agglomerated_supervoxels":
@@ -60,6 +128,12 @@ def create(output, variant="zyx", policy="source_labels", graph=None, port=8181,
         # Pair31/32 stays untouched until the cross-root neighbour-lock test.
         # Pair41/42 supplies a finite cut for the forced mincut-retry scenarios.
         add_refinement_geometry(labels)
+    paint_geometry = None
+    if paint:
+        labels, paint_geometry = add_paint_geometry(labels)
+        shape = list(labels.shape[::-1])
+        zz, yy, xx = np.indices(labels.shape)
+        image = ((xx * 5 + yy * 7 + zz * 11) % 256).astype(np.uint8)
     output.mkdir(parents=True)
     segmentation = CloudVolume("file://" + str(output / "segmentation"),
         info=CloudVolume.create_new_info(num_channels=1, layer_type="segmentation", data_type="uint64",
@@ -108,15 +182,24 @@ def create(output, variant="zyx", policy="source_labels", graph=None, port=8181,
             for group_id, left, right in ((2, 31, 32), (3, 41, 42)):
                 segment[np.isin(fragment, np.array([left, right], np.uint64))] = group_id
                 rg_a.append(left); rg_b.append(right); rg_aff.append(0.8)
+        if paint_geometry:
+            for group_id, members in enumerate(paint_geometry['segment_groups'], 10):
+                segment[np.isin(fragment, np.asarray(members, np.uint64))] = group_id
+            for a, b, affinity in paint_geometry['region_edges']:
+                rg_a.append(a); rg_b.append(b); rg_aff.append(affinity)
         np.savez(output / "agglomeration.npz", fragment=fragment, segment=segment,
                  rg_a=np.array(rg_a, np.uint64), rg_b=np.array(rg_b, np.uint64), rg_aff=np.array(rg_aff))
         manifest["agglomeration_https"] = "file:///source/agglomeration.npz"
     if supervoxel_split:
         manifest["supervoxel_split"] = {"enabled": True, "grid_xyz": [4, 4, 4],
                                        "max_atoms": 64, "max_seconds": 30}
+    if paint:
+        from supervoxel_paint import PAINT_LIMITS
+        manifest['supervoxel_split']['paint'] = {**PAINT_LIMITS, 'enabled': True}
     for name, data in [("manifest.json", manifest), ("expected.json", {
         "variant": variant, "shape_xyz": shape, "axes": axes, "unit": unit,
         "foreground_voxels": int(np.count_nonzero(labels)), "labels": expected,
+        **({'paint_geometry': paint_geometry} if paint_geometry else {}),
         "source_zyx_uint64_sha256": hashlib.sha256(labels.astype("<u8").tobytes()).hexdigest()})]:
         (output / name).write_text(json.dumps(data, indent=2) + "\n")
     print(output / "manifest.json")
@@ -131,5 +214,6 @@ if __name__ == "__main__":
     parser.add_argument("--graph-id")
     parser.add_argument("--port", type=int, default=8181)
     parser.add_argument("--supervoxel-split", action="store_true")
+    parser.add_argument("--paint", action="store_true", help="Add paint targets and enable agglomerated refinement")
     args = parser.parse_args()
-    create(args.output.resolve(), args.variant, args.atom_policy, args.graph_id, args.port, args.supervoxel_split)
+    create(args.output.resolve(), args.variant, args.atom_policy, args.graph_id, args.port, args.supervoxel_split, args.paint)

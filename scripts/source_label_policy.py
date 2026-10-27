@@ -1,12 +1,53 @@
 """Source-label guard and opt-in, bounded local supervoxel refinement."""
 import contextlib
 import json
+import re
 import time
 import uuid
 from pathlib import Path
 
 import numpy as np
 from flask import g, request
+
+
+_PAINT_KEY = re.compile(rb'"(?:p|\\u0070)(?:a|\\u0061)(?:i|\\u0069)(?:n|\\u006[eE])(?:t|\\u0074)"')
+
+
+def _has_paint_key(raw):
+    """Recognize a top-level paint key without decoding an unbounded body.
+
+    Ignore nested keys and string values. JSON's escaped spelling of the key
+    must still receive the byte limit before the full JSON decoder runs.
+    """
+    if b'"paint"' not in raw and b'\\u' not in raw:
+        return False
+    depth, start, escaped, key = 0, None, False, False
+    for index, value in enumerate(raw):
+        if start is not None:
+            if escaped:
+                escaped = False
+            elif value == 92:
+                escaped = True
+            elif value == 34:
+                if depth == 1 and key and index - start <= 31 and _PAINT_KEY.fullmatch(raw[start:index + 1]):
+                    return True
+                start = None
+            continue
+        if value == 34:
+            start = index
+        elif value in (123, 91):
+            if depth == 0 and value != 123:
+                return False
+            depth += 1
+            if depth == 1:
+                key = True
+        elif value in (125, 93):
+            depth -= 1
+            if depth <= 0:
+                return False
+        elif depth == 1 and value in (44, 58):
+            key = value == 44
+    return False
 
 
 @contextlib.contextmanager
@@ -180,6 +221,28 @@ def install(common):
     original_split = common.handle_split
 
     def split(table_id):
+        # Paint bounds apply only to paint bodies. Leave point requests and
+        # their native decoding/error behavior independent of this feature.
+        from supervoxel_paint import PAINT_LIMITS, PaintError
+        started = time.monotonic()
+        raw = request.get_data()
+        paint_body = _has_paint_key(raw)
+        if paint_body:
+            maximum = spec.get('supervoxel_split', {}).get('paint', {}).get(
+                'max_request_bytes', PAINT_LIMITS['max_request_bytes'])
+            if len(raw) > maximum:
+                raise PaintError('limit', 'Paint request exceeds max_request_bytes.')
+        try:
+            body = json.loads(raw)
+        except (ValueError, UnicodeError) as error:
+            if paint_body:
+                raise PaintError('limit', 'Paint request must be valid JSON.') from error
+            return original_split(table_id)
+        if not isinstance(body, dict):
+            return original_split(table_id)
+        if 'paint' in body:
+            from supervoxel_paint_service import painted_split
+            return painted_split(original_split, table_id, spec, body, started=started)
         if spec.get('supervoxel_split', {}).get('enabled', False):
             return enabled_split(original_split, table_id, spec)
         prepared = Path('/data/prepared.json')

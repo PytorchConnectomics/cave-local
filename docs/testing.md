@@ -131,6 +131,28 @@ removes only that new copy. Without this input, the report explicitly says
 This extra gate runs on the first selected scenario, including a targeted XYZ
 run; the report cannot claim it passed when it was not executed.
 
+Painted cuts add another opt-in gate. Generate a fresh fixture with
+`bin/cave fixture NEW_INPUT --paint --graph-id GRAPH --port FREE_PORT`, create
+its own `cave-pkg-*` deployment, start it, and run
+`bin/cave validate DEPLOYMENT --edit-fixture`. The fixture preserves the old
+svsplit targets and records its additional geometry in
+`expected.json.paint_geometry`. See the [paint contract](operations.md#painted-cuts-opt-in).
+The required run includes the existing 19 cases and painted success, separation,
+locality, seam, outside-box bypass, fake-edge provenance, undo/redo, validation,
+limits, races, disabled-gate and deadline cases. Provenance coverage includes
+process exits, partial/non-crash writes, delayed binding/marker writes and both
+lock-delay paths through the first `_write` persistence gate. Each report must
+distinguish passed, failed and pending cases. The older svsplit report alone
+does not establish paint acceptance.
+
+The PCG image now overlays the exact PyChunkedGraph fork revision in
+`upstream.lock.json`; tests must use the image build key computed from this
+candidate's lock and Dockerfiles. Re-run all supervoxel unit files and the new
+paint files in that image, followed by the complete fresh acceptance. Old image
+results do not qualify the fork. Timing observations are fixture measurements,
+not production latency guarantees. This server gate does not test the separate
+cave-seg-bio paint UI.
+
 Actual first and subsequent Copybara migrations, preserving public-side
 community files, executable modes and no-op behavior require the separate
 opt-in migration suite described in [release preparation](release.md).

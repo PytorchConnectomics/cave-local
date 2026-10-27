@@ -592,6 +592,53 @@ def publishing_runtime(tmp_path, monkeypatch):
     return state
 
 
+@pytest.mark.parametrize('failures', [1, 2])
+def test_prelock_discovery_race_uses_bounded_retry_without_allocating_stale_operation(
+        tmp_path, monkeypatch, publishing_runtime, failures):
+    env = publishing_runtime
+    original_discover = refine._discover
+    discoveries, allocations = [], []
+    def create_operation_id():
+        allocations.append(123)
+        return np.uint64(123)
+    def discover(*args):
+        discoveries.append(len(discoveries) + 1)
+        if len(discoveries) <= failures:
+            assert allocations == [] and not env.held and env.journal is None
+            raise refine.PreconditionsChanged('affected level-2 node 20 is no longer current')
+        return original_discover(*args)
+    monkeypatch.setattr(env.cg.client, 'create_operation_id', create_operation_id)
+    monkeypatch.setattr(refine, '_discover', discover)
+    if failures == 1:
+        result = refine.refine(env.cg, [{'atom': 100}], data_dir=tmp_path)
+        assert result.count == 1 and result.operation_ids == ['123']
+        assert allocations == [123] and len(discoveries) == 4
+        assert env.journal.state == 'done'
+        assert env.released == [(1000, 123), (2000, 123)]
+    else:
+        with pytest.raises(refine.RefinementError, match='root changed during refinement; retry'):
+            refine.refine(env.cg, [{'atom': 100}], data_dir=tmp_path)
+        assert len(discoveries) == 2 and allocations == []
+        assert env.journal is None and env.store.writes == [] and env.released == []
+    assert not env.held and refine.fenced_roots(tmp_path) == set()
+
+
+def test_prelock_discovery_retry_keeps_original_paint_deadline(tmp_path, monkeypatch, publishing_runtime):
+    from supervoxel_paint import PaintError
+    env, clock, discoveries = publishing_runtime, [0.0], []
+    monkeypatch.setattr(refine.time, 'monotonic', lambda: clock[0])
+    monkeypatch.setattr(env.cg.client, 'create_operation_id', lambda: pytest.fail('expired discovery allocated an edit'))
+    def discover(*args):
+        discoveries.append(True)
+        clock[0] = 6.0
+        raise refine.PreconditionsChanged('neighbour changed during discovery')
+    monkeypatch.setattr(refine, '_discover', discover)
+    with pytest.raises(PaintError, match='deadline expired'):
+        refine.refine(env.cg, [{'atom': 100}], data_dir=tmp_path, max_seconds=5)
+    assert discoveries == [True] and not env.held and env.journal is None
+    assert env.store.writes == [] and env.released == []
+
+
 @pytest.mark.parametrize("failure_step", refine.PUBLICATION_STEPS)
 def test_transient_publication_error_recovers_before_request_returns(
         tmp_path, monkeypatch, publishing_runtime, failure_step):

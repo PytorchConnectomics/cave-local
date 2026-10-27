@@ -111,6 +111,11 @@ from the region graph get `agglomeration_default_affinity` (default 0.001), so
 the split tool cuts weak boundaries first. Contacts between different segments
 start unjoined; `data/region_affinity.npy` records the affinity of every
 contact, aligned with `data/region_adjacency.npy`, as a candidate-merge list.
+The separate [paint switch](operations.md#painted-cuts-opt-in) refines only
+current atoms touched by both painted labels, then cuts between all painted
+source and sink atoms. Both switches are opt-in operational settings; original
+source labels remain read-only. A refused paint cut can retain a refinement
+that preserves the object. This API does not add a brush to Spelunker.
 Ingestion rejects supervoxels missing from the mapping and records how many
 segments start as several roots because their supervoxels do not touch inside
 the volume (common at crop edges). Supervoxel and segment IDs may use the full

@@ -257,7 +257,7 @@ fault injection is enabled only on generated `test_fixture` installations; a
 `CAVE_SVSPLIT_FAULT` environment value is ignored on other deployments. Tests
 must never edit a real proofreading graph or reuse another test's volumes.
 
-A split retries the native multicut at most once after a recognized failure.
+A point-seeded split retries the native multicut at most once after a recognized failure.
 `X-Cave-Supervoxels-Refined: N` reports the number of refined atoms, including when
 the retry fails. Same-source-label seeds in different atoms are allowed when the
 switch is enabled. When disabled, the existing indivisible-source rejection
@@ -341,3 +341,200 @@ atom-table generation once. Static gateway atomic-volume requests have no hard
 publication barrier; external clients must validate epochs. `export_preview.py`
 and `export_release.py` export package source, not segmentation data, and do not
 read atom tables or atomic voxels.
+
+## Painted cuts (opt-in)
+
+Painted cuts use two labels: source keeps the painted side and sink cuts it
+off. Enable both `supervoxel_split.enabled` and
+`supervoxel_split.paint.enabled` on an `agglomerated_supervoxels` deployment.
+Both switches are off by default. This run does not enable any real volume.
+
+For disposable acceptance choose a fresh directory, project and unused
+loopback port:
+
+```bash
+bin/cave fixture .runtime/paint-input --paint --graph-id pkg_paint --port 18282
+bin/cave create .runtime/paint-input/manifest.json .runtime/paint \
+  --source-dir .runtime/paint-input --project-name cave-pkg-paint-example
+bin/cave start .runtime/paint
+bin/cave validate .runtime/paint --edit-fixture
+```
+
+`fixture --paint` selects `agglomerated_supervoxels`, enables refinement and
+paint, preserves the existing svsplit targets, and adds independent neck,
+multi-atom, seam, bypass, distant-contact and fake-merge targets. Their source
+labels and XYZ voxel coordinates are recorded in `expected.json.paint_geometry`.
+`create --paint` enables the default paint limits only for a generated
+agglomerated fixture; a supplied dataset must declare its intended settings in
+its own manifest. Create never changes the input manifest or source arrays.
+
+### Split request and client contract
+
+Send `POST /segmentation/api/v1/table/<table>/split` with a JSON body:
+
+```json
+{
+  "paint": {
+    "version": 1,
+    "sources": [{"points_nm": [[100, 100, 200], [150, 100, 200]], "radius_nm": 40}],
+    "sinks": [{"points_nm": [[250, 100, 200]], "radius_nm": 40}]
+  }
+}
+```
+
+Coordinates are XYZ physical nanometers. Each stroke contains one or more
+points and a positive radius; one point paints a sphere. Longer strokes paint
+capsules around each consecutive segment, using voxel centres and the actual
+anisotropic resolution. A radius wider than one slice paints adjacent slices.
+Voxel-index inputs should be converted using `(index + 0.5) * resolution_nm_xyz`.
+Only `points_nm` is accepted by this version. Top-level `sources` and `sinks`
+must be absent or empty when `paint` is present. Painted requests always use
+mincut; `mincut=false` is refused.
+
+Background paint is discarded. Both labels must retain foreground voxels on
+one current object, and the retained label masks must not overlap. The server
+refines only current atoms containing both paint colours, using every painted
+voxel in each atom as a watershed seed. It then remaps all painted voxels and
+passes every touched current atom to one native multicut operation. The paint
+path does not grid-refine seam pieces or retry the point-seeded fallback.
+
+A successful response keeps the native split body and adds:
+
+| Header | Meaning |
+|---|---|
+| `X-Cave-Supervoxels-Refined` | Number of atoms refined, including zero. |
+| `X-Cave-Paint-Voxels` | Retained source and sink counts, comma-separated. |
+| `X-Cave-Paint-Record` | Native operation id associated with durable provenance. |
+| `X-Cave-Paint-Elapsed-Seconds` | Total request duration in seconds, including persistence that finishes after the deadline. |
+
+A refusal is HTTP 400 with the following shape:
+
+```json
+{"error": "The cut cannot be certified", "paint_refusal": {
+  "kind": "not_certified", "locations_nm": [[100, 200, 300]], "supervoxels": []
+}}
+```
+
+`kind` is one of `not_separated`, `not_certified`, `stray_cut`, `seam`,
+`other_object`, `empty_label`, `overlap`, `limit`, `deadline`, `object_changed`
+or `disabled`. `locations_nm` contains at most 20 XYZ physical locations for
+the client to display. A seam refusal asks the user to paint both colours
+inside the same supervoxel on one side of the chunk boundary.
+
+An error after the durable handoff may also include `paint_record_state` in
+the JSON response. This diagnostic reports the provenance state, native log
+status, affected roots, indefinite-lock owners and the observed painted-atom
+partition compared with the pre-cut and expected partitions. A failed graph
+read leaves the comparison unknown and reports its error. Equal partitions do
+not prove that no graph rows changed: an interrupted multi-row write can retain
+partial records. Preserve the record and use the recovery procedure below.
+Native write failures keep their native error response; they are not successful
+cuts or ordinary pre-cut refusals.
+
+Before applying a cut, the service checks all source/sink components under
+native root locks. A closed-side certificate proves separation in the whole
+object; if needed, it tries one doubled, bounded solve box. It refuses a cut
+that remains uncertified. Locality uses actual face-contact voxels, not nearby
+atom bounding boxes. For a fake edge, locality needs the creating merge's
+recorded coordinates; unresolved provenance is refused. A refusal applies no
+native cut. Refinements already published remain, preserving the object's
+voxel set and root. Undo/redo applies to the native cut and retains refinement.
+
+Spelunker itself has no new paint brush in this package. The separate
+cave-seg-bio client must record annotation polylines with radius, submit this
+body, pass painted requests through its gate without a same-fragment
+pre-rejection on enabled volumes, and show refusal locations. Brush controls,
+label/radius controls and a Cut button are outside this repository change.
+
+### Paint limits
+
+`supervoxel_split.paint` accepts only the following settings. All numeric
+limits must be finite and positive; count limits and box dimensions are
+integers. The parent `supervoxel_split.max_atoms` bounds refinements.
+
+| Setting | Default | Unit or scope |
+|---|---|---|
+| `enabled` | `false` | Paint gate; requires the parent gate too. |
+| `max_radius_nm` | 500 | Stroke radius in nm. |
+| `max_stroke_points` | 256 | Points per stroke. |
+| `max_paint_voxels` | 200000 | Painted voxel count. |
+| `max_box_voxels` | `[512,512,128]` | XYZ box dimensions in voxels. |
+| `max_cut_distance_nm` | 1000 | Distance from paint to an actual removed-edge contact. |
+| `max_painted_atoms` | 256 | Distinct current atoms under both labels combined. |
+| `max_removed_edges` | 2000 | Edges checked before applying a cut. |
+| `max_contact_voxels` | 2000000 | Total contact-crop voxels read. |
+| `max_seconds` | 60 | One request-wide deadline in seconds. |
+| `max_request_bytes` | 262144 | Raw request body bytes. |
+| `max_strokes` | 128 | Strokes across both labels. |
+| `max_total_points` | 2048 | Points across all strokes. |
+| `max_raster_work` | 4000000 | Sum of padded segment-box voxel counts, including overlaps. |
+
+Raster work is checked before allocation and processed in batches of at most
+65536 voxels. Graph reads, refinement, remapping, solving and checking share
+the request deadline. The persistence gate checks immediately before the
+first `mutate_rows` of native `_write`, after indefinite-root-lock acquisition
+and client lock renewal; the earlier `CREATED` log is outside this gate.
+No cut persistence starts after the deadline. Once persistence starts it may
+finish after the deadline; successful completion reports success. The native
+solver cannot be interrupted, so a late result is discarded before writing.
+
+### Paint provenance and recovery
+
+The service durably saves the paint exactly as sent, user id, start time,
+paint counts, terminals and refinement ids under
+`data/supervoxel_splits/paint/pending/<request_id>.json` before mutation. The
+record is bound to the native operation id before `_write`, then marked
+`handed_to_write`. Successful records are finalized as
+`paint/<operation_id>.json`. Refused requests without a handoff marker are
+retained under `paint/refused/`. These regular files are included in the
+existing backup/restore workflow.
+
+Worker/request recovery resolves pending records only by their bound operation
+id. A completed PCG operation finalizes its record. `WRITE_STARTED` remains
+`awaiting_pcg_repair`; a handoff marker with `CREATED`, `EXCEPTION` or no log
+remains `ambiguous`, since multi-row writes are not atomic. An unbound record,
+or one without a handoff marker, can become `not_applied` after its deadline
+and lock lifetime. Never infer that no graph rows changed merely from a
+`CREATED` log when the handoff marker exists.
+
+```bash
+bin/cave svsplit repair DEPLOYMENT
+bin/cave svsplit repair DEPLOYMENT --pcg-repair OPERATION_ID
+```
+
+The first command recovers refinement state and reconciles/reports paint
+records, including roots, indefinite locks and the observed partition of
+painted atoms. The second explicitly invokes native PCG repair only for one
+uniquely bound, handed-off operation whose native status is `CREATED`,
+`EXCEPTION` or `WRITE_STARTED`, then reconciles its record. Its native log must
+reconstruct the recorded paint terminals, and its journal must retain the exact
+validated voxel box and removed edges; repair reuses that box and the original
+native edit time. The request's start time plus deadline plus root-lock lifetime
+must have passed before any replay. `CREATED` and `EXCEPTION` repairs require
+every recorded root to remain current. The command locks those exact roots,
+rechecks them under the locks, and refuses a root held by another operation;
+it never follows a root into a newer lineage. `WRITE_STARTED` repair requires
+every recorded root's indefinite lock to still belong to the selected operation.
+Select a confirmed interrupted operation reported as `awaiting_pcg_repair` or
+`ambiguous`, not an operation still being written by a live request.
+
+Explicit repair recomputes and finishes the cut. For an `ambiguous` record,
+this can apply a cut even if no graph rows were previously written; inspect
+the retained record and graph state before selecting that action. The recomputed
+removed edges must equal the previously validated cut before native edge removal,
+and the successful native log must report that same edge set before locks are
+released or provenance becomes `completed`. A post-repair mismatch retains the
+indefinite locks and the record as `ambiguous`, even if native status is `SUCCESS`.
+
+Missing native logs, unbound records and records without a handoff marker cannot
+be replayed by this command. Neither can a `CREATED`/`EXCEPTION` record whose
+partial write or a subsequent edit superseded a recorded root, nor a
+`WRITE_STARTED` record without all its own indefinite locks. Preserve these
+refusals for investigation; do not bypass them by changing provenance or locks.
+Ordinary recovery never invokes native repair and does not discard either
+ambiguous or awaiting-repair records. Young unsuccessful requests remain pending until
+their deadline plus root-lock lifetime, unless the owning request has already
+reported its error. A confirmed native `SUCCESS` can be finalized immediately.
+Repair remains available after the
+feature is disabled if provenance is retained. Do not delete pending records
+or manually clear native locks.

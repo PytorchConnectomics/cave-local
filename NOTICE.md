@@ -7,25 +7,30 @@ packages, container images or components built from them.
 
 The design combines the CAVE services maintained by CAVEconnectome with the
 seung-lab Spelunker fork of Neuroglancer and Fullstory's Bigtable emulator.
-Native graph editing algorithms and the viewer TypeScript source remain
-upstream. The viewer build applies the exact dependency-only overlay in
+The graph runtime overlays a pinned PyChunkedGraph fork with a robust multicut
+fallback and an integer-pair fix. The viewer TypeScript source remains upstream.
+The viewer build applies the exact dependency-only overlay in
 [config/viewer-dependencies.lock.json](config/viewer-dependencies.lock.json).
 
 | Component | Acquisition | Inspected upstream license |
 | --- | --- | --- |
 | [Spelunker / Neuroglancer](https://github.com/seung-lab/neuroglancer/blob/d4aeac3b66eb4bd3fa86dbdc0202a7f006439740/LICENSE) | Source revision in `upstream.lock.json` | Apache-2.0 |
 | [Fullstory Bigtable emulator](https://github.com/fullstorydev/emulators/blob/4b55687158696cd3d906e467b9afc2f9a41c9575/bigtable/LICENSE) | Source revision in `upstream.lock.json` | MIT, Copyright (c) 2021 Engineering at Fullstory |
-| [PyChunkedGraph](https://github.com/CAVEconnectome/PyChunkedGraph/blob/v2.22.0.dev11/LICENSE) | Digest-pinned upstream v2 image | MPL-2.0 |
+| [PyChunkedGraph](https://github.com/PytorchConnectomics/PyChunkedGraph/blob/26c7c74f87a7d5af125970c1e5a623e0c19de425/LICENSE) | Digest-pinned upstream v2 base image plus the exact fork source revision in `upstream.lock.json` | MPL-2.0 |
 | [AnnotationFrameworkInfoService](https://github.com/CAVEconnectome/AnnotationFrameworkInfoService/blob/master/LICENSE) | Digest-pinned upstream image | MIT, Copyright (c) 2024 CAVE |
 | [EMAnnotationSchemas](https://github.com/CAVEconnectome/EMAnnotationSchemas/blob/master/LICENSE) | Digest-pinned upstream image | MIT, Copyright (c) 2018 Forrest Collman |
 | [AnnotationEngine](https://github.com/CAVEconnectome/AnnotationEngine/blob/master/LICENSE) | Digest-pinned upstream image | MIT, Copyright (c) 2018 Forrest Collman |
 | [MaterializationEngine](https://github.com/CAVEconnectome/MaterializationEngine/blob/master/LICENSE) | Digest-pinned upstream image | MIT |
 | [DynamicAnnotationDB](https://github.com/CAVEconnectome/DynamicAnnotationDB/blob/master/LICENSE) | Upstream annotation/materialization dependency | MIT, Copyright (c) 2024 CAVE |
 
-The PyChunkedGraph link deliberately identifies the pinned v2 release. Its
+The PyChunkedGraph link identifies the pinned fork of the v2 package. Its
 legacy `pcgv1` branch has a different license and is outside this package.
 Container source links identify their projects; source/image digest mappings
 are not a complete component inventory.
+`docker/pcg.Dockerfile` copies the fetched fork package into `/app/pychunkedgraph`.
+The generated vendor checkout remains ignored; its source URL and exact revision
+are recorded in `upstream.lock.json`. These changes do not constitute a new
+container dependency or security audit.
 
 Redis, PostgreSQL/PostGIS, nginx, Go and Alpine images retain their own licenses.
 So do all Python/npm dependencies. Keep their distribution metadata and license

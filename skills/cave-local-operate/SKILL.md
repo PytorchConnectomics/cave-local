@@ -61,3 +61,39 @@ refinement. Report the saved verifier results separately from planned cases.
 Use `bin/cave validate DEPLOYMENT --edit-fixture` only on the assigned disposable
 fixture. Enabling the feature on any real volume requires the user's explicit
 scope; a maintenance or test request does not supply it.
+
+For painted cuts, read the [paint request and recovery contract](../../docs/operations.md#painted-cuts-opt-in).
+Both the refinement and paint switches must be enabled. Only atoms painted with
+both colours are refined; a refused cut may retain those refinements while
+preserving the object. Report the structured refusal and locations to the user.
+The separate cave-seg-bio brush is not shipped by this repository.
+
+Retain `data/supervoxel_splits/paint/` provenance. `bin/cave svsplit repair DEPLOYMENT`
+reports pending native operations with their roots, locks and partition comparison.
+Use `bin/cave svsplit repair DEPLOYMENT --pcg-repair OPERATION_ID` only for the
+explicitly selected, confirmed interrupted operation reported as
+`awaiting_pcg_repair` or `ambiguous`. Native repair accepts one uniquely bound,
+handed-off record with reconstructible native status `CREATED`, `EXCEPTION`
+or `WRITE_STARTED`, matching terminals, the recorded validated voxel box and
+removed edges. It requires the request's start time plus deadline plus lock
+lifetime to have passed; do not repair a live request. For `CREATED`/`EXCEPTION`,
+every recorded root must still be current and available for locking by this
+operation. For `WRITE_STARTED`, every recorded root must already carry this
+operation's indefinite lock. Partial `CREATED` writes that superseded a root
+and missing or foreign `WRITE_STARTED` locks therefore refuse replay. Preserve
+the refusal and investigate; never change records or locks to bypass it.
+
+Explicit repair recomputes and finishes the cut at its original native edit
+time and exact recorded box, while holding the recorded roots locked. Its
+solver result must match the previously validated removed edges before removal,
+and the successful native log must match before completion and unlock. A
+post-repair mismatch remains `ambiguous` with indefinite locks retained, even
+when native status says `SUCCESS`. For an ambiguous record, repair may apply
+a cut even if no graph rows were previously written; inspect the retained
+record and graph before choosing that action. A missing native log, binding
+or handoff marker prevents replay. Ordinary recovery does not invoke native
+repair.
+Neither state proves that no graph rows changed, even if the diagnostic
+partition matches the pre-cut partition. Retain optional `paint_record_state`
+response diagnostics; never delete these records or clear locks by hand.
+Disabling paint retains recovery.

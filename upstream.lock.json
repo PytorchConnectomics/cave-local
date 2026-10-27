@@ -6,5 +6,9 @@
   "neuroglancer": {
     "revision": "d4aeac3b66eb4bd3fa86dbdc0202a7f006439740",
     "remote": "https://github.com/seung-lab/neuroglancer.git"
+  },
+  "pychunkedgraph": {
+    "revision": "26c7c74f87a7d5af125970c1e5a623e0c19de425",
+    "remote": "https://github.com/PytorchConnectomics/PyChunkedGraph.git"
   }
 }

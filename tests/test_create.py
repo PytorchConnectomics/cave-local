@@ -100,3 +100,62 @@ def test_refinement_is_operational_configuration_not_data_identity():
     meta['atom_policy'] = 'source_labels'
     with pytest.raises(ValueError, match='requires agglomerated_supervoxels'):
         creator.validate_manifest(meta)
+
+
+def paint_manifest(paint):
+    meta = manifest()
+    meta.update(atom_policy='agglomerated_supervoxels',
+                agglomeration_https='file:///source/agglomeration.npz',
+                supervoxel_split={'enabled': True, 'grid_xyz': [4, 4, 4], 'paint': paint})
+    return meta
+
+
+@pytest.mark.parametrize('paint', [True, [], {'enabled': 1}, {'unknown': 3},
+    {'max_radius_nm': 0}, {'max_cut_distance_nm': float('nan')}, {'max_seconds': float('inf')},
+    {'max_box_voxels': [4, 4]}, {'max_box_voxels': [4, True, 4]},
+    {'max_box_voxels': [4, 0, 4]}, {'max_box_voxels': '512,512,128'}])
+def test_invalid_paint_configuration_is_rejected(paint):
+    with pytest.raises(ValueError, match='supervoxel_split.paint'):
+        creator.validate_manifest(paint_manifest(paint))
+
+
+@pytest.mark.parametrize('name', ['max_stroke_points', 'max_paint_voxels', 'max_painted_atoms',
+    'max_removed_edges', 'max_contact_voxels', 'max_request_bytes', 'max_strokes',
+    'max_total_points', 'max_raster_work'])
+@pytest.mark.parametrize('value', [0, -1, True, 3.5])
+def test_paint_integer_limits_reject_invalid_values(name, value):
+    with pytest.raises(ValueError, match=name):
+        creator.validate_manifest(paint_manifest({name: value}))
+
+
+def test_paint_defaults_and_operational_identity():
+    expected = {'enabled': False, 'max_radius_nm': 500, 'max_stroke_points': 256,
+        'max_paint_voxels': 200000, 'max_box_voxels': [512, 512, 128],
+        'max_cut_distance_nm': 1000, 'max_painted_atoms': 256, 'max_removed_edges': 2000,
+        'max_contact_voxels': 2000000, 'max_seconds': 60, 'max_request_bytes': 262144,
+        'max_strokes': 128, 'max_total_points': 2048, 'max_raster_work': 4000000}
+    assert creator.validate_paint_config({}) == expected
+    from ingest_segmentation_iteration import data_spec
+    meta = paint_manifest({})
+    before = data_spec(meta)
+    meta['supervoxel_split']['paint'] = {'enabled': True, 'max_radius_nm': 15.5}
+    creator.validate_manifest(meta)
+    assert data_spec(meta) == before
+    # Both gates are runtime conditions; retaining paint config while disabling
+    # new refinement must remain a supported recovery configuration.
+    meta['supervoxel_split']['enabled'] = False
+    creator.validate_manifest(meta)
+
+
+def test_create_paint_switch_requires_an_explicit_fixture():
+    meta = paint_manifest({})
+    with pytest.raises(ValueError, match='generated'):
+        creator.enable_fixture_paint(meta)
+    meta['test_fixture'] = True
+    creator.enable_fixture_paint(meta)
+    assert meta['supervoxel_split']['enabled']
+    assert meta['supervoxel_split']['paint']['enabled']
+    assert meta['supervoxel_split']['paint']['max_raster_work'] == 4000000
+    meta['atom_policy'] = 'source_labels'
+    with pytest.raises(ValueError, match='agglomerated'):
+        creator.enable_fixture_paint(meta)

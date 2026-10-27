@@ -493,12 +493,15 @@ def test_disabled_install_does_not_import_pcg(monkeypatch):
 
 
 @pytest.mark.parametrize('requested', [100, 101])
-def test_undo_after_redo_uses_actual_bridge_with_refined_history(tmp_path, monkeypatch, requested):
+@pytest.mark.parametrize('bridge', [[200, 300], [300, 200]])
+def test_undo_after_redo_uses_actual_bridge_with_refined_history(tmp_path, monkeypatch, requested, bridge):
     legacy(tmp_path)
     tables = publish(tmp_path, 100, [101], 1000, [(100, 200, 101, 200)])
     # The requested 100--200 merge activated 300--200 instead. The translated
     # 101--200 pair is a log alias only; it cannot be passed to native split.
-    actual = np.array([[200, 300]], np.uint64)
+    # Same-chunk fake edges can be stored in reverse order only. Native undo's
+    # ordered existence precheck must receive the actual stored orientation.
+    actual = np.array([bridge], np.uint64)
     stamp = datetime(2026, 1, 1, tzinfo=timezone.utc)
     calls = []
     cg = SimpleNamespace(
@@ -533,6 +536,26 @@ def test_undo_after_redo_uses_actual_bridge_with_refined_history(tmp_path, monke
         np.testing.assert_array_equal(calls[0]['supervoxels'], [101, 200])
         assert (stamp - calls[0]['parent_ts']).total_seconds() == .1
         assert history.translated_ids.get() == (200, 300)
+    finally:
+        history.translated_ids.reset(token)
+
+
+def test_translate_operation_preserves_current_edge_orientation_and_affinity(tmp_path):
+    legacy(tmp_path)
+    tables = publish(tmp_path, 100, [101], 1000, [(100, 200, 101, 200)])
+    operation = SimpleNamespace(
+        added_edges=np.array([[300, 200], [200, 300], [200, 100]], np.uint64),
+        affinities=np.array([.75, .75, .5]),
+    )
+    token = history.translated_ids.set(())
+    try:
+        history.translate_operation(operation, tables)
+        np.testing.assert_array_equal(operation.added_edges, [[101, 200], [300, 200]])
+        np.testing.assert_allclose(operation.affinities, [.5, .75])
+        # The public edge-map function remains canonical and de-duplicates both
+        # orientations; preserving native orientation is specific to operations.
+        np.testing.assert_array_equal(history.translate_edges([[300, 200], [200, 300]], tables=tables),
+                                      [[200, 300]])
     finally:
         history.translated_ids.reset(token)
 

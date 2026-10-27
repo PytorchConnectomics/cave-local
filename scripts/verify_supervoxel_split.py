@@ -431,7 +431,8 @@ class Verifier:
     def candidate_hashes(self):
         source = Path(__file__).resolve().parent
         names = ("supervoxel_split.py", "supervoxel_refine.py", "supervoxel_history.py",
-                 "supervoxel_service.py", "source_label_policy.py", "local_mesh.py", "wsgi.py")
+                 "supervoxel_service.py", "source_label_policy.py", "local_mesh.py", "wsgi.py",
+                 "supervoxel_paint.py", "supervoxel_paint_service.py", "supervoxel_paint_history.py")
         hashes = {}
         for name in names:
             expected = hashlib.sha256((source / name).read_bytes()).hexdigest()
@@ -1273,7 +1274,14 @@ class Verifier:
 
 
 def verify(destination, cases=None):
-    return Verifier(destination).run(cases)
+    verifier = Verifier(destination)
+    result = verifier.run(cases)
+    if cases is None and verifier.spec.get('supervoxel_split', {}).get('paint', {}).get('enabled'):
+        from verify_supervoxel_paint import verify as verify_paint
+        result['paint'] = verify_paint(destination)
+        result['passed'] = result['passed'] and result['paint']['passed']
+        verifier.write_report()
+    return result
 
 
 if __name__ == "__main__":

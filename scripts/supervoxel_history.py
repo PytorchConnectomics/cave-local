@@ -556,6 +556,17 @@ def translate_operation(operation, tables, data_dir='/data', coordinate_lookup=N
             continue
         before = getattr(effective, name)
         after = translate_edges(before, tables=tables)
+        # Native undo has already selected the stored edge orientation. Fake
+        # edges within one chunk may exist only in reverse ID order, and PCG's
+        # existence precheck compares ordered pairs. Preserve that orientation
+        # when neither endpoint was retired; only translated provenance needs
+        # the canonical ordering supplied by translate_edges.
+        current_orientations = {}
+        for edge in np.asarray(before, np.uint64).reshape(-1, 2):
+            if not tables.retired.intersection(map(int, edge)):
+                current_orientations.setdefault(tuple(sorted(map(int, edge))), edge)
+        after = np.asarray([current_orientations.get(tuple(map(int, edge)), edge)
+                            for edge in after], np.uint64).reshape(-1, 2)
         setattr(effective, name, after)
         if operation is not effective:
             setattr(operation, name, after)
@@ -565,7 +576,8 @@ def translate_operation(operation, tables, data_dir='/data', coordinate_lookup=N
             for edge, affinity in zip(before, effective.affinities):
                 for pair in translate_edges([edge], tables=tables):
                     affinities[tuple(map(int, pair))] = affinity
-            effective.affinities = np.array([affinities[tuple(map(int, edge))] for edge in after], dtype=np.float32)
+            effective.affinities = np.array([affinities[tuple(sorted(map(int, edge)))]
+                                             for edge in after], dtype=np.float32)
     for side in ('source', 'sink'):
         name, coordinate_name = side + '_ids', side + '_coords'
         if not hasattr(effective, name):

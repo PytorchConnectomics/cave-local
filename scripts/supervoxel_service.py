@@ -47,6 +47,8 @@ def install(common, data_dir='/data'):
     from supervoxel_refine import install_fence, recover_if_idle
     install_fence(data_dir=data_dir)
     install_history(data_dir=data_dir)
+    from supervoxel_paint_service import install_hooks
+    install_hooks()
 
     def recover_reader():
         from pychunkedgraph.app.app_utils import get_cg
@@ -79,6 +81,10 @@ def attach(app, data_dir='/data'):
     from supervoxel_history import PublicationBusy, read_epoch
     from supervoxel_refine import RefinementError
     from pychunkedgraph.app import common as app_common
+    from supervoxel_paint import PaintError
+
+    def paint_error(error):
+        return jsonify({'error': str(error), 'paint_refusal': error.as_dict()}), 400
 
     def unavailable(error):
         response = jsonify({'code': 503, 'message': str(error)})
@@ -88,6 +94,7 @@ def attach(app, data_dir='/data'):
 
     app.register_error_handler(PublicationBusy, unavailable)
     app.register_error_handler(RefinementError, unavailable)
+    app.register_error_handler(PaintError, paint_error)
     # PCG's v1 and legacy blueprints register their own Exception handler. It
     # wins over Flask's app handlers and calls this shared function, otherwise
     # converting every non-PCG exception to 500. Handle only errors that escape
@@ -97,6 +104,8 @@ def attach(app, data_dir='/data'):
     if not getattr(native_unhandled, '_cave_svsplit_unavailable', False):
         @functools.wraps(native_unhandled)
         def unhandled(error):
+            if isinstance(error, PaintError):
+                return paint_error(error)
             if isinstance(error, (PublicationBusy, RefinementError)):
                 return unavailable(error)
             return native_unhandled(error)
@@ -113,4 +122,13 @@ def attach(app, data_dir='/data'):
         count = getattr(g, 'svsplit_refined', 0)
         if count:
             response.headers['X-Cave-Supervoxels-Refined'] = str(count)
+        if hasattr(g, 'paint_operation'):
+            response.headers['X-Cave-Supervoxels-Refined'] = str(count)
+            response.headers['X-Cave-Paint-Voxels'] = ','.join(map(str, g.paint_counts))
+            response.headers['X-Cave-Paint-Record'] = str(g.paint_operation)
+            response.headers['X-Cave-Paint-Elapsed-Seconds'] = str(round(g.paint_elapsed, 6))
+        if hasattr(g, 'paint_record_state') and response.is_json:
+            value = response.get_json()
+            value['paint_record_state'] = g.paint_record_state
+            response.set_data(json.dumps(value))
         return response

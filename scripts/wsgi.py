@@ -32,6 +32,8 @@ if service=='pcg':
             from pychunkedgraph.graph.chunkedgraph import ChunkedGraph
             from supervoxel_refine import recover
             recover(ChunkedGraph(graph_id=svsplit_spec['graph_id']))
+            from supervoxel_paint_history import recover_paint
+            recover_paint(ChunkedGraph(graph_id=svsplit_spec['graph_id']), '/data')
     def publish_edit(table_id,user_id,result,is_priority=True,remesh=True):
         import redis
         payload={'graph':table_id,'user_id':str(user_id),'operation_id':int(result.operation_id),'roots':[str(x) for x in result.new_root_ids],'time':time.time()}
@@ -65,7 +67,7 @@ elif service=='materialize':
     with bootstrap.app_context():
         from materializationengine.app import create_app
 app=create_app()
-if svsplit_adapters:
+if service=='pcg':
     from supervoxel_service import attach as attach_svsplit
     attach_svsplit(app)
 if release_database_sessions:

@@ -16,6 +16,42 @@ from docker_capacity import available_cpus
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def validate_paint_config(paint):
+    """Validate operational limits without silently accepting mistyped fields."""
+    from supervoxel_paint import PAINT_LIMITS
+    if not isinstance(paint, dict) or type(paint.get('enabled', False)) is not bool:
+        raise ValueError('supervoxel_split.paint must be an object with a boolean enabled field')
+    if set(paint) - (set(PAINT_LIMITS) | {'enabled'}):
+        raise ValueError('Unknown supervoxel_split.paint option')
+    result = {**PAINT_LIMITS, 'enabled': False, **paint}
+    box = result['max_box_voxels']
+    if (not isinstance(box, (list, tuple)) or len(box) != 3
+            or any(type(value) is not int or value <= 0 for value in box)):
+        raise ValueError('supervoxel_split.paint.max_box_voxels needs three positive XYZ integers')
+    real_limits = {'max_radius_nm', 'max_cut_distance_nm', 'max_seconds'}
+    for name, value in result.items():
+        if name in {'enabled', 'max_box_voxels'}:
+            continue
+        if name in real_limits:
+            valid = type(value) in (int, float) and math.isfinite(value) and value > 0
+        else:
+            valid = type(value) is int and value > 0
+        if not valid:
+            raise ValueError(f'supervoxel_split.paint.{name} must be finite and positive'
+                             + ('' if name in real_limits else ' (integer)'))
+    return result
+
+
+def enable_fixture_paint(meta):
+    """The convenience switch cannot silently opt a supplied dataset in."""
+    if not meta.get('test_fixture') or meta.get('atom_policy') != 'agglomerated_supervoxels':
+        raise ValueError('--paint requires a generated agglomerated_supervoxels fixture')
+    split = meta.setdefault('supervoxel_split', {})
+    split['enabled'] = True
+    split.setdefault('grid_xyz', [4, 4, 4])
+    split['paint'] = validate_paint_config({**split.get('paint', {}), 'enabled': True})
+
+
 def validate_manifest(meta):
     graph = meta.get('graph_id', '')
     if not re.fullmatch(r'[a-z][a-z0-9_]{0,40}', graph):
@@ -53,7 +89,7 @@ def validate_manifest(meta):
         split = meta['supervoxel_split']
         if not isinstance(split, dict) or type(split.get('enabled', False)) is not bool:
             raise ValueError('supervoxel_split must be an object with a boolean enabled field')
-        if set(split) - {'enabled', 'grid_xyz', 'max_atoms', 'max_seconds'}:
+        if set(split) - {'enabled', 'grid_xyz', 'max_atoms', 'max_seconds', 'paint'}:
             raise ValueError('Unknown supervoxel_split option')
         grid = split.get('grid_xyz', [16, 16, 16])
         if (not isinstance(grid, list) or len(grid) != 3 or
@@ -67,6 +103,10 @@ def validate_manifest(meta):
             raise ValueError('supervoxel_split.max_seconds must be finite and positive')
         if split.get('enabled') and policy != 'agglomerated_supervoxels':
             raise ValueError('supervoxel_split requires agglomerated_supervoxels')
+        if 'paint' in split:
+            paint = validate_paint_config(split['paint'])
+            if paint['enabled'] and policy != 'agglomerated_supervoxels':
+                raise ValueError('supervoxel_split.paint requires agglomerated_supervoxels')
     for field in ('image_https', 'segmentation_https') + (('agglomeration_https',) if policy == 'agglomerated_supervoxels' else ()):
         source = urlsplit(meta.get(field, ''))
         if any(character.isspace() or character in '{};"' for character in meta.get(field, '')):
@@ -82,8 +122,10 @@ def validate_manifest(meta):
     return url.port
 
 
-def create(manifest, dest, source_dir=None, project_name=None):
+def create(manifest, dest, source_dir=None, project_name=None, paint=False):
     meta = json.loads(Path(manifest).read_text())
+    if paint:
+        enable_fixture_paint(meta)
     port = validate_manifest(meta)
     from ingest_segmentation_iteration import validate_geometry
     validate_geometry(meta)
@@ -169,7 +211,8 @@ def create(manifest, dest, source_dir=None, project_name=None):
     token.chmod(0o600)
     for name in ('sitecustomize.py', 'wsgi.py', 'celery_app.py', 'local_mesh.py', 'source_label_policy.py',
                  'supervoxel_split.py', 'supervoxel_refine.py', 'supervoxel_history.py',
-                 'supervoxel_service.py', 'database_connections.py', 'segmentation_metadata.py'):
+                 'supervoxel_service.py', 'supervoxel_paint.py', 'supervoxel_paint_service.py',
+                 'supervoxel_paint_history.py', 'database_connections.py', 'segmentation_metadata.py'):
         shutil.copyfile(ROOT / 'scripts' / name, dest / 'scripts' / name)
     shutil.copyfile(ROOT / 'scripts/ingest_segmentation_iteration.py', dest / 'scripts/ingest.py')
     for name in ('empty.ini', 'pcg.py', 'common.py'):
@@ -198,5 +241,6 @@ if __name__ == '__main__':
     parser.add_argument('destination', type=Path)
     parser.add_argument('--source-dir', type=Path)
     parser.add_argument('--project-name')
+    parser.add_argument('--paint', action='store_true', help='Enable paint defaults on a generated agglomerated fixture')
     args = parser.parse_args()
-    create(args.manifest, args.destination, args.source_dir, args.project_name)
+    create(args.manifest, args.destination, args.source_dir, args.project_name, args.paint)

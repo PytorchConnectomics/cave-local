@@ -105,9 +105,9 @@ def main():
     sub.add_parser('deps')
     sub.add_parser('fetch')
     p = sub.add_parser('build'); p.add_argument('--no-cache', action='store_true'); p.add_argument('--skip-viewer', action='store_true')
-    p = sub.add_parser('fixture'); p.add_argument('output'); p.add_argument('--variant', default='zyx', choices=['zyx', 'xyz']); p.add_argument('--atom-policy', default='source_labels', choices=['source_labels', 'spatial_tiles', 'agglomerated_supervoxels']); p.add_argument('--graph-id', default='pkg_fixture'); p.add_argument('--port', default=8181, type=int); p.add_argument('--supervoxel-split', action='store_true')
-    p = sub.add_parser('svsplit'); q = p.add_subparsers(dest='svsplit_command', required=True); q.add_parser('repair').add_argument('deployment')
-    p = sub.add_parser('create'); p.add_argument('manifest'); p.add_argument('destination'); p.add_argument('--source-dir'); p.add_argument('--project-name')
+    p = sub.add_parser('fixture'); p.add_argument('output'); p.add_argument('--variant', default='zyx', choices=['zyx', 'xyz']); p.add_argument('--atom-policy', default='source_labels', choices=['source_labels', 'spatial_tiles', 'agglomerated_supervoxels']); p.add_argument('--graph-id', default='pkg_fixture'); p.add_argument('--port', default=8181, type=int); p.add_argument('--supervoxel-split', action='store_true'); p.add_argument('--paint', action='store_true', help='Add paint geometry; implies agglomerated_supervoxels and --supervoxel-split')
+    p = sub.add_parser('svsplit'); q = p.add_subparsers(dest='svsplit_command', required=True); p = q.add_parser('repair'); p.add_argument('deployment'); p.add_argument('--pcg-repair', type=int, metavar='OPERATION_ID')
+    p = sub.add_parser('create'); p.add_argument('manifest'); p.add_argument('destination'); p.add_argument('--source-dir'); p.add_argument('--project-name'); p.add_argument('--paint', action='store_true', help='Enable paint defaults on a generated agglomerated fixture')
     for name in ('start', 'stop', 'status', 'logs', 'snapshot', 'browser-handoff'):
         p = sub.add_parser(name); p.add_argument('deployment')
     p = sub.add_parser('validate'); p.add_argument('deployment'); p.add_argument('--edit-fixture', action='store_true'); p.add_argument('--browser', action='store_true')
@@ -124,19 +124,27 @@ def main():
         from fetch_upstream import fetch
         fetch()
     elif args.command == 'build': build(args.no_cache, args.skip_viewer)
-    elif args.command == 'fixture': run([sys.executable, ROOT / 'scripts/make_fixture.py', args.output, '--variant', args.variant, '--atom-policy', args.atom_policy, '--graph-id', args.graph_id, '--port', args.port] + (['--supervoxel-split'] if args.supervoxel_split else []))
+    elif args.command == 'fixture': run([sys.executable, ROOT / 'scripts/make_fixture.py', args.output, '--variant', args.variant, '--atom-policy', args.atom_policy, '--graph-id', args.graph_id, '--port', args.port] + (['--supervoxel-split'] if args.supervoxel_split else []) + (['--paint'] if args.paint else []))
     elif args.command == 'svsplit':
         dest, meta, cmd = deployment(args.deployment)
         current = dest / 'data/atom_tables/current'
+        paint_state = dest / 'data/supervoxel_splits/paint'
+        has_paint = (bool(meta.get('supervoxel_split', {}).get('paint'))
+                     or any(paint_state.rglob('*.json')))
         retained = (current.exists() or current.is_symlink()
-                    or any((dest / 'data/supervoxel_splits/journal').rglob('journal.json')))
+                    or any((dest / 'data/supervoxel_splits/journal').rglob('journal.json')) or has_paint)
         if not meta.get('supervoxel_split', {}).get('enabled') and not retained:
             raise ValueError('Supervoxel refinement is not enabled and has no retained state for this deployment')
-        run(cmd + ['exec', '-T', 'pcg', 'python', '/workspace/scripts/supervoxel_refine.py',
-                   '--repair', '--graph-id', meta['graph_id']])
+        if args.pcg_repair is not None and (args.pcg_repair <= 0 or not has_paint):
+            raise ValueError('--pcg-repair needs a positive painted operation id and retained paint state')
+        script = 'supervoxel_paint_history.py' if has_paint else 'supervoxel_refine.py'
+        run(cmd + ['exec', '-T', 'pcg', 'python', '/workspace/scripts/' + script,
+                   '--repair', '--graph-id', meta['graph_id']]
+            + (['--pcg-repair', str(args.pcg_repair)] if args.pcg_repair is not None else []))
     elif args.command == 'create':
         from create_segmentation_deployment import create
-        create(args.manifest, args.destination, args.source_dir, args.project_name)
+        create(args.manifest, args.destination, args.source_dir, args.project_name,
+               **({'paint': True} if args.paint else {}))
     elif args.command == 'start': start(args.deployment)
     elif args.command in ('stop', 'status', 'logs'):
         dest, meta, cmd = deployment(args.deployment)
