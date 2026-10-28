@@ -20,6 +20,38 @@ def bounds():return load_atom_tables().bounds
 def geometry():
     import json
     return json.loads(Path('/data/prepared.json').read_text())
+@lru_cache(maxsize=1)
+def lowres():
+    # Optional data/atomic_ds (a coarser copy of the supervoxel layer, info carries stride_xyz): whole-cube roots exceed the
+    # full-resolution limit below. Each coarse voxel holds its block's most frequent supervoxel at the time of the copy.
+    p=Path('/data/atomic_ds/info')
+    if not p.exists():return None
+    import json
+    i=json.loads(p.read_text());return np.array(i['stride_xyz'],int),np.array(i['scales'][0]['resolution'],float),np.array(i['scales'][0]['size'],int)
+def block_mode(a,f):
+    # Most frequent non-zero label per f-block (as cave_atomic_downsample.py builds atomic_ds); axes are multiples of f.
+    X,Y,Z=(n//s for n,s in zip(a.shape,f))
+    b=a.reshape(X,f[0],Y,f[1],Z,f[2]).transpose(0,2,4,1,3,5).reshape(-1,int(np.prod(f)))
+    cnt=np.zeros(b.shape,np.int16)
+    for j in range(b.shape[1]):cnt+=b==b[:,j:j+1]
+    cnt[b==0]=-1
+    return b[np.arange(len(b)),cnt.argmax(1)].reshape(X,Y,Z)
+def refresh_refined(arr,lo,f,tables):
+    # Refinement relabels one supervoxel's voxels into pieces, so only blocks whose stored mode was a supervoxel retired since
+    # the copy can change; recompute those from the current full-resolution labels.
+    retired=np.fromiter(tables.retired,np.uint64,len(tables.retired))
+    if not len(retired):return arr
+    stale=np.isin(arr,retired)
+    if not stale.any():return arr
+    full=CloudVolume('file:///data/atomic',fill_missing=True,cache=False);shape=np.array(full.bounds.maxpt)
+    for atom in np.unique(arr[stale]):
+        sel=np.argwhere(arr==atom);a,b=sel.min(0),sel.max(0)+1
+        f0,f1=(lo+a)*f,np.minimum((lo+b)*f,shape)
+        cut=full[tuple(slice(int(x),int(y)) for x,y in zip(f0,f1))][...,0]
+        cut=np.pad(cut,[(0,(-n)%k) for n,k in zip(cut.shape,f)])
+        mode=block_mode(cut,f);box=arr[tuple(slice(int(x),int(y)) for x,y in zip(a,b))]
+        hit=box==atom;box[hit]=mode[:box.shape[0],:box.shape[1],:box.shape[2]][hit]
+    return arr
 def manifest(table_id,node_id):
     name=str(node_id)+'.drc';p=Path('/data/meshes')/name;p.parent.mkdir(exist_ok=True)
     with LOCK:
@@ -31,15 +63,20 @@ def manifest(table_id,node_id):
                 tables=load_atom_tables();ix=tables.index;pos=np.searchsorted(ix[:,0],leaves)
                 assert np.all(pos<len(ix)) and np.all(ix[pos,0]==leaves)
                 bb=tables.bounds[pos].astype(int);lo=np.maximum(bb[:,:3].min(axis=0)-1,0);hi=np.minimum(bb[:,3:].max(axis=0)+1,geometry()['shape_xyz'])
+                url,resolution='file:///data/atomic',np.array(geometry()['resolution_nm_xyz'])
+                ds=lowres();coarse=ds is not None and np.prod(hi-lo)>20_000_000
+                # Small roots stay at full resolution (fast, and tiny pieces do not vanish in the coarse copy).
+                if coarse:
+                    f,resolution,size=ds;lo=lo//f;hi=np.minimum(-(-hi//f),size);url='file:///data/atomic_ds'
                 if np.prod(hi-lo)>200_000_000:return 'too_large'
-                cv=CloudVolume('file:///data/atomic',fill_missing=True,cache=False)
+                cv=CloudVolume(url,fill_missing=True,cache=False)
                 arr=cv[tuple(slice(int(x),int(y)) for x,y in zip(lo,hi))][...,0]
-                return lo,np.asfortranarray(np.isin(arr,leaves).astype(np.uint8))
+                if coarse:arr=refresh_refined(arr,lo,f,tables)
+                return lo,resolution,np.asfortranarray(np.isin(arr,leaves).astype(np.uint8))
             observed=snapshot_read(read_mask,recover=lambda: recover_if_idle(lambda: get_cg(table_id,skip_cache=True)))
             if observed is None:return jsonify({'fragments':[]})
             if isinstance(observed,str):return jsonify({'error':'Selected root exceeds local on-demand meshing limit; use sharded L2 workers.'}),413
-            lo,mask=observed
-            resolution=np.array(geometry()['resolution_nm_xyz'])
+            lo,resolution,mask=observed
             mesher=zmesh.Mesher(resolution);mesher.mesh(mask,close=True)
             if not mesher.ids():return jsonify({'fragments':[]})
             mesh=mesher.get(1,reduction_factor=0);vertices=mesh.vertices.astype(np.float32)+(lo*resolution).astype(np.float32)
