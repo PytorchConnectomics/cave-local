@@ -49,7 +49,7 @@ def test_defaults_and_original_provenance_are_independent():
         "enabled": False, "max_radius_nm": 500, "max_stroke_points": 256,
         "max_paint_voxels": 200000, "max_box_voxels": [512, 512, 128],
         "max_cut_distance_nm": 1000, "max_painted_atoms": 256,
-        "max_removed_edges": 2000, "max_contact_voxels": 2000000,
+        "max_removed_edges": 2000, "max_contact_voxels": 2000000, "max_object_atoms": 100000,
         "max_seconds": 60, "max_request_bytes": 262144, "max_strokes": 128,
         "max_total_points": 2048, "max_raster_work": 4000000,
     }

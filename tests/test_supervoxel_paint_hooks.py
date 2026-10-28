@@ -424,3 +424,25 @@ def test_hook_installation_is_idempotent(hooked):
     service.install_hooks()
     assert before == (operation.MulticutOperation._apply, operation.run_multicut,
                       operation.GraphEditOperation._write, Table.mutate_rows)
+
+
+def _whole_object_context(pairs, sources, sinks, max_object_atoms=100000):
+    from pychunkedgraph.graph.edges import Edges
+    pairs = np.asarray(pairs, np.uint64).reshape(-1, 2)
+    atoms = np.unique(np.concatenate([pairs.ravel(), np.asarray(sorted(sources | sinks), np.uint64)]))
+    graph = SimpleNamespace(get_subgraph=lambda root: ({7: SimpleNamespace(supervoxels=atoms)},
+                                                       [Edges(pairs[:, 0], pairs[:, 1])]))
+    return SimpleNamespace(cg=graph, root=99, sources=set(sources), sinks=set(sinks), check=lambda: None,
+                           limits={**PAINT_LIMITS, 'max_object_atoms': max_object_atoms})
+
+
+def test_whole_object_check_accepts_a_cut_that_severs_every_path():
+    # 1-2-3 and a loop 1-4-5-3 that leaves any local box: cutting 2-3 alone leaves the loop.
+    context = _whole_object_context([[1, 2], [2, 3], [1, 4], [4, 5], [5, 3]], {1}, {3})
+    assert not service._whole_object_separated(context, [(2, 3)])
+    assert service._whole_object_separated(context, [(2, 3), (4, 5)])
+
+
+def test_whole_object_check_refuses_objects_over_the_atom_limit():
+    context = _whole_object_context([[1, 2], [2, 3]], {1}, {3}, max_object_atoms=2)
+    assert not service._whole_object_separated(context, [(2, 3)])

@@ -120,7 +120,7 @@ def test_invalid_paint_configuration_is_rejected(paint):
 
 
 @pytest.mark.parametrize('name', ['max_stroke_points', 'max_paint_voxels', 'max_painted_atoms',
-    'max_removed_edges', 'max_contact_voxels', 'max_request_bytes', 'max_strokes',
+    'max_removed_edges', 'max_contact_voxels', 'max_object_atoms', 'max_request_bytes', 'max_strokes',
     'max_total_points', 'max_raster_work'])
 @pytest.mark.parametrize('value', [0, -1, True, 3.5])
 def test_paint_integer_limits_reject_invalid_values(name, value):
@@ -132,7 +132,7 @@ def test_paint_defaults_and_operational_identity():
     expected = {'enabled': False, 'max_radius_nm': 500, 'max_stroke_points': 256,
         'max_paint_voxels': 200000, 'max_box_voxels': [512, 512, 128],
         'max_cut_distance_nm': 1000, 'max_painted_atoms': 256, 'max_removed_edges': 2000,
-        'max_contact_voxels': 2000000, 'max_seconds': 60, 'max_request_bytes': 262144,
+        'max_contact_voxels': 2000000, 'max_object_atoms': 100000, 'max_seconds': 60, 'max_request_bytes': 262144,
         'max_strokes': 128, 'max_total_points': 2048, 'max_raster_work': 4000000}
     assert creator.validate_paint_config({}) == expected
     from ingest_segmentation_iteration import data_spec

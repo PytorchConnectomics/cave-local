@@ -24,6 +24,7 @@ PAINT_LIMITS = {
     "max_painted_atoms": 256,
     "max_removed_edges": 2000,
     "max_contact_voxels": 2000000,
+    "max_object_atoms": 100000,
     "max_seconds": 60,
     "max_request_bytes": 262144,
     "max_strokes": 128,

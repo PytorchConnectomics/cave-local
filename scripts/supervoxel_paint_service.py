@@ -163,6 +163,29 @@ def _edge_contacts(context, edge, bounds, budget):
     return contacts(labels, lo, *edge)
 
 
+def _whole_object_separated(context, cut):
+    """Exact fallback when neither side is closed in the local box (typical for whole-cube objects): the same native
+    subgraph read the multicut uses, without its box, for the locked root, then components without the cut. Objects
+    over max_object_atoms stay uncertified."""
+    from functools import reduce
+    from pychunkedgraph.graph.edges import Edges
+    context.check()
+    agglomerations, edges = context.cg.get_subgraph(np.uint64(context.root))
+    supervoxels = np.concatenate([agg.supervoxels for agg in agglomerations.values()]) if agglomerations else np.empty(0, np.uint64)
+    if len(supervoxels) > context.limits['max_object_atoms']:
+        return False
+    context.check()
+    edges = reduce(lambda x, y: x + y, edges, Edges([], []))
+    keep = np.isin(edges.node_ids1, supervoxels) & np.isin(edges.node_ids2, supervoxels)
+    whole = set(_pairs(np.stack([edges.node_ids1[keep], edges.node_ids2[keep]], axis=1)))
+    removed = set(cut)
+    kept = [edge for edge in whole if edge not in removed and edge[::-1] not in removed]
+    for group in components(kept, set(map(int, supervoxels)) | set(context.sources) | set(context.sinks)):
+        if group & context.sources and group & context.sinks:
+            return False
+    return True
+
+
 def _check_cut(context, edges, removed):
     context.check()
     local = _pairs(edges.get_pairs())
@@ -188,7 +211,7 @@ def _check_cut(context, edges, removed):
     sink_side = set().union(*(group for group in groups if group & context.sinks))
     source_closed, source_open = closed_side(source_side, bounds, context.box[0], context.box[1], fake)
     sink_closed, sink_open = closed_side(sink_side, bounds, context.box[0], context.box[1], fake)
-    if not source_closed and not sink_closed:
+    if not source_closed and not sink_closed and not _whole_object_separated(context, cut):
         opened = sorted(set(source_open) | set(sink_open))
         context.refuse('not_certified', 'The local cut cannot certify separation through the whole object.',
                        [bounds[a][:3] for a in opened[:20]], opened)

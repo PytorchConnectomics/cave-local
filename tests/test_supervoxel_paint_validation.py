@@ -176,8 +176,10 @@ def test_lookup_discards_reads_finishing_after_deadline(monkeypatch, context, ph
     assert len(calls) == (1 if phase == 'roots' else 0)
 
 
-def cut_setup(monkeypatch, context, *, bounds=None, cells=(), data=None):
+def cut_setup(monkeypatch, context, *, bounds=None, cells=(), data=None, whole=False):
     bounds = bounds or {A: np.array([2, 2, 2, 4, 5, 5]), B: np.array([4, 2, 2, 6, 5, 5])}
+    # These fixtures have no graph: the whole-object fallback reports the outcome chosen by the test.
+    monkeypatch.setattr(service, '_whole_object_separated', lambda ctx, cut: whole)
     monkeypatch.setattr(service, '_bounds', lambda ctx, ids: {atom: bounds[atom] for atom in ids})
     monkeypatch.setattr(service, '_fake_cells', lambda ctx, ids: list(cells))
     if data is None:
@@ -353,3 +355,13 @@ def test_fake_cell_reads_use_unique_l2_chunk_rows(monkeypatch, context):
         client=SimpleNamespace(read_node=read_node))
     assert service._fake_cells(context, {A, B}) == [cell]
     assert calls == [(2000, {'properties': attributes.Connectivity.FakeEdges, 'fake_edges': True})]
+
+
+def test_whole_object_fallback_certifies_when_no_side_is_closed(monkeypatch, context):
+    cells = [SimpleNamespace(value=np.array([[A, C], [B, D]], np.uint64))]
+    edges, _, _ = cut_setup(monkeypatch, context, cells=cells, whole=True)
+    monkeypatch.setattr(service, '_edge_contacts', lambda *args: np.zeros((1, 3), np.int64))
+    try:
+        service._check_cut(context, edges, [[A, B]])
+    except PaintError as error:
+        assert error.kind != 'not_certified'

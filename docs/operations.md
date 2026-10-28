@@ -463,6 +463,7 @@ integers. The parent `supervoxel_split.max_atoms` bounds refinements.
 | `max_painted_atoms` | 256 | Distinct current atoms under both labels combined. |
 | `max_removed_edges` | 2000 | Edges checked before applying a cut. |
 | `max_contact_voxels` | 2000000 | Total contact-crop voxels read. |
+| `max_object_atoms` | 100000 | Largest object (supervoxels) checked exactly over its whole graph when the local box cannot certify the cut. |
 | `max_seconds` | 60 | One request-wide deadline in seconds. |
 | `max_request_bytes` | 262144 | Raw request body bytes. |
 | `max_strokes` | 128 | Strokes across both labels. |
