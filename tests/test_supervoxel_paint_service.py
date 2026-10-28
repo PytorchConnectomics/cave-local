@@ -178,7 +178,8 @@ def test_outer_paint_refusal_persists_observed_write_counters(monkeypatch, tmp_p
     from datetime import timedelta
     from pychunkedgraph.app import app_utils
     import supervoxel_paint_history as history
-    cg = SimpleNamespace(meta=SimpleNamespace(graph_config=SimpleNamespace(ROOT_LOCK_EXPIRY=timedelta(seconds=5))))
+    cg = SimpleNamespace(meta=SimpleNamespace(graph_config=SimpleNamespace(ROOT_LOCK_EXPIRY=timedelta(seconds=5))),
+                         get_subgraph=lambda *args, **kwargs: ({}, []))  # no seam paths
     monkeypatch.setattr(app_utils, 'get_cg', lambda *args, **kwargs: cg)
     monkeypatch.setattr(history, 'recover_paint', lambda *args: None)
     monkeypatch.setattr(paint_service, '_fault', lambda *args, **kwargs: None)

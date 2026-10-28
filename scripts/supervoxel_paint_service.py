@@ -430,6 +430,46 @@ def install_hooks():
     Client.renew_locks = renew
 
 
+def _seam_target(context, cg, root, sources, sinks, grouped):
+    """A painted cut across a chunk boundary can be blocked by pieces of one ABISS fragment joined by infinite (seam)
+    edges. Find the first red-to-blue path of seam edges near the paint and the piece to refine on it: the first piece
+    after the red end (the red end itself when the two ends are seam neighbours). Its seeds are its own paint plus its
+    voxels touching the path neighbour on each side. Returns None when no seam path joins the colours."""
+    from functools import reduce
+    from pychunkedgraph.graph.edges import Edges
+    context.check()
+    paint = np.concatenate([context.source_xyz, context.sink_xyz])
+    lo = np.maximum(paint.min(0) - context.offset, 0)
+    hi = np.minimum(paint.max(0) + context.offset + 1, context.spec['shape_xyz'])
+    agglomerations, edges = cg.get_subgraph(np.uint64(root), bbox=np.array([lo, hi]), bbox_is_coordinate=True)
+    context.check()
+    if not agglomerations:
+        return None
+    supervoxels = np.concatenate([agg.supervoxels for agg in agglomerations.values()])
+    edges = reduce(lambda x, y: x + y, edges, Edges([], []))
+    keep = np.isin(edges.node_ids1, supervoxels) & np.isin(edges.node_ids2, supervoxels) & np.isinf(edges.affinities)
+    infinite = _pairs(np.stack([edges.node_ids1[keep], edges.node_ids2[keep]], axis=1))
+    paths = separation(infinite, [], set(map(int, sources)), set(map(int, sinks)))
+    if not paths:
+        return None
+    path = paths[0][2]
+    nodes = [path[0][0]] + [v for _, v in path]
+    target, red, blue = (nodes[0], None, nodes[1]) if len(nodes) == 2 else (nodes[1], nodes[0], nodes[2])
+    bounds = _bounds(context, [n for n in (target, red, blue) if n is not None])
+    budget = [0]
+    painted = grouped.get(target, {})
+    empty = np.empty((0, 3), np.int64)
+    seeds = {}
+    for label, neighbour in (('source', red), ('sink', blue)):
+        touching = _edge_contacts(context, (target, neighbour), bounds, budget) if neighbour is not None else empty
+        seeds[label] = np.unique(np.concatenate([np.asarray(painted.get(label, empty), np.int64).reshape(-1, 3),
+                                                 np.asarray(touching, np.int64).reshape(-1, 3)]), axis=0)
+    both = {tuple(v) for v in seeds['source']} & {tuple(v) for v in seeds['sink']}
+    if both:
+        seeds = {k: np.array([v for v in seeds[k] if tuple(v) not in both], np.int64).reshape(-1, 3) for k in seeds}
+    return target, seeds['source'], seeds['sink'], [n for n in nodes]
+
+
 def painted_split(native, table_id, spec, body, data_dir='/data', started=None):
     from flask import g, request
     from pychunkedgraph.app import app_utils
@@ -489,6 +529,30 @@ def painted_split(native, table_id, spec, body, data_dir='/data', started=None):
                             reason='painted', data_dir=data_dir, max_seconds=remaining)
             if not result.count:
                 context.refuse('object_changed', 'Painted supervoxel could not be refined.')
+            refined += result.count
+            context.journal.update(refinement_operation_ids=
+                context.journal.data.get('refinement_operation_ids', []) + result.operation_ids)
+            g.svsplit_refined = refined
+            root, sources, sinks, grouped = _lookup(context, cg, root)
+        # Seams: refine the unsplittable piece where a seam path from red meets blue (one at a time, fresh reads).
+        while True:
+            found = _seam_target(context, cg, root, sources, sinks, grouped)
+            if found is None:
+                break
+            atom, red, blue, chain = found
+            if not len(red) or not len(blue):
+                context.refuse('seam', 'Paint both colours inside the same supervoxel on one side of the chunk boundary.',
+                               np.concatenate([red, blue])[:20], chain)
+            if refined >= options.get('max_atoms', 64):
+                context.refuse('limit', 'Too many seam-joined supervoxels require refinement.', atoms=chain)
+            tables = load_atom_tables(data_dir)
+            lo = tables.bounds[np.searchsorted(tables.ids, np.uint64(atom)), :3]
+            item = {'atom': int(atom), 'source_vox': (red - lo)[:, ::-1].tolist(), 'sink_vox': (blue - lo)[:, ::-1].tolist()}
+            remaining = min(options.get('max_seconds', 30), deadline - time.monotonic())
+            result = refine(cg, [item], grid_xyz=options.get('grid_xyz', [16, 16, 16]),
+                            reason='painted-seam', data_dir=data_dir, max_seconds=remaining)
+            if not result.count:
+                context.refuse('seam', 'A seam-joined supervoxel could not be refined.', np.concatenate([red, blue])[:20], chain)
             refined += result.count
             context.journal.update(refinement_operation_ids=
                 context.journal.data.get('refinement_operation_ids', []) + result.operation_ids)
