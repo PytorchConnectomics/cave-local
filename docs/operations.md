@@ -458,7 +458,7 @@ integers. The parent `supervoxel_split.max_atoms` bounds refinements.
 | `max_radius_nm` | 500 | Stroke radius in nm. |
 | `max_stroke_points` | 256 | Points per stroke. |
 | `max_paint_voxels` | 200000 | Painted voxel count. |
-| `max_box_voxels` | `[512,512,128]` | XYZ box dimensions in voxels. |
+| `max_box_voxels` | `[2048,2048,2048]` | XYZ extent of the native solve box, rounded up to whole graph chunks; a safety cap only (PCG keeps its own seed box). |
 | `max_cut_distance_nm` | 1000 | Distance from paint to an actual removed-edge contact. |
 | `max_painted_atoms` | 256 | Distinct current atoms under both labels combined. |
 | `max_removed_edges` | 2000 | Edges checked before applying a cut. |

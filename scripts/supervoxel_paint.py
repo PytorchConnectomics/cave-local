@@ -19,7 +19,7 @@ PAINT_LIMITS = {
     "max_radius_nm": 500,
     "max_stroke_points": 256,
     "max_paint_voxels": 200000,
-    "max_box_voxels": [512, 512, 128],
+    "max_box_voxels": [2048, 2048, 2048],
     "max_cut_distance_nm": 1000,
     "max_painted_atoms": 256,
     "max_removed_edges": 2000,
