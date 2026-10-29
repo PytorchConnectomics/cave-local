@@ -93,7 +93,18 @@ def test_lookup_groups_all_foreground_voxels_inside_snapshot(monkeypatch, contex
     assert snapshots == [{'data_dir': context.data_dir}]
 
 
-@pytest.mark.parametrize('expected_root,kind', [(None, 'other_object'), (ROOT, 'object_changed')])
+def test_first_lookup_drops_paint_off_the_main_object(monkeypatch, context):
+    # A (two source voxels) is the main object; B's single sink voxel is on another object and is dropped, which
+    # leaves blue empty.
+    volume_reader(monkeypatch, lookup_volume())
+    graph, _ = root_reader({A: ROOT, B: ROOT + 1})
+    with pytest.raises(PaintError) as caught:
+        service._lookup(context, graph)
+    assert caught.value.kind == 'empty_label'
+    assert context.dropped == 1
+
+
+@pytest.mark.parametrize('expected_root,kind', [(ROOT, 'object_changed')])
 def test_lookup_rejects_other_roots_with_physical_locations(monkeypatch, context, expected_root, kind):
     volume_reader(monkeypatch, lookup_volume())
     graph, _ = root_reader({A: ROOT, B: ROOT + 1})
@@ -142,7 +153,8 @@ def test_invalid_painted_object_never_reaches_journal_or_native_edit(monkeypatch
         with pytest.raises(PaintError) as caught:
             service.painted_split(lambda *args: pytest.fail('invalid paint reached native mutation'),
                 'paint_validation', spec, body, data_dir=context.data_dir)
-    assert caught.value.kind == condition
+    # Paint on another object is dropped; here that empties blue, so the request is refused before any mutation.
+    assert caught.value.kind == ('empty_label' if condition == 'other_object' else condition)
 
 
 @pytest.mark.parametrize('change', ['source_replaced', 'labels_swapped', 'extra_source'])

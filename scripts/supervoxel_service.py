@@ -125,6 +125,8 @@ def attach(app, data_dir='/data'):
         if hasattr(g, 'paint_operation'):
             response.headers['X-Cave-Supervoxels-Refined'] = str(count)
             response.headers['X-Cave-Paint-Voxels'] = ','.join(map(str, g.paint_counts))
+            if getattr(g, 'paint_dropped', 0):
+                response.headers['X-Cave-Paint-Dropped'] = str(g.paint_dropped)
             response.headers['X-Cave-Paint-Record'] = str(g.paint_operation)
             response.headers['X-Cave-Paint-Elapsed-Seconds'] = str(round(g.paint_elapsed, 6))
         if hasattr(g, 'paint_record_state') and response.is_json:

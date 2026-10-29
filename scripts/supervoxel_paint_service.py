@@ -55,6 +55,7 @@ class PaintContext:
     begun: bool = False
     checked: dict = field(default_factory=dict)
     whole_box: object = None
+    dropped: int = 0
 
     @property
     def resolution(self):
@@ -87,7 +88,21 @@ def _lookup(context, cg, expected_root=None, *, locked=False):
             context.refuse('limit', 'Paint touches too many supervoxels.', atoms=ids)
         roots = cg.get_roots(ids)
         context.check()
-        wanted = int(roots[0]) if expected_root is None else int(expected_root)
+        if expected_root is None:
+            # The object being cut is the one most of the paint covers (the mode); paint on other objects is dropped.
+            counts = {}
+            for atom, root in zip(map(int, ids), map(int, roots)):
+                counts[root] = counts.get(root, 0) + sum(len(grouped[atom][label]) for label in ('source', 'sink'))
+            wanted = max(counts, key=lambda r: (counts[r], -r))
+            keep = {int(a) for a, r in zip(ids, roots) if int(r) == wanted}
+            context.dropped = sum(counts.values()) - counts[wanted]
+            grouped = {a: v for a, v in grouped.items() if a in keep}
+            src = np.array([a for a in src if int(a) in keep], np.uint64)
+            sink = np.array([a for a in sink if int(a) in keep], np.uint64)
+            if not len(src) or not len(sink):
+                context.refuse('empty_label', 'After dropping the paint outside the main object, one colour covers none of it.')
+            return wanted, src, sink, grouped
+        wanted = int(expected_root)
         other = ids[roots != wanted]
         if len(other):
             positions = [xyz for atom in other for label in ('source', 'sink')
@@ -508,6 +523,7 @@ def painted_split(native, table_id, spec, body, data_dir='/data', started=None):
         raise PaintError('limit', 'bb_offset must contain three nonnegative voxel distances.')
     root, sources, sinks, grouped = _lookup(context, cg)
     context.root = root
+    g.paint_dropped = context.dropped
     # Keep only foreground paint; all subsequent read/recheck/trees use these voxels.
     context.source_xyz = np.concatenate([v['source'] for v in grouped.values() if len(v['source'])])
     context.sink_xyz = np.concatenate([v['sink'] for v in grouped.values() if len(v['sink'])])
