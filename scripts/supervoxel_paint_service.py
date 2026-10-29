@@ -485,7 +485,13 @@ def _seam_target(context, cg, root, sources, sinks, grouped):
                                                  np.asarray(touching, np.int64).reshape(-1, 3)]), axis=0)
     both = {tuple(v) for v in seeds['source']} & {tuple(v) for v in seeds['sink']}
     if both:
-        seeds = {k: np.array([v for v in seeds[k] if tuple(v) not in both], np.int64).reshape(-1, 3) for k in seeds}
+        # Voxels touching both sides go to neither, unless that empties a side (a seam contact can be one voxel that
+        # also touches the other neighbour): then they seed the side they would otherwise leave empty.
+        kept = {k: np.array([v for v in seeds[k] if tuple(v) not in both], np.int64).reshape(-1, 3) for k in seeds}
+        for k, other in (('source', 'sink'), ('sink', 'source')):
+            if not len(kept[k]) and len(kept[other]):
+                kept[k] = np.array(sorted(both), np.int64).reshape(-1, 3)
+        seeds = kept
     return target, seeds['source'], seeds['sink'], [n for n in nodes]
 
 
