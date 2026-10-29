@@ -479,28 +479,34 @@ def _seam_target(context, cg, root, sources, sinks, grouped):
     reds, blues = set(map(int, sources)), set(map(int, sinks))
     j = next(k for k, n in enumerate(nodes) if n in blues)
     i = max(k for k in range(j) if nodes[k] in reds)
+    at = lambda k: nodes[k] if 0 <= k < len(nodes) else None
+    # Candidates (piece, red-side neighbour, blue-side neighbour); a piece refined small by earlier attempts can have every
+    # voxel touch both sides, so the piece on the other side of the meeting point is tried next.
     if j == i + 1:
-        target, red, blue = nodes[i], (nodes[i - 1] if i > 0 else None), nodes[j]
+        candidates = [(nodes[i], at(i - 1), nodes[j]), (nodes[j], nodes[i], at(j + 1))]
     else:
-        target, red, blue = nodes[i + 1], nodes[i], nodes[i + 2]
-    bounds = _bounds(context, [n for n in (target, red, blue) if n is not None])
-    budget = [0]
-    painted = grouped.get(target, {})
+        candidates = [(nodes[i + 1], nodes[i], nodes[i + 2]), (nodes[i], at(i - 1), nodes[i + 1])]
     empty = np.empty((0, 3), np.int64)
-    seeds = {}
-    for label, neighbour in (('source', red), ('sink', blue)):
-        touching = _edge_contacts(context, (target, neighbour), bounds, budget) if neighbour is not None else empty
-        seeds[label] = np.unique(np.concatenate([np.asarray(painted.get(label, empty), np.int64).reshape(-1, 3),
-                                                 np.asarray(touching, np.int64).reshape(-1, 3)]), axis=0)
-    both = {tuple(v) for v in seeds['source']} & {tuple(v) for v in seeds['sink']}
-    if both:
-        # Voxels touching both sides go to neither, unless that empties a side (a seam contact can be one voxel that
-        # also touches the other neighbour): then they seed the side they would otherwise leave empty.
-        kept = {k: np.array([v for v in seeds[k] if tuple(v) not in both], np.int64).reshape(-1, 3) for k in seeds}
-        for k, other in (('source', 'sink'), ('sink', 'source')):
-            if not len(kept[k]) and len(kept[other]):
-                kept[k] = np.array(sorted(both), np.int64).reshape(-1, 3)
-        seeds = kept
+    budget = [0]
+    for target, red, blue in candidates:
+        bounds = _bounds(context, [n for n in (target, red, blue) if n is not None])
+        painted = grouped.get(target, {})
+        seeds = {}
+        for label, neighbour in (('source', red), ('sink', blue)):
+            touching = _edge_contacts(context, (target, neighbour), bounds, budget) if neighbour is not None else empty
+            seeds[label] = np.unique(np.concatenate([np.asarray(painted.get(label, empty), np.int64).reshape(-1, 3),
+                                                     np.asarray(touching, np.int64).reshape(-1, 3)]), axis=0)
+        both = {tuple(v) for v in seeds['source']} & {tuple(v) for v in seeds['sink']}
+        if both:
+            # Voxels touching both sides go to neither, unless that empties a side (a seam contact can be one voxel
+            # that also touches the other neighbour): then they seed the side they would otherwise leave empty.
+            kept = {k: np.array([v for v in seeds[k] if tuple(v) not in both], np.int64).reshape(-1, 3) for k in seeds}
+            for k, other in (('source', 'sink'), ('sink', 'source')):
+                if not len(kept[k]) and len(kept[other]):
+                    kept[k] = np.array(sorted(both), np.int64).reshape(-1, 3)
+            seeds = kept
+        if len(seeds['source']) and len(seeds['sink']):
+            break
     return target, seeds['source'], seeds['sink'], [n for n in nodes]
 
 
