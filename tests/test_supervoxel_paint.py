@@ -351,3 +351,27 @@ def test_refusal_payload_caps_locations_and_preserves_ids():
     assert error.as_dict()["supervoxels"] == [2**64 - 1]
     assert PaintError("limit", "bad", locations_nm=None, supervoxels=None).as_dict() == {
         "kind": "limit", "locations_nm": [], "supervoxels": []}
+
+
+def test_overlapping_colours_follow_the_later_stroke():
+    from supervoxel_paint import parse_paint, rasterize
+    line = lambda x: [[x, 50.0, 50.0], [x, 150.0, 50.0]]
+    body = {"paint": {"version": 1,
+        "sources": [{"points_nm": line(50.0), "radius_nm": 30, "order": 0},
+                    {"points_nm": line(90.0), "radius_nm": 30, "order": 2}],
+        "sinks": [{"points_nm": line(70.0), "radius_nm": 30, "order": 1}]}}
+    src, snk = rasterize(parse_paint(body), [10, 10, 10], [64, 64, 64])
+    src, snk = set(map(tuple, src)), set(map(tuple, snk))
+    assert not src & snk
+    # x voxel 7 (75 nm) is covered by the sink (order 1) and the later source (order 2): the source wins.
+    assert (7, 10, 4) in src and (7, 10, 4) not in snk
+    # x voxel 5 (55 nm) is covered by the first source (order 0) and the sink (order 1): the sink wins.
+    assert (5, 10, 4) in snk and (5, 10, 4) not in src
+
+
+def test_overlap_without_order_is_still_refused_later():
+    from supervoxel_paint import parse_paint, rasterize
+    body = {"paint": {"version": 1, "sources": [{"points_nm": [[50.0, 50.0, 50.0]], "radius_nm": 30}],
+                      "sinks": [{"points_nm": [[60.0, 50.0, 50.0]], "radius_nm": 30}]}}
+    src, snk = rasterize(parse_paint(body), [10, 10, 10], [64, 64, 64])
+    assert set(map(tuple, src)) & set(map(tuple, snk))

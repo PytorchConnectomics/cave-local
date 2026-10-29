@@ -54,6 +54,7 @@ class PaintContext:
     renewals: int = 0
     begun: bool = False
     checked: dict = field(default_factory=dict)
+    whole_box: object = None
 
     @property
     def resolution(self):
@@ -274,7 +275,10 @@ def install_hooks():
         context = active_paint.get()
         if context is None or context.cg is None:
             return native_box(source, sink, offset)
-        result = np.asarray(native_box(source, sink, context.offset), np.int64)
+        # Objects small enough for the exact whole-object check are cut over their whole extent, so the cut sees every
+        # connection between the colours (a box around the paint misses paths that leave it, e.g. only +-12 z voxels).
+        result = (np.asarray(context.whole_box, np.int64) if context.whole_box is not None
+                  else np.asarray(native_box(source, sink, context.offset), np.int64))
         # PCG reads whole graph chunks intersecting the coordinate box.
         chunks = np.asarray(context.spec['graph_chunk_xyz'])
         clipped_lo = np.maximum(result[0], 0)
@@ -571,6 +575,17 @@ def painted_split(native, table_id, spec, body, data_dir='/data', started=None):
             for name, label, atoms in (('sources', 'source', sources), ('sinks', 'sink', sinks)):
                 remapped[name] = [[str(int(atom)), *((representative(int(atom), grouped[int(atom)][label]) + .5)
                                                    * context.resolution).tolist()] for atom in atoms]
+            leaves = np.asarray(cg.get_subgraph_leaves(np.uint64(root)), np.uint64)
+            context.whole_box = None
+            if 0 < len(leaves) <= context.limits['max_object_atoms']:
+                tables = load_atom_tables(data_dir)
+                pos = np.searchsorted(tables.ids, leaves)
+                known = pos < len(tables.ids)
+                known[known] = tables.ids[pos[known]] == leaves[known]
+                if np.all(known):
+                    b = np.asarray(tables.bounds[pos], np.int64)
+                    context.whole_box = np.array([np.maximum(b[:, :3].min(0) - 1, 0),
+                                                  np.minimum(b[:, 3:].max(0), context.spec['shape_xyz'])])
             terminals = sorted(context.sources | context.sinks)
             context.journal.update(sources=sorted(context.sources), sinks=sorted(context.sinks),
                 roots=[root], painted_atoms=terminals, pre_partition=[0] * len(terminals),

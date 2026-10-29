@@ -53,6 +53,7 @@ class PaintError(ValueError):
 class Stroke:
     points_nm: np.ndarray
     radius_nm: float
+    order: int | None = None  # drawing order; where colours overlap the later stroke wins
 
 
 @dataclass(frozen=True)
@@ -118,8 +119,11 @@ also supported here so callers can preserve that ordering without Flask.
             raise PaintError("limit", "Paint exceeds max_strokes")
         groups.append(strokes)
         for stroke in strokes:
-            if not isinstance(stroke, dict) or set(stroke) != {"points_nm", "radius_nm"}:
-                raise PaintError("limit", "Each stroke needs only points_nm and radius_nm")
+            if (not isinstance(stroke, dict) or not {"points_nm", "radius_nm"} <= set(stroke)
+                    or set(stroke) - {"points_nm", "radius_nm", "order"}):
+                raise PaintError("limit", "Each stroke needs points_nm and radius_nm (and optionally order)")
+            if "order" in stroke and (type(stroke["order"]) is not int or stroke["order"] < 0):
+                raise PaintError("limit", "Stroke order must be a nonnegative integer")
             points = stroke["points_nm"]
             if not isinstance(points, list) or not points:
                 raise PaintError("limit", "Each stroke needs at least one XYZ point")
@@ -141,7 +145,7 @@ also supported here so callers can preserve that ordering without Flask.
         for stroke in strokes:
             points = np.asarray(stroke["points_nm"], dtype=np.float64)
             points.setflags(write=False)
-            group.append(Stroke(points, float(stroke["radius_nm"])))
+            group.append(Stroke(points, float(stroke["radius_nm"]), stroke.get("order")))
         parsed.append(tuple(group))
     return Paint(*parsed, deepcopy(paint))
 
@@ -212,10 +216,11 @@ avoids estimating a sparse capsule's voxel count from its much larger box.
                 work += count
                 if work > limits["max_raster_work"]:
                     raise PaintError("limit", "Paint exceeds max_raster_work")
-                segments.append((label, a, b, stroke.radius_nm, lo, size, count))
+                segments.append((label, a, b, stroke.radius_nm, lo, size, count, stroke.order))
     painted = [set(), set()]
+    owner = {}  # voxel -> drawing order of the stroke that set its colour (strokes with an order only)
     total = 0
-    for label, a, b, radius, lo, size, count in segments:
+    for label, a, b, radius, lo, size, count, order in segments:
         direction = b - a
         squared_length = float(np.dot(direction, direction))
         for begin in range(0, count, RASTER_BATCH_VOXELS):
@@ -232,11 +237,23 @@ avoids estimating a sparse capsule's voxel count from its much larger box.
             squared_distance = np.sum((physical - nearest) ** 2, axis=1)
             selected = xyz[squared_distance <= radius * radius]
             for point in map(tuple, selected):
-                if point not in painted[label]:
-                    if total >= limits["max_paint_voxels"]:
-                        raise PaintError("limit", "Paint exceeds max_paint_voxels")
-                    painted[label].add(point)
-                    total += 1
+                if point in painted[label]:
+                    if order is not None and owner.get(point, -1) < order:
+                        owner[point] = order
+                    continue
+                other = painted[1 - label]
+                if point in other and order is not None:
+                    # Overlapping colours: the later stroke wins (a stroke without an order never overrides).
+                    if owner.get(point) is None or owner[point] > order:
+                        continue
+                    other.discard(point)
+                    total -= 1
+                if total >= limits["max_paint_voxels"]:
+                    raise PaintError("limit", "Paint exceeds max_paint_voxels")
+                painted[label].add(point)
+                if order is not None:
+                    owner[point] = order
+                total += 1
             if checkpoint is not None:
                 checkpoint()
             check_deadline(deadline)
