@@ -473,7 +473,16 @@ def _seam_target(context, cg, root, sources, sinks, grouped):
         return None
     path = paths[0][2]
     nodes = [path[0][0]] + [v for _, v in path]
-    target, red, blue = (nodes[0], None, nodes[1]) if len(nodes) == 2 else (nodes[1], nodes[0], nodes[2])
+    # Split where the colours meet on the path, not next to its red end: j = first blue piece, i = last red piece
+    # before it. Adjacent: refine the red piece against its blue neighbour; otherwise the first piece after i, seeded
+    # by its contacts with the red piece i and the next piece towards blue.
+    reds, blues = set(map(int, sources)), set(map(int, sinks))
+    j = next(k for k, n in enumerate(nodes) if n in blues)
+    i = max(k for k in range(j) if nodes[k] in reds)
+    if j == i + 1:
+        target, red, blue = nodes[i], (nodes[i - 1] if i > 0 else None), nodes[j]
+    else:
+        target, red, blue = nodes[i + 1], nodes[i], nodes[i + 2]
     bounds = _bounds(context, [n for n in (target, red, blue) if n is not None])
     budget = [0]
     painted = grouped.get(target, {})
