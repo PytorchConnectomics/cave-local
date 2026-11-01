@@ -144,3 +144,25 @@ def test_deadline_after_refinements_says_they_are_kept(monkeypatch, tmp_path):
     assert calls == [20, 21, 22]
     message = str(refused[-1])
     assert 'The 2 supervoxel refinements already made are kept' in message and 'resend' in message
+
+
+def test_whole_atom_refinement_makes_two_sides_not_grid_cells():
+    from supervoxel_refine import _compute_pieces
+    voxels = np.zeros((4, 4, 40), np.uint64)  # ZYX bar spanning three 16-voxel grid cells in X
+    voxels[1:3, 1:3, :] = 7
+    snapshot = {'voxels': voxels, 'atom': 7, 'lo': np.array([3, 0, 0])}
+    request = {'source_vox': [[1, 1, 0]], 'sink_vox': [[1, 1, 39]]}
+    _, gridded = _compute_pieces(snapshot, request, [16, 16, 16], [10, 10, 10])
+    pieces, whole = _compute_pieces(snapshot, request, [16, 16, 16], [10, 10, 10], whole_atom=True)
+    assert gridded == 3 and whole == 2
+    assert pieces[1, 1, 0] != pieces[1, 1, 39]
+
+
+def test_whole_atom_falls_back_to_grid_above_the_size_cap(monkeypatch):
+    import supervoxel_refine
+    monkeypatch.setattr(supervoxel_refine, 'WHOLE_ATOM_MAX_VOXELS', 10)
+    voxels = np.zeros((4, 4, 40), np.uint64)
+    voxels[1:3, 1:3, :] = 7
+    snapshot = {'voxels': voxels, 'atom': 7, 'lo': np.array([3, 0, 0])}
+    request = {'source_vox': [[1, 1, 0]], 'sink_vox': [[1, 1, 39]]}
+    assert supervoxel_refine._compute_pieces(snapshot, request, [16, 16, 16], [10, 10, 10], whole_atom=True)[1] == 3

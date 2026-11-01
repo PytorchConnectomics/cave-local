@@ -685,9 +685,17 @@ def validate_preconditions(cg, precondition, *, publishing=False):
             raise PreconditionsChanged(f"affected level-2 node {node} is obsolete")
 
 
-def _compute_pieces(snapshot, request, grid_xyz, spacing):
+WHOLE_ATOM_MAX_VOXELS = 500_000  # whole-atom seeded watershed above this size falls back to the grid (~1 s here)
+
+
+def _compute_pieces(snapshot, request, grid_xyz, spacing, whole_atom=False):
+    """Grid pieces, with each grid piece holding both seed groups split by a seeded watershed. ``whole_atom`` (paint)
+    treats the atom as one grid cell when it is at most WHOLE_ATOM_MAX_VOXELS, so a painted atom becomes its
+    source side, its sink side and any disconnected parts, not every grid cell it covers."""
     from supervoxel_split import grid_pieces, seeded_pieces
     mask = snapshot["voxels"] == snapshot["atom"]
+    if whole_atom and int(mask.sum()) <= WHOLE_ATOM_MAX_VOXELS:
+        grid_xyz = np.maximum(np.asarray(snapshot["lo"], int) + np.asarray(mask.shape[::-1]), 1)
     pieces, count = grid_pieces(mask, snapshot["lo"], grid_xyz)
     sources = [tuple(map(int, p)) for p in request.get("source_vox", ())]
     sinks = [tuple(map(int, p)) for p in request.get("sink_vox", ())]
@@ -1136,7 +1144,8 @@ def _allocate(cg, snapshot, tables, count):
     return new
 
 
-def refine(cg, requests, *, grid_xyz=(16, 16, 16), reason="same_supervoxel", data_dir="/data", max_seconds=None):
+def refine(cg, requests, *, grid_xyz=(16, 16, 16), reason="same_supervoxel", data_dir="/data", max_seconds=None,
+           whole_atom=False):
     from supervoxel_history import load_atom_tables
     install_lock_ownership_fix()
     if cg.cache is not None:
@@ -1191,7 +1200,7 @@ def refine(cg, requests, *, grid_xyz=(16, 16, 16), reason="same_supervoxel", dat
                         raise RefinementError("supervoxel refinement in progress or awaiting repair")
                     _renew(cg.client, locked, operation)
                     check_budget()
-                    pieces, count = _compute_pieces(snapshot, request, grid_xyz, cg.segmentation_resolution)
+                    pieces, count = _compute_pieces(snapshot, request, grid_xyz, cg.segmentation_resolution, whole_atom)
                     _renew(cg.client, locked, operation)
                     if count <= 1:
                         break

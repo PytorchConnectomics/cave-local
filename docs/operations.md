@@ -213,7 +213,10 @@ use global Docker pruning to clean up this project.
 An `agglomerated_supervoxels` deployment can refine an atom when split seeds
 share it, or after a native mincut fails. It first divides that atom on a
 volume-aligned grid, then uses a seeded distance-transform watershed if opposing
-seeds still share a piece. The calculation uses the current ABISS-derived labels
+seeds still share a piece. Painted cuts skip the grid for atoms of at most
+500,000 voxels: the whole atom is split by the seeded watershed into its painted
+sides (plus any disconnected parts), so painting does not multiply supervoxels.
+The calculation uses the current ABISS-derived labels
 and region-graph edges; it needs no affinity volume. Refinement preserves the
 object and its root. The subsequent native multicut changes the object and is
 undoable. Refinement itself is permanent.

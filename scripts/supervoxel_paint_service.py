@@ -601,7 +601,8 @@ def painted_split(native, table_id, spec, body, data_dir='/data', started=None):
                     'sink_vox': (seeds['sink'] - lo)[:, ::-1].tolist()}
             remaining = min(options.get('max_seconds', 30), deadline - time.monotonic())
             result = refine(cg, [item], grid_xyz=options.get('grid_xyz', [16, 16, 16]),
-                            reason='painted', data_dir=data_dir, max_seconds=remaining)
+                            reason='painted', data_dir=data_dir, max_seconds=remaining,
+                            whole_atom=True)
             if not result.count:
                 context.refuse('object_changed', 'Painted supervoxel could not be refined.')
             refined += result.count
@@ -632,7 +633,8 @@ def painted_split(native, table_id, spec, body, data_dir='/data', started=None):
                         'sink_vox': (blue - lo)[:, ::-1].tolist()}
                 remaining = min(options.get('max_seconds', 30), deadline - time.monotonic())
                 result = refine(cg, [item], grid_xyz=options.get('grid_xyz', [16, 16, 16]),
-                                reason='painted-seam', data_dir=data_dir, max_seconds=remaining)
+                                reason='painted-seam', data_dir=data_dir, max_seconds=remaining,
+                                whole_atom=True)
                 if not result.count:
                     context.refuse('seam', 'A seam-joined supervoxel could not be refined.',
                                    np.concatenate([red, blue])[:20], chain)
