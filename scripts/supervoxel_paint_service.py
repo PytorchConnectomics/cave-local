@@ -449,11 +449,31 @@ def install_hooks():
     Client.renew_locks = renew
 
 
-def _seam_target(context, cg, root, sources, sinks, grouped):
+MAX_SEAM_GENERATIONS = 3  # a seam piece split this many times within one request is refused, not split again
+
+
+def _merge_seeds(seeds):
+    """Voxels touching both sides go to neither, unless that empties a side (a seam contact can be one voxel that also
+    touches the other neighbour): then they seed the side they would otherwise leave empty."""
+    both = {tuple(v) for v in seeds['source']} & {tuple(v) for v in seeds['sink']}
+    if not both:
+        return seeds
+    kept = {k: np.array([v for v in seeds[k] if tuple(v) not in both], np.int64).reshape(-1, 3) for k in seeds}
+    for k, other in (('source', 'sink'), ('sink', 'source')):
+        if not len(kept[k]) and len(kept[other]):
+            kept[k] = np.array(sorted(both), np.int64).reshape(-1, 3)
+    return kept
+
+
+def _seam_targets(context, cg, root, sources, sinks, grouped):
     """A painted cut across a chunk boundary can be blocked by pieces of one ABISS fragment joined by infinite (seam)
-    edges. Find the first red-to-blue path of seam edges near the paint and the piece to refine on it: the first piece
-    after the red end (the red end itself when the two ends are seam neighbours). Its seeds are its own paint plus its
-    voxels touching the path neighbour on each side. Returns None when no seam path joins the colours."""
+    edges. Find every red-to-blue path of seam edges near the paint and, on each, the piece to refine where the
+    colours meet: the last red piece before the first blue one (adjacent ends) or the first piece after it. A piece
+    chosen by several paths is refined once with all of their seeds: its own paint plus its voxels touching each
+    path's red-side neighbour (source) and blue-side neighbour (sink). One subgraph read serves all paths, so a pass
+    costs one refinement per chosen piece instead of one per path. Returns [(atom, source_xyz, sink_xyz, chain)]
+    sorted by atom (empty when no seam path joins the colours); a path whose pieces cannot seed both sides is
+    returned with an empty side, last, so the caller refuses it once the others are refined."""
     from functools import reduce
     from pychunkedgraph.graph.edges import Edges
     context.check()
@@ -463,51 +483,65 @@ def _seam_target(context, cg, root, sources, sinks, grouped):
     agglomerations, edges = cg.get_subgraph(np.uint64(root), bbox=np.array([lo, hi]), bbox_is_coordinate=True)
     context.check()
     if not agglomerations:
-        return None
+        return []
     supervoxels = np.concatenate([agg.supervoxels for agg in agglomerations.values()])
     edges = reduce(lambda x, y: x + y, edges, Edges([], []))
     keep = np.isin(edges.node_ids1, supervoxels) & np.isin(edges.node_ids2, supervoxels) & np.isinf(edges.affinities)
     infinite = _pairs(np.stack([edges.node_ids1[keep], edges.node_ids2[keep]], axis=1))
     paths = separation(infinite, [], set(map(int, sources)), set(map(int, sinks)))
     if not paths:
-        return None
-    path = paths[0][2]
-    nodes = [path[0][0]] + [v for _, v in path]
-    # Split where the colours meet on the path, not next to its red end: j = first blue piece, i = last red piece
-    # before it. Adjacent: refine the red piece against its blue neighbour; otherwise the first piece after i, seeded
-    # by its contacts with the red piece i and the next piece towards blue.
+        return []
     reds, blues = set(map(int, sources)), set(map(int, sinks))
-    j = next(k for k, n in enumerate(nodes) if n in blues)
-    i = max(k for k in range(j) if nodes[k] in reds)
-    at = lambda k: nodes[k] if 0 <= k < len(nodes) else None
-    # Candidates (piece, red-side neighbour, blue-side neighbour); a piece refined small by earlier attempts can have every
-    # voxel touch both sides, so the piece on the other side of the meeting point is tried next.
-    if j == i + 1:
-        candidates = [(nodes[i], at(i - 1), nodes[j]), (nodes[j], nodes[i], at(j + 1))]
-    else:
-        candidates = [(nodes[i + 1], nodes[i], nodes[i + 2]), (nodes[i], at(i - 1), nodes[i + 1])]
     empty = np.empty((0, 3), np.int64)
-    budget = [0]
-    for target, red, blue in candidates:
-        bounds = _bounds(context, [n for n in (target, red, blue) if n is not None])
-        painted = grouped.get(target, {})
-        seeds = {}
-        for label, neighbour in (('source', red), ('sink', blue)):
-            touching = _edge_contacts(context, (target, neighbour), bounds, budget) if neighbour is not None else empty
-            seeds[label] = np.unique(np.concatenate([np.asarray(painted.get(label, empty), np.int64).reshape(-1, 3),
-                                                     np.asarray(touching, np.int64).reshape(-1, 3)]), axis=0)
-        both = {tuple(v) for v in seeds['source']} & {tuple(v) for v in seeds['sink']}
-        if both:
-            # Voxels touching both sides go to neither, unless that empties a side (a seam contact can be one voxel
-            # that also touches the other neighbour): then they seed the side they would otherwise leave empty.
-            kept = {k: np.array([v for v in seeds[k] if tuple(v) not in both], np.int64).reshape(-1, 3) for k in seeds}
-            for k, other in (('source', 'sink'), ('sink', 'source')):
-                if not len(kept[k]) and len(kept[other]):
-                    kept[k] = np.array(sorted(both), np.int64).reshape(-1, 3)
-            seeds = kept
-        if len(seeds['source']) and len(seeds['sink']):
-            break
-    return target, seeds['source'], seeds['sink'], [n for n in nodes]
+    budget, touching_cache, chosen, failed = [0], {}, {}, None
+
+    def touching(target, neighbour):
+        if neighbour is None:
+            return empty
+        key = (target, neighbour)
+        if key not in touching_cache:
+            bounds = _bounds(context, [target, neighbour])
+            touching_cache[key] = np.asarray(_edge_contacts(context, key, bounds, budget), np.int64).reshape(-1, 3)
+        return touching_cache[key]
+
+    for _, _, path in paths:
+        nodes = [int(path[0][0])] + [int(v) for _, v in path]
+        # Split where the colours meet on the path, not next to its red end: j = first blue piece, i = last red piece
+        # before it. Adjacent: refine the red piece against its blue neighbour; otherwise the first piece after i,
+        # seeded by its contacts with the red piece i and the next piece towards blue.
+        j = next(k for k, n in enumerate(nodes) if n in blues)
+        i = max(k for k in range(j) if nodes[k] in reds)
+        at = lambda k: nodes[k] if 0 <= k < len(nodes) else None
+        # Candidates (piece, red-side neighbour, blue-side neighbour); a piece refined small by earlier attempts can
+        # have every voxel touch both sides, so the piece on the other side of the meeting point is tried next. A
+        # piece another path already chose is preferred, so overlapping paths share one refinement.
+        if j == i + 1:
+            candidates = [(nodes[i], at(i - 1), nodes[j]), (nodes[j], nodes[i], at(j + 1))]
+        else:
+            candidates = [(nodes[i + 1], nodes[i], nodes[i + 2]), (nodes[i], at(i - 1), nodes[i + 1])]
+        candidates.sort(key=lambda c: c[0] not in chosen)
+        for target, red, blue in candidates:
+            painted = grouped.get(target, {})
+            seeds = {label: np.unique(np.concatenate([np.asarray(painted.get(label, empty), np.int64).reshape(-1, 3),
+                                                      touching(target, neighbour)]), axis=0)
+                     for label, neighbour in (('source', red), ('sink', blue))}
+            seeds = _merge_seeds(seeds)
+            if len(seeds['source']) and len(seeds['sink']):
+                entry = chosen.setdefault(target, {'source': [], 'sink': [], 'chain': nodes})
+                entry['source'].append(seeds['source'])
+                entry['sink'].append(seeds['sink'])
+                break
+        else:
+            if failed is None:
+                failed = (target, seeds['source'], seeds['sink'], nodes)
+    result = []
+    for target in sorted(chosen):
+        entry = chosen[target]
+        seeds = _merge_seeds({label: np.unique(np.concatenate(entry[label]), axis=0) for label in ('source', 'sink')})
+        result.append((target, seeds['source'], seeds['sink'], entry['chain']))
+    if failed is not None and failed[0] not in chosen:
+        result.append(failed)
+    return result
 
 
 def painted_split(native, table_id, spec, body, data_dir='/data', started=None):
@@ -575,29 +609,39 @@ def painted_split(native, table_id, spec, body, data_dir='/data', started=None):
                 context.journal.data.get('refinement_operation_ids', []) + result.operation_ids)
             g.svsplit_refined = refined
             root, sources, sinks, grouped = _lookup(context, cg, root)
-        # Seams: refine the unsplittable piece where a seam path from red meets blue (one at a time, fresh reads).
+        # Seams: each pass refines, once each, the unsplittable pieces where seam paths from red meet blue, then reads
+        # again. A piece this request has already split MAX_SEAM_GENERATIONS times is refused rather than shaved again.
+        generation = {}
         while True:
-            found = _seam_target(context, cg, root, sources, sinks, grouped)
-            if found is None:
+            found = _seam_targets(context, cg, root, sources, sinks, grouped)
+            if not found:
                 break
-            atom, red, blue, chain = found
-            if not len(red) or not len(blue):
-                context.refuse('seam', 'Paint both colours inside the same supervoxel on one side of the chunk boundary.',
-                               np.concatenate([red, blue])[:20], chain)
-            if refined >= options.get('max_atoms', 64):
-                context.refuse('limit', 'Too many seam-joined supervoxels require refinement.', atoms=chain)
-            tables = load_atom_tables(data_dir)
-            lo = tables.bounds[np.searchsorted(tables.ids, np.uint64(atom)), :3]
-            item = {'atom': int(atom), 'source_vox': (red - lo)[:, ::-1].tolist(), 'sink_vox': (blue - lo)[:, ::-1].tolist()}
-            remaining = min(options.get('max_seconds', 30), deadline - time.monotonic())
-            result = refine(cg, [item], grid_xyz=options.get('grid_xyz', [16, 16, 16]),
-                            reason='painted-seam', data_dir=data_dir, max_seconds=remaining)
-            if not result.count:
-                context.refuse('seam', 'A seam-joined supervoxel could not be refined.', np.concatenate([red, blue])[:20], chain)
-            refined += result.count
-            context.journal.update(refinement_operation_ids=
-                context.journal.data.get('refinement_operation_ids', []) + result.operation_ids)
-            g.svsplit_refined = refined
+            for atom, red, blue, chain in found:
+                if not len(red) or not len(blue):
+                    context.refuse('seam', 'Paint both colours inside the same supervoxel on one side of the chunk boundary.',
+                                   np.concatenate([red, blue])[:20], chain)
+                if generation.get(int(atom), 0) >= MAX_SEAM_GENERATIONS:
+                    context.refuse('seam', 'A seam-joined supervoxel keeps touching both colours after repeated '
+                                   'refinement; paint both colours inside it, away from the chunk boundary.',
+                                   np.concatenate([red, blue])[:20], chain)
+                if refined >= options.get('max_atoms', 64):
+                    context.refuse('limit', 'Too many seam-joined supervoxels require refinement.', atoms=chain)
+                tables = load_atom_tables(data_dir)
+                lo = tables.bounds[np.searchsorted(tables.ids, np.uint64(atom)), :3]
+                item = {'atom': int(atom), 'source_vox': (red - lo)[:, ::-1].tolist(),
+                        'sink_vox': (blue - lo)[:, ::-1].tolist()}
+                remaining = min(options.get('max_seconds', 30), deadline - time.monotonic())
+                result = refine(cg, [item], grid_xyz=options.get('grid_xyz', [16, 16, 16]),
+                                reason='painted-seam', data_dir=data_dir, max_seconds=remaining)
+                if not result.count:
+                    context.refuse('seam', 'A seam-joined supervoxel could not be refined.',
+                                   np.concatenate([red, blue])[:20], chain)
+                refined += result.count
+                for child in result.new_ids.get(int(atom), []):
+                    generation[int(child)] = generation.get(int(atom), 0) + 1
+                context.journal.update(refinement_operation_ids=
+                    context.journal.data.get('refinement_operation_ids', []) + result.operation_ids)
+                g.svsplit_refined = refined
             root, sources, sinks, grouped = _lookup(context, cg, root)
         _fault('after_refinement', context)
         attempts = 0
@@ -651,7 +695,15 @@ def painted_split(native, table_id, spec, body, data_dir='/data', started=None):
             g.svsplit_refined = refined
             return result
         context.refuse('object_changed', 'Painted object changed repeatedly.')
-    except Exception as error:
+    except Exception as caught:
+        error = caught
+        if (isinstance(error, PaintError) and error.kind == 'deadline' and context.error is None and refined
+                and not context.journal.data.get('handed_to_write')):
+            # Refinements are published one by one and stay; a resend starts from the smaller supervoxels.
+            error = PaintError('deadline', f'{error.message} The {refined} supervoxel refinements already made are kept; '
+                               'resend the same paint to continue from them.',
+                               locations_nm=error.locations_nm, supervoxels=error.supervoxels)
+            error.__cause__ = caught
         try:
             context.journal.update(write_calls=context.write_calls, write_entries=context.write_entries)
         except Exception as journal_error:
@@ -666,4 +718,6 @@ def painted_split(native, table_id, spec, body, data_dir='/data', started=None):
             error.add_note('Paint outcome recording failed: ' + str(journal_error))
         if context.error is not None:
             raise context.error from error
+        if error is not caught:
+            raise error from caught
         raise
