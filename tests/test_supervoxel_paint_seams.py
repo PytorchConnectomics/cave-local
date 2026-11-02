@@ -76,14 +76,15 @@ def test_no_seam_paths_returns_empty(monkeypatch):
     assert paint_service._seam_targets(context(), seam_graph([[1, 2]]), 100, [1], [3], {}) == []
 
 
-def painted_request(monkeypatch, tmp_path, seam_targets, refine, refused):
+def painted_request(monkeypatch, tmp_path, seam_targets, refine, refused, native=None, recorded=None):
     """Drive painted_split up to the seam loop with every graph access faked."""
     from datetime import timedelta
     from pychunkedgraph.app import app_utils
     import supervoxel_history
     import supervoxel_paint_history as history
     import supervoxel_refine
-    cg = SimpleNamespace(meta=SimpleNamespace(graph_config=SimpleNamespace(ROOT_LOCK_EXPIRY=timedelta(seconds=5))))
+    cg = SimpleNamespace(meta=SimpleNamespace(graph_config=SimpleNamespace(ROOT_LOCK_EXPIRY=timedelta(seconds=5))),
+                         get_subgraph_leaves=lambda *a, **k: [])
     monkeypatch.setattr(app_utils, 'get_cg', lambda *a, **k: cg)
     monkeypatch.setattr(history, 'recover_paint', lambda *a: None)
     monkeypatch.setattr(paint_service, '_fault', lambda *a, **k: None)
@@ -95,11 +96,11 @@ def painted_request(monkeypatch, tmp_path, seam_targets, refine, refused):
     ids = np.arange(1, 200, dtype=np.uint64)
     monkeypatch.setattr(supervoxel_history, 'load_atom_tables',
                         lambda *a: SimpleNamespace(ids=ids, bounds=np.zeros((len(ids), 6), np.int64)))
-    recorded = {}
+    recorded = {} if recorded is None else recorded
     journal = SimpleNamespace(data=recorded, update=lambda **v: recorded.update(v),
                               refuse=lambda error, **k: refused.append(error) or recorded)
     monkeypatch.setattr(history.PaintJournal, 'create', lambda *a, **k: journal)
-    app = app_for(monkeypatch, specimen(), tmp_path, lambda table: pytest.fail('native cut reached'))
+    app = app_for(monkeypatch, specimen(), tmp_path, native or (lambda table: pytest.fail('native cut reached')))
 
     @app.before_request
     def identity():
@@ -166,3 +167,28 @@ def test_whole_atom_falls_back_to_grid_above_the_size_cap(monkeypatch):
     snapshot = {'voxels': voxels, 'atom': 7, 'lo': np.array([3, 0, 0])}
     request = {'source_vox': [[1, 1, 0]], 'sink_vox': [[1, 1, 39]]}
     assert supervoxel_refine._compute_pieces(snapshot, request, [16, 16, 16], [10, 10, 10], whole_atom=True)[1] == 3
+
+
+def test_unsplittable_seam_end_gives_up_its_colour_and_the_cut_continues(monkeypatch, tmp_path):
+    passes = []
+
+    def targets(*args):
+        passes.append(1)
+        return [(2, np.empty((0, 3), int), np.empty((0, 3), int), [1, 2])] if len(passes) == 1 else []
+    reached = []
+
+    def native(table):
+        reached.append(table)
+        raise PaintError('deadline', 'stop after reaching the native cut')
+    refused, recorded = [], {}
+    response = painted_request(monkeypatch, tmp_path, targets, lambda *a, **k: pytest.fail('no refinement'),
+                               refused, native, recorded)
+    assert reached and response.json['paint_refusal']['kind'] == 'deadline'
+    assert recorded['seam_yielded'] == {'1': 'source'}  # equal paint: the lower id yields
+
+
+def test_seam_yields_are_capped(monkeypatch, tmp_path):
+    targets = lambda *a: [(2, np.empty((0, 3), int), np.empty((0, 3), int), [1, 2])]
+    refused = []
+    response = painted_request(monkeypatch, tmp_path, targets, lambda *a, **k: pytest.fail('no refinement'), refused)
+    assert response.status_code == 400 and response.json['paint_refusal']['kind'] == 'seam'

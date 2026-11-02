@@ -56,6 +56,7 @@ class PaintContext:
     checked: dict = field(default_factory=dict)
     whole_box: object = None
     dropped: int = 0
+    yielded: dict = field(default_factory=dict)  # atom -> label it gave up on an unsplittable seam
 
     @property
     def resolution(self):
@@ -109,6 +110,12 @@ def _lookup(context, cg, expected_root=None, *, locked=False):
                          for xyz in grouped[int(atom)][label][:20]]
             context.refuse('object_changed' if expected_root is not None else 'other_object',
                            'The painted voxels must belong to the same current object.', positions, other)
+        if context.yielded:
+            src = np.array([a for a in src if context.yielded.get(int(a)) != 'source'], np.uint64)
+            sink = np.array([a for a in sink if context.yielded.get(int(a)) != 'sink'], np.uint64)
+            if not len(src) or not len(sink):
+                context.refuse('seam', 'Paint both colours away from the chunk boundary: one colour only covers '
+                               'supervoxels glued to the other colour across it.', atoms=list(context.yielded))
         if locked and (set(map(int, src)) != context.sources or set(map(int, sink)) != context.sinks):
             context.refuse('object_changed', 'Painted supervoxels changed before the native root lock.', atoms=ids)
         return wanted, src, sink, grouped
@@ -450,6 +457,7 @@ def install_hooks():
 
 
 MAX_SEAM_GENERATIONS = 3  # a seam piece split this many times within one request is refused, not split again
+MAX_SEAM_YIELDS = 8  # painted ends that may give up their colour on unsplittable seams in one request
 
 
 def _merge_seeds(seeds):
@@ -619,8 +627,19 @@ def painted_split(native, table_id, spec, body, data_dir='/data', started=None):
                 break
             for atom, red, blue, chain in found:
                 if not len(red) or not len(blue):
-                    context.refuse('seam', 'Paint both colours inside the same supervoxel on one side of the chunk boundary.',
-                                   np.concatenate([red, blue])[:20], chain)
+                    # No piece on this path can be seeded on both sides: typically single-voxel pieces glued across a
+                    # chunk face with opposite paint. The painted end holding less paint gives up its colour; the
+                    # multicut then places it (its seam edge keeps it with its neighbour).
+                    ends = [(int(chain[0]), 'source'), (int(chain[-1]), 'sink')]
+                    ends = [(a, label) for a, label in ends
+                            if a not in context.yielded and len(grouped.get(a, {}).get(label, ()))]
+                    if not ends or len(context.yielded) >= MAX_SEAM_YIELDS:
+                        context.refuse('seam', 'Paint both colours inside the same supervoxel on one side of the chunk '
+                                       'boundary.', np.concatenate([red, blue])[:20], chain)
+                    end, label = min(ends, key=lambda e: (len(grouped[e[0]][e[1]]), e[0]))
+                    context.yielded[end] = label
+                    context.journal.update(seam_yielded={str(a): l for a, l in context.yielded.items()})
+                    continue
                 if generation.get(int(atom), 0) >= MAX_SEAM_GENERATIONS:
                     context.refuse('seam', 'A seam-joined supervoxel keeps touching both colours after repeated '
                                    'refinement; paint both colours inside it, away from the chunk boundary.',
