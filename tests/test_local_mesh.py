@@ -58,3 +58,13 @@ class CoarseMeshTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+@unittest.skipIf(local_mesh is None, 'requires the PCG image')
+class MembershipTest(unittest.TestCase):
+    def test_member_matches_isin_for_large_ids(self):
+        rng = np.random.default_rng(0)
+        ids = np.array([72269181642342472, 72339550386520401, 5, 2 ** 62 + 3], np.uint64)
+        a = rng.choice(np.concatenate([ids, np.array([0, 9, 72269181642342473], np.uint64)]), (6, 7, 5))
+        np.testing.assert_array_equal(local_mesh.member(a, ids[:3]), np.isin(a, ids[:3]))
+        before = a.copy(); local_mesh.member(a, ids); np.testing.assert_array_equal(a, before)
