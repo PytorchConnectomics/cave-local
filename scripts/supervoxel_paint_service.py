@@ -56,6 +56,7 @@ class PaintContext:
     checked: dict = field(default_factory=dict)
     whole_box: object = None
     dropped: int = 0
+    reattached: int = 0
     yielded: dict = field(default_factory=dict)  # atom -> label it gave up on an unsplittable seam
 
     @property
@@ -209,6 +210,55 @@ def _whole_object_separated(context, cut):
     return True
 
 
+def _reattach_orphans(context, edges, removed):
+    """A multicut can remove every edge of an unpainted piece, which then becomes its own object attached to neither
+    colour (it seems to vanish after the cut). Give each such piece back to the colour it is more strongly attached to
+    across the cut (summed affinity, then edge count) by keeping those edges; repeat until no piece is stranded. Keeping
+    edges between a stranded piece and one colour cannot join the colours; _check_cut re-verifies the result."""
+    pairs = np.asarray(edges.get_pairs(), np.uint64).reshape(-1, 2)
+    weight = {}
+    for (a, b), w in zip(pairs.tolist(), np.asarray(edges.affinities, float).tolist()):
+        key = (min(a, b), max(a, b))
+        weight[key] = max(weight.get(key, 0.0), w if np.isfinite(w) else 0.0)
+    local = list(weight)
+    cut = set(_pairs(removed))
+    nodes = set(context.sources) | set(context.sinks) | {n for pair in local for n in pair}
+    restored = set()
+    while True:
+        groups = components([e for e in local if e not in cut], nodes)
+        side = {}
+        for group in groups:
+            label = 'source' if group & context.sources else 'sink' if group & context.sinks else None
+            for node in group:
+                side[node] = label
+        changed = False
+        for group in (g for g in groups if not (g & context.sources) and not (g & context.sinks)):
+            score, via = {'source': [0.0, 0], 'sink': [0.0, 0]}, {'source': [], 'sink': []}
+            for edge in cut:
+                inside = (edge[0] in group, edge[1] in group)
+                if inside[0] == inside[1]:
+                    continue
+                label = side.get(edge[1] if inside[0] else edge[0])
+                if label:
+                    score[label][0] += weight.get(edge, 0.0)
+                    score[label][1] += 1
+                    via[label].append(edge)
+            if via['source'] or via['sink']:
+                pick = max(('source', 'sink'), key=lambda k: tuple(score[k]))
+                cut.difference_update(via[pick])
+                restored.update(via[pick])
+                changed = True
+                break  # sides changed: recompute components before the next stranded piece
+        if not changed:
+            break
+    if not restored:
+        return removed
+    removed = np.asarray(removed)
+    keep = np.array([tuple(sorted(map(int, row))) not in restored for row in removed.reshape(-1, 2)], bool)
+    context.reattached = len(restored)
+    return removed[keep]
+
+
 def _check_cut(context, edges, removed):
     context.check()
     local = _pairs(edges.get_pairs())
@@ -260,6 +310,7 @@ def _check_cut(context, edges, removed):
     context.check()
     terminal_groups = {atom: index for index, group in enumerate(groups) for atom in group}
     context.checked = {'removed_edges': [list(e) for e in cut], 'source_closed': source_closed,
+                       'reattached_edges': context.reattached,
                        'expected_partition': [terminal_groups[a] for a in sorted(context.sources | context.sinks)],
                        'sink_closed': sink_closed, 'contact_voxels': budget[0], 'box_voxel_xyz': np.asarray(context.box).tolist()}
 
@@ -334,6 +385,7 @@ def install_hooks():
             result = native_solve(edges, sources, sinks, **kwargs)
             _fault('solve', context)
             context.check()
+            result = _reattach_orphans(context, edges, result)
             _check_cut(context, edges, result)
             return result
         except PaintError as error:

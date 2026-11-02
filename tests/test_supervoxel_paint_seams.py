@@ -192,3 +192,36 @@ def test_seam_yields_are_capped(monkeypatch, tmp_path):
     refused = []
     response = painted_request(monkeypatch, tmp_path, targets, lambda *a, **k: pytest.fail('no refinement'), refused)
     assert response.status_code == 400 and response.json['paint_refusal']['kind'] == 'seam'
+
+
+def solved(pairs, affinities):
+    return SimpleNamespace(get_pairs=lambda: np.asarray(pairs, np.uint64), affinities=np.asarray(affinities, float))
+
+
+def orphan_context(sources, sinks):
+    c = context()
+    c.sources, c.sinks = set(sources), set(sinks)
+    return c
+
+
+def test_stranded_piece_rejoins_the_side_it_is_most_attached_to():
+    # 1 (red) - 3 - 2 (blue); a cut removing both edges of 3 strands it. 3 is more strongly tied to red.
+    edges = solved([[1, 3], [3, 2], [1, 2]], [0.9, 0.2, 0.1])
+    c = orphan_context({1}, {2})
+    out = paint_service._reattach_orphans(c, edges, np.array([[1, 3], [3, 2], [1, 2]], np.uint64))
+    assert sorted(tuple(sorted(r)) for r in out.tolist()) == [(1, 2), (2, 3)] and c.reattached == 1
+
+
+def test_stranded_chain_is_reattached_through_its_neighbours():
+    # 4 is only cut off from 3, and 3 from both colours: 3 joins blue (stronger), then 4 follows 3.
+    edges = solved([[1, 3], [3, 2], [3, 4], [1, 2]], [0.1, 0.8, 0.5, 0.3])
+    c = orphan_context({1}, {2})
+    out = paint_service._reattach_orphans(c, edges, np.array([[3, 1], [3, 2], [4, 3], [1, 2]], np.uint64))
+    assert sorted(tuple(sorted(r)) for r in out.tolist()) == [(1, 2), (1, 3)]
+
+
+def test_cut_without_stranded_pieces_is_returned_unchanged():
+    edges = solved([[1, 3], [3, 2]], [0.9, 0.2])
+    removed = np.array([[3, 2]], np.uint64)
+    c = orphan_context({1}, {2})
+    assert paint_service._reattach_orphans(c, edges, removed) is removed and c.reattached == 0
