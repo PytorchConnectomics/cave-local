@@ -1,0 +1,183 @@
+{
+  "observed_date": "2026-10-18",
+  "scope": "Read-only artifact integrity and metadata inspection; no scoring, inference, graph writes or jobs.",
+  "config_path": "/home/donglai/dw-os/coding/focus/cereb-nerl/em_erl/configs/cereb32.json",
+  "config_sha256": "f72c0c7c962ed6236e34f57adc5b21a3a03f3d5ff0974ed94cd840f51cd8f0cc",
+  "repositories": [
+    {
+      "path": "/home/donglai/dw-os/coding/cave-local",
+      "revision": "29645eb79a9f946c09eaab38a17c8ea0858fd41d"
+    },
+    {
+      "path": "/home/donglai/dw-os/coding/cave-local/.worktrees/pcg-fork",
+      "revision": "6844daac0595a87153bb757a8624399074349228"
+    },
+    {
+      "path": "/home/donglai/dw-os/coding/PyChunkedGraph",
+      "revision": "26c7c74f87a7d5af125970c1e5a623e0c19de425"
+    },
+    {
+      "path": "/home/donglai/dw-os/coding/cave-seg-bio",
+      "revision": "dc679dfde9126e8e2b89958689ef3e182ba16dc7"
+    },
+    {
+      "path": "/home/donglai/dw-os/coding/focus/cereb-nerl/em_erl",
+      "revision": "be1787acb4b334bbde203b23a2d4058b066139db"
+    },
+    {
+      "path": "/home/donglai/dw-os/kb",
+      "revision": "61f12768c58047b3bdda47862dbc8c656faadd4e"
+    }
+  ],
+  "volumes": [
+    {
+      "name": "ExPID99-32x_1_cerebellum",
+      "export_path": "/data/runs/msi-datasim-26/results/q5-cave/deployments/cereb32x1_u10_mt0700_v2/exports/20261015T141608Z",
+      "export_manifest_sha256": "134b88296cca306f6e7afd6220198ad16531dd856cd419d8795f5cdc0ea22d9a",
+      "metadata": {
+        "graph": "cereb32x1_u10_mt0700_v2",
+        "timestamp": 1792073768.8160632,
+        "shape_zyx": [
+          256,
+          512,
+          512
+        ],
+        "resolution_zyx_nm": [
+          12.5,
+          10.15625,
+          10.15625
+        ],
+        "roots_initial": 2644,
+        "roots_now": 2597,
+        "supervoxels": 268522,
+        "edits": 75,
+        "edits_by_kind": {
+          "merge": 59,
+          "split": 16
+        }
+      },
+      "files": [
+        {
+          "name": "atoms.npz",
+          "bytes": 1332624,
+          "sha256": "154055f054f094eac6e8a9319b37d00fe1c007862931a54819bf956ddddbd85f",
+          "matches_manifest": true
+        },
+        {
+          "name": "edits.json",
+          "bytes": 1855303,
+          "sha256": "9c79624449c38ad5c63d13f54bb912a25bca48a0e0bf7443fc785c9dde84e94d",
+          "matches_manifest": true
+        },
+        {
+          "name": "seg.h5",
+          "bytes": 10665921,
+          "sha256": "3396c71ca97f66aecca9c5e019c3eafea05673b0262a1672e1ac9cb74e7b016a",
+          "matches_manifest": true
+        }
+      ],
+      "review_path": "/data/runs/msi-liconn-moe20um-2608/results/gt_score_cereb32/preparation-20261015/cereb32x1-u10-mt0700-v2.json",
+      "review_sha256": "566c0f7a6a23f0c4ebfaaae4bc4cb068d165e77dbd4d128300d3e17c107c7d34",
+      "review_matches_config": true,
+      "operation_status_counts": {
+        "0": 71,
+        "2": 1,
+        "1": 3
+      },
+      "operation_attribution_counts": {
+        "operation_id": 71,
+        "none": 4
+      },
+      "review_row_counts": {
+        "labels": 169,
+        "queue_items": 219,
+        "points": 425
+      },
+      "prediction_crop_origin_zyx_from_config": [
+        365,
+        320,
+        320
+      ],
+      "preflight_cohort_from_config_not_recomputed": {
+        "axons": 112,
+        "nonaxon_roots": 30,
+        "included_points": 307,
+        "excluded_points": 118
+      }
+    },
+    {
+      "name": "ExPID99-32x_2_cerebellum",
+      "export_path": "/data/runs/msi-datasim-26/results/q5-cave/deployments/cereb32x2_u10_mt0700_crop/exports/20261015T141615Z",
+      "export_manifest_sha256": "a439122e092d78d810d0d7fa10b3a186f72d854171620e6b2c9d37bfd13ad6fa",
+      "metadata": {
+        "graph": "cereb32x2_u10_mt0700",
+        "timestamp": 1792073775.4931064,
+        "shape_zyx": [
+          256,
+          512,
+          512
+        ],
+        "resolution_zyx_nm": [
+          12.5,
+          10.15625,
+          10.15625
+        ],
+        "roots_initial": 3639,
+        "roots_now": 3564,
+        "supervoxels": 163725,
+        "edits": 169,
+        "edits_by_kind": {
+          "merge": 118,
+          "split": 51
+        }
+      },
+      "files": [
+        {
+          "name": "atoms.npz",
+          "bytes": 766578,
+          "sha256": "2c5c485d49a0ceb5ac8e5ef327624f79a400b479be6e97232010ac4171785927",
+          "matches_manifest": true
+        },
+        {
+          "name": "edits.json",
+          "bytes": 442100,
+          "sha256": "8da4057162b3ee58cc14fa6130db4a04915638af32fe685015062c2a57596af9",
+          "matches_manifest": true
+        },
+        {
+          "name": "seg.h5",
+          "bytes": 10585056,
+          "sha256": "50ed78100bfa53e2f6b7472e073e66e200e9d9cce5df25af0906e0f8c0c7152e",
+          "matches_manifest": true
+        }
+      ],
+      "review_path": "/data/runs/msi-liconn-moe20um-2608/results/gt_score_cereb32/preparation-20261015/cereb32x2-u10-mt0700.json",
+      "review_sha256": "0962526b47bdc99d64b5e6a4e04be33fabbf0c6c8e5e6f1dea5057bb1e53fc09",
+      "review_matches_config": true,
+      "operation_status_counts": {
+        "0": 159,
+        "1": 10
+      },
+      "operation_attribution_counts": {
+        "operation_id": 159,
+        "none": 10
+      },
+      "review_row_counts": {
+        "labels": 185,
+        "queue_items": 178,
+        "points": 636
+      },
+      "prediction_crop_origin_zyx_from_config": [
+        400,
+        320,
+        320
+      ],
+      "preflight_cohort_from_config_not_recomputed": {
+        "axons": 119,
+        "nonaxon_roots": 40,
+        "included_points": 496,
+        "excluded_points": 140
+      }
+    }
+  ]
+}
